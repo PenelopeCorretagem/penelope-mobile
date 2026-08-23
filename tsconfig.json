@@ -1,0 +1,15 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["src/app/*"],
+      "@constant/*": ["src/constants/*"],
+      "@dtos/*": ["src/types/*"],
+      "@institutional/*": ["src/modules/institutional/*"],
+      "@service-penelopec/*": ["src/services/*"],
+      "@shared/*": ["src/shared/*"]
+    }
+  }
+}

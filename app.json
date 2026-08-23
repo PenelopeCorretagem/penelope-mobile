@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "penelope-mobile",
+    "slug": "penelope-mobile",
+    "scheme": "penelope",
+    "version": "1.0.0",
+    "platforms": ["ios", "android", "web"],
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    }
+  }
+}
