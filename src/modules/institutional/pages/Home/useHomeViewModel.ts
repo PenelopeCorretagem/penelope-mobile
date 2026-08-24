@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getAllAdvertisements } from '@service-penelopec/advertisementService'
+import { toAdvertisementList } from '@shared/utils/advertisementNormalizer'
 import { HomeModel } from './HomeModel'
 import { ESTATE_TYPES } from '@constant/estateTypes'
 
@@ -24,7 +25,7 @@ export function useHomeViewModel() {
       })
 
       if (Array.isArray(launchAds)) {
-        homeModel.setPreLaunchAdvertisements(launchAds)
+        homeModel.setPreLaunchAdvertisements(toAdvertisementList(launchAds))
       }
     } catch (error) {
       homeModel.setError(error instanceof Error ? error.message : 'Erro ao carregar lançamentos')

@@ -1,0 +1,72 @@
+{
+  "advertisements": [
+    {
+      "id": 1001,
+      "active": true,
+      "type": "LANCAMENTO",
+      "featured": true,
+      "createdAt": "2025-02-10T08:30:00Z",
+      "estate": {
+        "title": "Cobertura Duplex no Centro de São Paulo",
+        "description": "Cobertura com varanda gourmet e vista para a cidade.",
+        "area": 250.5,
+        "numberOfRooms": 3,
+        "type": "LANCAMENTO",
+        "address": { "city": "São Paulo", "region": "Sudeste", "uf": "SP" },
+        "images": [{ "url": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80", "type": "CAPA" }],
+        "amenities": [{ "id": 1, "description": "Varanda", "icon": "Trees" }, { "id": 2, "description": "Piscina", "icon": "Waves" }]
+      }
+    },
+    {
+      "id": 1002,
+      "active": true,
+      "type": "DISPONIVEL",
+      "featured": false,
+      "createdAt": "2025-02-15T10:15:00Z",
+      "estate": {
+        "title": "Casa em Condomínio Fechado em Campinas",
+        "description": "Casa térrea com piscina e churrasqueira.",
+        "area": 180,
+        "numberOfRooms": 4,
+        "type": "DISPONIVEL",
+        "address": { "city": "Campinas", "region": "Sudeste", "uf": "SP" },
+        "images": [{ "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", "type": { "id": 1, "description": "Capa" } }],
+        "amenitiesIds": [5, 6, 7]
+      }
+    },
+    {
+      "id": 1003,
+      "active": true,
+      "type": "DISPONIVEL",
+      "featured": false,
+      "createdAt": "2025-01-20T13:45:00Z",
+      "estate": {
+        "title": "Sala Comercial na Avenida Paulista",
+        "description": "Sala comercial em prédio de alto padrão.",
+        "area": 300,
+        "numberOfRooms": 0,
+        "type": "DISPONIVEL",
+        "address": { "city": "São Paulo", "region": "Sudeste", "uf": "SP" },
+        "images": [],
+        "amenities": [{ "id": 8, "description": "Recepção", "icon": "Users" }]
+      }
+    },
+    {
+      "id": 1004,
+      "active": true,
+      "type": "EM_OBRAS",
+      "featured": false,
+      "createdAt": "2025-02-20T12:00:00Z",
+      "estate": {
+        "title": "Casa com Acessibilidade em Jundiaí",
+        "description": "Casa térrea com acesso adaptado.",
+        "area": 160,
+        "numberOfRooms": 3,
+        "type": "EM_OBRAS",
+        "address": { "city": "Jundiaí", "region": "Sudeste", "uf": "SP" },
+        "images": [{ "url": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=800&q=80", "type": "cover" }],
+        "amenities": [{ "id": 9, "description": "Acessibilidade", "icon": "Accessibility" }]
+      }
+    }
+  ]
+}
