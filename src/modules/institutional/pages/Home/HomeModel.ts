@@ -40,9 +40,9 @@ export class HomeModel {
   _validateAdvertisementsArray(advertisements: Advertisement[]) {
     advertisements.forEach(advertisement => {
       this._validateAdvertisementInstance(advertisement)
-      if (advertisement.estate.type.key !== ESTATE_TYPES.LANCAMENTO.key) {
+      if (advertisement.estate.type.key !== ESTATE_TYPES.LANCAMENTO.domainKey) {
         throw new Error(
-          `O tipo de propriedade: ${advertisement.estate.type.key} deveria ser do tipo ${ESTATE_TYPES.LANCAMENTO.key}`
+          `O tipo de propriedade: ${advertisement.estate.type.key} deveria ser do tipo ${ESTATE_TYPES.LANCAMENTO.domainKey}`
         )
       }
     })
