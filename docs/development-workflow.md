@@ -1,5 +1,8 @@
 # Workflow de Desenvolvimento — MVVM Modular com React Native + TypeScript
 
+> Para executar este processo com agentes e gerar registros em `outputs/`, consulte
+> [Workflow com agentes e skills](./agentic-workflow.md).
+
 ## 1. Objetivo
 
 Este workflow define como novas funcionalidades devem ser criadas e organizadas no projeto

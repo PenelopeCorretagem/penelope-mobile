@@ -1,0 +1,4 @@
+interface:
+  display_name: "Desenvolvimento Penelope"
+  short_description: "Orquestra features MVVM no Penelope Mobile"
+  default_prompt: "Use $penelope-development para implementar esta tarefa do início ao relatório final."
