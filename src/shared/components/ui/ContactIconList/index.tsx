@@ -1,0 +1,1 @@
+export { ContactIconListView } from './ContactIconListView'

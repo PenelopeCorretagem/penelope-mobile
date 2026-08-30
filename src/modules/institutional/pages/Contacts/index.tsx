@@ -1,1 +1,2 @@
-export { default, default as AdvertisementsView } from './AdvertisementsView'
+export { default, ContactsView } from './ContactsView'
+export { useContactsViewModel } from './useContactsViewModel'

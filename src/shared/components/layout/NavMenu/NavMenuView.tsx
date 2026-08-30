@@ -8,6 +8,7 @@ const links = [
   { label: "Início", href: "/home" as const },
   { label: "Imóveis", href: "/imoveis" as const },
   { label: "Sobre", href: "/sobre" as const },
+  { label: "Contato", href: "/contato" as const },
 ];
 
 export default function NavMenuView() {
