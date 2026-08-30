@@ -12,6 +12,7 @@ export default function Footer() {
         <Link href="/" style={styles.link}>Início</Link>
         <Link href="/imoveis" style={styles.link}>Imóveis</Link>
         <Link href="/sobre" style={styles.link}>Sobre</Link>
+        <Link href="/contato" style={styles.link}>Contato</Link>
       </View>
       <Text style={styles.copyright}>© {year} Penélope. Todos os direitos reservados.</Text>
     </View>
