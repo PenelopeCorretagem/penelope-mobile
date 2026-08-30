@@ -20,10 +20,10 @@ export function useLoginViewModel() {
     setForm(nextForm);
 
     const nextFieldError = getLoginFieldError(nextForm, field);
-    setFieldErrors({
-      email: field === "email" ? nextFieldError : "",
-      senha: field === "senha" ? nextFieldError : "",
-    });
+    setFieldErrors((prev) => ({
+      ...prev,
+      [field]: nextFieldError,
+    }));
 
     setError(null);
   };
