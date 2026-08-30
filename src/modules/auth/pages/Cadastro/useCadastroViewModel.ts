@@ -25,12 +25,10 @@ export function useCadastroViewModel() {
     setForm(nextForm);
 
     const nextFieldError = getCadastroFieldError(nextForm, field);
-    setFieldErrors({
-      nomeCompleto: field === "nomeCompleto" ? nextFieldError : "",
-      email: field === "email" ? nextFieldError : "",
-      senha: field === "senha" ? nextFieldError : "",
-      confirmSenha: field === "confirmSenha" ? nextFieldError : "",
-    });
+    setFieldErrors((prev) => ({
+      ...prev,
+      [field]: nextFieldError,
+    }));
 
     setError(null);
   };
