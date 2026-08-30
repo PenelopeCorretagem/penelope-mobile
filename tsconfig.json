@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "paths": {
       "@app/*": ["src/app/*"],
+      "@auth/*": ["src/modules/auth/*"],
       "@constant/*": ["src/constants/*"],
       "@dtos/*": ["src/types/*"],
       "@institutional/*": ["src/modules/institutional/*"],
