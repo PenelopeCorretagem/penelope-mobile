@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -110,22 +110,18 @@ export function AuthScreen({
           {helperLabel && helperActionLabel ? (
             <View style={styles.inlineLinkRow}>
               <Text style={styles.inlineText}>{helperLabel}</Text>
-              <Link href={helperHref} asChild>
-                <Pressable>
-                  <Text style={styles.linkText}>{helperActionLabel}</Text>
-                </Pressable>
-              </Link>
+              <Pressable onPress={() => router.push(helperHref)}>
+                <Text style={styles.linkText}>{helperActionLabel}</Text>
+              </Pressable>
             </View>
           ) : null}
 
           {secondaryPrompt && secondaryActionLabel && secondaryActionHref ? (
             <View style={styles.inlineLinkRow}>
               <Text style={styles.inlineText}>{secondaryPrompt}</Text>
-              <Link href={secondaryActionHref} asChild>
-                <Pressable>
-                  <Text style={styles.linkText}>{secondaryActionLabel}</Text>
-                </Pressable>
-              </Link>
+              <Pressable onPress={() => router.push(secondaryActionHref)}>
+                <Text style={styles.linkText}>{secondaryActionLabel}</Text>
+              </Pressable>
             </View>
           ) : null}
         </View>
@@ -231,7 +227,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: spacing.md,
     flexWrap: "wrap",
-    gap: 6,
   },
   inlineText: {
     color: colors.secondary,

@@ -4,7 +4,7 @@ import { colors } from '@shared/styles/style'
 
 export default function TextView({ children, style, ...props }: PropsWithChildren<TextProps>) {
   return (
-    <Text {...props} style={[{ color: colors.text, fontSize: 16, lineHeight: 24 }, style]}>
+    <Text {...props} style={[{ color: colors.text, fontSize: 16, lineHeight: 24, textAlign: 'center' }, style]}>
       {children}
     </Text>
   )

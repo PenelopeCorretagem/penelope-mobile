@@ -4,7 +4,7 @@ import { colors, spacing } from '@shared/styles/style'
 import Button from '@shared/components/ui/Button'
 import Text from '@shared/components/ui/Text'
 import Heading from '@shared/components/ui/Heading'
-import { ContactsModel } from '@institutional/pages/Contacts/ContactsModel'
+import { ContactsModel } from '@profile/submodules/settings/pages/Contacts/ContactsModel'
 
 type FormData = {
   subject: string
@@ -98,7 +98,7 @@ export function ContactFormView() {
       }}
       scrollEnabled={false}
     >
-      <View style={{ gap: spacing.md }}>
+      <View>
         {renderField('Assunto', 'subject', 'Qual é o motivo do contato?')}
         {renderField('Mensagem', 'message', 'Escreva sua mensagem...', true)}
 

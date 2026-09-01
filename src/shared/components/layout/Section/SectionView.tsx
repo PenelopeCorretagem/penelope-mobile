@@ -4,7 +4,7 @@ import { spacing } from '@shared/styles/style'
 
 export default function SectionView({ children, style, ...props }: PropsWithChildren<ViewProps>) {
   return (
-    <View {...props} style={[{ paddingHorizontal: spacing.lg, paddingVertical: spacing.xl }, style]}>
+    <View {...props} style={[{ paddingRight: spacing.lg, paddingLeft: spacing.lg, paddingTop: spacing.xl, paddingBottom: spacing.xl, display:'flex', alignItems: 'center', justifyContent: 'center' }, style]}>
       {children}
     </View>
   )

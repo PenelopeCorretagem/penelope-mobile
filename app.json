@@ -14,6 +14,14 @@
     "android": {
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
-    }
+    },
+    "plugins": [
+      [
+        "expo-speech-recognition",
+        {
+          "speechRecognitionPermission": "Allow $(PRODUCT_NAME) to use speech recognition."
+        }
+      ]
+    ]
   }
 }

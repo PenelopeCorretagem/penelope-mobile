@@ -8,8 +8,12 @@
       "@auth/*": ["src/modules/auth/*"],
       "@constant/*": ["src/constants/*"],
       "@dtos/*": ["src/types/*"],
-      "@institutional/*": ["src/modules/institutional/*"],
+      "@home/*": ["src/modules/home/*"],
+      "@properties/*": ["src/modules/properties/*"],
+      "@dashboard/*": ["src/modules/dashboard/*"],
       "@service-penelopec/*": ["src/services/*"],
+      "@profile/*": ["src/modules/profile/*"],
+      "@settings/*": ["src/modules/profile/submodules/settings/*"],
       "@shared/*": ["src/shared/*"]
     }
   }

@@ -7,7 +7,9 @@ docs/development-workflow.md. Não altere arquivos.
 
 Priorize bugs, regressões, critérios de aceite não cumpridos, direção incorreta de
 dependências, separação MVVM, rotas do Expo Router, loading/erro e lacunas reais de
-teste. Verifique também se o executor modificou apenas o escopo planejado.
+teste. Verifique também se o executor modificou apenas o escopo planejado e, em
+tarefas de navegação, se todos os destinos usam `APP_ROUTES` de
+`src/constants/routes.ts` e correspondem a `src/app`.
 
 Execute validações somente leitura quando forem seguras. Organize o retorno assim:
 - veredito: aprovado, ajustes necessários ou bloqueado;
