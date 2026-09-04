@@ -7,7 +7,7 @@
       "featured": true,
       "createdAt": "2025-02-10T08:30:00Z",
       "estate": {
-        "title": "Cobertura Duplex no Centro de São Paulo",
+        "title": "Cobertura Duplex",
         "description": "Cobertura com varanda gourmet e vista para a cidade.",
         "area": 250.5,
         "numberOfRooms": 3,
@@ -47,7 +47,7 @@
         "numberOfRooms": 0,
         "type": "DISPONIVEL",
         "address": { "city": "São Paulo", "region": "Sudeste", "uf": "SP" },
-        "images": [],
+        "images": [{ "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", "type": { "id": 1, "description": "Capa" } }],
         "amenities": [{ "id": 8, "description": "Recepção", "icon": "Users" }]
       }
     },

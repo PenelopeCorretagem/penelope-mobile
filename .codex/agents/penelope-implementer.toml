@@ -11,12 +11,19 @@ Siga a arquitetura do projeto:
 - View contém interface e não chama API diretamente;
 - integrações externas ficam em src/services;
 - src/app contém rotas e layouts do Expo Router;
+- src/constants/routes.ts é a fonte única de destinos; use APP_ROUTES via
+	@constant/routes e mantenha os valores sincronizados com src/app;
 - shared recebe apenas reuso comprovado.
 
 Use os aliases existentes em tsconfig.json. Antes de depender de uma API do Expo,
 confirme seu comportamento na documentação do SDK 54 indicada em AGENTS.md.
 Faça a menor mudança que satisfaça os critérios de aceite, sem criar Issue, PR,
 merge, publicação ou dependência externa não autorizada.
+
+Preserve o shell atual de src/app/app/_layout.tsx, composto por HeaderView com
+SearchModalView e TabNavigator inferior com Home, Imóveis, Dashboard, Favoritos e
+Perfil. Configurações fica fora da barra inferior. Não reintroduza menu hamburguer
+ou Footer no shell.
 
 Ao terminar, execute npm run typecheck e os testes relevantes disponíveis. Retorne
 status, arquivos alterados, decisões, comandos/resultados, desvios do plano e

@@ -1,12 +1,16 @@
 export type CadastroFormState = {
   nomeCompleto: string;
+  dataNascimento: string;
   email: string;
   senha: string;
   confirmSenha: string;
 };
 
+export type CadastroField = keyof CadastroFormState;
+
 export const createEmptyCadastroForm = (): CadastroFormState => ({
   nomeCompleto: "",
+  dataNascimento: "",
   email: "",
   senha: "",
   confirmSenha: "",
@@ -22,6 +26,11 @@ export function getCadastroFieldError(
     if (!form.nomeCompleto.trim()) return "Informe seu nome completo.";
     if (form.nomeCompleto.trim().length < 2)
       return "Seu nome deve ter pelo menos 2 letras.";
+    return "";
+  }
+
+  if (field === "dataNascimento") {
+    if (!form.dataNascimento.trim()) return "Informe sua data de nascimento.";
     return "";
   }
 
@@ -47,10 +56,20 @@ export function getCadastroFieldError(
 export function getCadastroFieldErrors(form: CadastroFormState) {
   return {
     nomeCompleto: getCadastroFieldError(form, "nomeCompleto"),
+    dataNascimento: getCadastroFieldError(form, "dataNascimento"),
     email: getCadastroFieldError(form, "email"),
     senha: getCadastroFieldError(form, "senha"),
     confirmSenha: getCadastroFieldError(form, "confirmSenha"),
   };
+}
+
+export function validateCadastroStep(
+  form: CadastroFormState,
+  fields: CadastroField[],
+) {
+  const hasErrors = fields.some((field) => Boolean(getCadastroFieldError(form, field)));
+
+  return hasErrors ? "Preencha os campos corretamente para continuar." : null;
 }
 
 export function validateCadastroForm(form: CadastroFormState) {

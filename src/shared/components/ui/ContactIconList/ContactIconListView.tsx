@@ -58,13 +58,12 @@ export function ContactIconListView({
     <View
       style={{
         flexDirection: layout === 'horizontal' ? 'row' : 'column',
-        gap: spacing.md,
         alignItems: 'center',
         justifyContent: layout === 'horizontal' ? 'center' : 'flex-start',
         flexWrap: 'wrap',
       }}
     >
-      {validContacts.map(contact => (
+      {validContacts.map((contact, index) => (
         <Pressable
           key={contact.id}
           onPress={() => handlePress(contact.href)}
@@ -76,6 +75,8 @@ export function ContactIconListView({
               backgroundColor: pressed ? colors.secondary : colors.primary,
               alignItems: 'center',
               justifyContent: 'center',
+              marginRight: layout === 'horizontal' && index < validContacts.length - 1 ? spacing.md : 0,
+              marginBottom: layout === 'horizontal' ? 0 : spacing.md,
               opacity: pressed ? 0.85 : 1,
             },
           ]}

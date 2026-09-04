@@ -6,6 +6,7 @@ import {
   CadastroFormState,
   getCadastroFieldError,
   getCadastroFieldErrors,
+  validateCadastroStep,
   validateCadastroForm,
 } from "./CadastroModel";
 
@@ -13,11 +14,13 @@ export function useCadastroViewModel() {
   const [form, setForm] = useState<CadastroFormState>(createEmptyCadastroForm);
   const [fieldErrors, setFieldErrors] = useState({
     nomeCompleto: "",
+    dataNascimento: "",
     email: "",
     senha: "",
     confirmSenha: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [step, setStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
 
   const updateField = (field: keyof CadastroFormState, value: string) => {
@@ -54,12 +57,27 @@ export function useCadastroViewModel() {
     }, 500);
   };
 
+  const handleNext = () => {
+    const firstStepFields = ["nomeCompleto", "dataNascimento"] as const;
+    const nextErrors = getCadastroFieldErrors(form);
+    setFieldErrors(nextErrors);
+
+    if (validateCadastroStep(form, [...firstStepFields])) return;
+
+    setStep(2);
+  };
+
+  const handleBack = () => setStep(1);
+
   return {
     form,
     error,
     fieldErrors,
     isSubmitting,
+    step,
     updateField,
+    handleNext,
+    handleBack,
     handleSubmit,
   };
 }

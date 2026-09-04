@@ -10,10 +10,14 @@ Entregue um plano concreto e verificável que contenha:
 - módulo responsável e evidências no repositório;
 - componentes, assets, styles e utilitários existentes avaliados para reuso;
 - Model, Service, ViewModel, View, componentes e rotas que realmente precisam mudar;
+- regra de centralização em `src/constants/routes.ts`, com conferência dos caminhos
+	contra a árvore real de `src/app` quando houver navegação;
 - sequência de implementação, validações e riscos;
 - branch sugerida conforme a convenção do projeto.
 
 Respeite os aliases reais de tsconfig.json e a versão Expo declarada no projeto.
 Não invente camadas ou dependências. Sinalize contradições entre o pedido, o
-documento e o código real para o agente principal decidir.
+documento e o código real para o agente principal decidir. Considere a estrutura
+atual `auth`, `home`, `properties` e `profile`, o `HeaderView` com busca e o
+`TabNavigator` inferior; não presuma menu hamburguer ou footer no shell.
 """

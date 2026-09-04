@@ -1,67 +1,42 @@
-# Workflow com agentes e skills
+# Workflow com agentes
 
-Este workflow operacionaliza as regras de `docs/development-workflow.md` no Codex.
-A entrada pode ser uma solicitação em linguagem natural; cada execução gera um
-registro auditável em `outputs/`.
+O agente `penelope-development` conduz tarefas do Penelope Mobile em cinco fases:
 
 ```text
-input -> planejamento -> execução -> saída
-             |              |
-             v              v
-      penelope_planner  penelope_implementer
-                              |
-                              v
-                       penelope_reviewer
+input -> planejamento -> execução -> revisão -> saída
 ```
 
-O planejador e o revisor trabalham em modo somente leitura. O implementador é o
-único subagente escritor, reduzindo conflitos. O agente principal coordena as fases,
-decide sobre achados e grava os outputs.
+Cada execução é registrada em `outputs/<run-id>/` com `input.md`, `plan.md`,
+`execution.md`, `review.md` e `summary.md`.
 
-## Como usar
+No GitHub Copilot, o agente principal executa as fases em sequência. Quando houver
+subagentes disponíveis, a exploração e a revisão podem ser delegadas a agentes
+somente leitura; a implementação deve permanecer em uma única fase escritora.
 
-No Codex CLI ou na extensão, invoque a skill:
-
-```text
-$penelope-development implemente a tela de contatos com estados de loading e erro
-```
-
-A skill também pode ser selecionada automaticamente para pedidos de implementação,
-correção ou refatoração neste repositório.
-
-Para criar apenas o scaffold de uma execução manualmente:
+Para criar os artefatos manualmente:
 
 ```powershell
-powershell -ExecutionPolicy Bypass `
-  -File .agents/skills/penelope-development/scripts/new-run.ps1 `
-  -Slug contatos `
-  -Task 'Implementar a tela de contatos'
+powershell -ExecutionPolicy Bypass -File .agents/skills/penelope-development/scripts/new-run.ps1 -Slug contatos -Task 'Implementar a tela de contatos'
 ```
 
-Para validar que todos os registros foram finalizados:
+Para validar uma execução concluída:
 
 ```powershell
-powershell -ExecutionPolicy Bypass `
-  -File .agents/skills/penelope-development/scripts/validate-run.ps1 `
-  -RunDirectory outputs/20260823-120000-contatos
+powershell -ExecutionPolicy Bypass -File .agents/skills/penelope-development/scripts/validate-run.ps1 -RunDirectory outputs/20260823-120000-contatos
 ```
 
-## Artefatos por execução
+O workflow não cria Issue, Pull Request, merge, branch ou publicação externa sem
+pedido explícito.
 
-```text
-outputs/<run-id>/
-├── input.md
-├── plan.md
-├── execution.md
-├── review.md
-└── summary.md
-```
+## Regras arquiteturais atuais
 
-- `input.md`: pedido normalizado, escopo e critérios de aceite.
-- `plan.md`: impacto arquitetural e plano aprovado.
-- `execution.md`: mudanças, comandos, decisões e falhas.
-- `review.md`: veredito, achados e checklist.
-- `summary.md`: saída final, validações, pendências e próximo passo.
-
-O workflow não cria Issue, Pull Request, merge ou publicação automaticamente.
-Essas ações externas continuam dependendo de um pedido explícito.
+- `src/constants/routes.ts` é a fonte única dos destinos de navegação. Os agentes
+	devem preferir `APP_ROUTES` via `@constant/routes` e rejeitar novas strings de
+	rota espalhadas pelo código.
+- A aplicação usa o shell de `src/app/app/_layout.tsx`: `HeaderView` com busca
+	global via `SearchModalView` e `TabNavigator` inferior.
+- A navegação principal é `Home`, `Imóveis`, `Dashboard`, `Favoritos` e `Perfil`.
+- `Configurações` é uma rota Stack sem TabNavigator, acessada pela engrenagem do Perfil.
+- A organização vigente dos módulos é `auth`, `home`, `properties` e `profile`.
+- `Footer` e o menu hamburguer não fazem parte do shell atual. Não devem ser
+	reintroduzidos sem requisito explícito.

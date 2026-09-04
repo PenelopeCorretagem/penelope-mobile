@@ -1,0 +1,1 @@
+export { default, default as PropertDeytailsView } from './PropertDeytailsView'

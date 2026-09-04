@@ -8,8 +8,11 @@ import {
   LoginFormState,
   validateLoginForm,
 } from "./LoginModel";
+import { APP_ROUTES } from "@constant/routes";
+import { useAuth } from "@shared/context/AuthContext";
 
 export function useLoginViewModel() {
+  const { login } = useAuth();
   const [form, setForm] = useState<LoginFormState>(createEmptyLoginForm);
   const [fieldErrors, setFieldErrors] = useState({ email: "", senha: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,9 +49,9 @@ export function useLoginViewModel() {
     setError(null);
 
     setTimeout(() => {
-      Alert.alert("Login", "Acesso realizado com sucesso!");
+      login();
       setIsSubmitting(false);
-      router.replace("/home");
+      router.replace(APP_ROUTES.imoveis);
     }, 500);
   };
 
