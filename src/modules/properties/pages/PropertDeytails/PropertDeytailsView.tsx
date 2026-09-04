@@ -1,7 +1,6 @@
 import { ScrollView, Text } from 'react-native'
 import Section from '@shared/components/layout/Section'
 import { colors, styles } from '@shared/styles/style'
-import Footer from '@shared/components/layout/Footer'
 
 export default function PropertDeytailsView() {
   return (

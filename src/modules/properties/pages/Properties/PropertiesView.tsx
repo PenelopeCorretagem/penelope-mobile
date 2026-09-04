@@ -1,26 +1,23 @@
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native'
 import Alert from '@shared/components/feedback/Alert'
-import AdvertisementsCarousel from 'src/modules/properties/components/AdvertisementsCarousel'
 import Button from '@shared/components/ui/Button'
-import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import Section from '@shared/components/layout/Section'
+import AdvertisementCard from '@properties/components/AdvertisementCard'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import { usePropertiesViewModel } from './usePropertiesViewModel'
 
-export default function PropertiesView() {
+export default function PropertiesView({ favoritesOnly = false }: { favoritesOnly?: boolean }) {
   const {
-    availableCities,
-    availableRegions,
+    advertisements,
     clearFilters,
     error,
-    filters,
-    groups,
+    hasMoreAdvertisements,
     isLoading,
+    loadMoreAdvertisements,
     retry,
     totalResults,
-    updateFilters,
-  } = usePropertiesViewModel()
+  } = usePropertiesViewModel({ favoritesOnly })
 
   if (isLoading) {
     return (
@@ -41,28 +38,33 @@ export default function PropertiesView() {
   }
 
   return (
-    <ScrollView style={sharedStyles.screen}>
-      {totalResults === 0 ? (
-        <Section style={styles.state}>
-          <Text>Nenhuma propriedade encontrada com os filtros aplicados.</Text>
-          <Button onPress={clearFilters}>Limpar busca e filtros</Button>
-        </Section>
-      ) : (
-        <View>
-          <Section><AdvertisementsCarousel advertisements={groups.launch} title="Lançamentos" /></Section>
-          <Section style={filters.type === 'DISPONIVEL' ? undefined : styles.availableSection}>
-            <AdvertisementsCarousel advertisements={groups.available} title="Disponíveis" />
-          </Section>
-          <Section><AdvertisementsCarousel advertisements={groups.underConstruction} title="Em Obras" /></Section>
-        </View>
-      )}
-      </ScrollView>
+    totalResults === 0 ? (
+      <Section style={styles.state}>
+        <Text>Nenhuma propriedade encontrada com os filtros aplicados.</Text>
+        <Button onPress={clearFilters}>Limpar busca e filtros</Button>
+      </Section>
+    ) : (
+      <FlatList
+        contentContainerStyle={styles.feedContent}
+        data={advertisements}
+        keyExtractor={(advertisement) => String(advertisement.id)}
+        onEndReached={loadMoreAdvertisements}
+        onEndReachedThreshold={0.7}
+        renderItem={({ item }) => <AdvertisementCard advertisement={item} />}
+        style={sharedStyles.screen}
+        ListFooterComponent={hasMoreAdvertisements ? <ActivityIndicator color={colors.primary} style={styles.footer} /> : null}
+      />
+    )
   )
 }
 
 const styles = StyleSheet.create({
-  availableSection: {
-    backgroundColor: colors.surface,
+  feedContent: {
+    paddingBottom: spacing.lg,
+    paddingTop: spacing.sm,
+  },
+  footer: {
+    paddingVertical: spacing.md,
   },
   state: {
     alignItems: 'center',

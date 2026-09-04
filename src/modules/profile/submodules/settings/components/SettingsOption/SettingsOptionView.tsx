@@ -45,11 +45,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 12,
     marginBottom: spacing.md,
+    width: '100%',
   },
   container: {
     alignItems: 'center',
     flexDirection: 'row',
     padding: spacing.md,
+    width: '100%',
   },
   iconBox: {
     alignItems: 'center',

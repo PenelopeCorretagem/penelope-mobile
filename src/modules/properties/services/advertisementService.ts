@@ -3,7 +3,7 @@ export type AdvertisementQuery = {
   active: boolean
 }
 
-const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001'
+const apiBaseUrl = 'http://192.168.0.172:3001'
 
 export async function getAllAdvertisements(
   query: AdvertisementQuery,

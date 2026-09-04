@@ -1,13 +1,16 @@
 import { Ionicons } from '@expo/vector-icons'
-import { Image, Pressable, StyleSheet, View } from 'react-native'
+import { router } from 'expo-router'
+import { useState } from 'react'
+import { FlatList, Image, NativeScrollEvent, NativeSyntheticEvent, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { ESTATE_TYPES } from '@constant/estateTypes'
+import { APP_ROUTES } from '@constant/routes'
 import { Advertisement } from '@dtos/Advertisement'
 import Button from '@shared/components/ui/Button'
 import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import { useFavorites } from '@shared/context/FavoritesContext'
 import { colors, spacing } from '@shared/styles/style'
-import { getCoverImageUrl } from '@properties/pages/Properties/PropertiesModel'
+import { getAdvertisementImageUrls } from '@properties/pages/Properties/PropertiesModel'
 
 type AdvertisementCardProps = {
   advertisement: Advertisement
@@ -17,7 +20,10 @@ type AdvertisementCardProps = {
 export default function AdvertisementCardView({ advertisement, width }: AdvertisementCardProps) {
   const { estate } = advertisement
   const { isFavorite, toggleFavorite } = useFavorites()
-  const coverImageUrl = getCoverImageUrl(advertisement)
+  const { width: windowWidth } = useWindowDimensions()
+  const cardWidth = width ?? windowWidth - spacing.md * 2
+  const imageUrls = getAdvertisementImageUrls(advertisement)
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
   const amenities = estate.amenities?.slice(0, 4) ?? []
   const detail = `${estate.area ?? '?'} m² - ${estate.numberOfRooms ?? '?'} dormitórios`
   const typeConfig = Object.values(ESTATE_TYPES).find(({ domainKey }) => domainKey === estate.type.key)
@@ -31,16 +37,30 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
   return (
     <View
       accessibilityRole="summary"
-      style={[styles.card, width ? { marginHorizontal: spacing.md, width } : undefined]}
+      style={[styles.card, { width: cardWidth }]}
     >
       <View style={styles.imageContainer}>
-        {coverImageUrl ? (
-          <Image
-            accessibilityLabel={`Imagem do imóvel ${estate.title ?? ''}`}
-            source={{ uri: coverImageUrl }}
-            style={styles.cover}
-          />
-        ) : null}
+        <FlatList
+          data={imageUrls}
+          decelerationRate="fast"
+          horizontal
+          keyExtractor={(url, index) => `${url}-${index}`}
+          nestedScrollEnabled
+          onScroll={({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
+            const pageWidth = nativeEvent.layoutMeasurement.width
+            if (pageWidth > 0) setActiveImageIndex(Math.round(nativeEvent.contentOffset.x / pageWidth))
+          }}
+          pagingEnabled
+          renderItem={({ item: imageUrl }) => (
+            <Image
+              accessibilityLabel={`Imagem do imóvel ${estate.title ?? ''}`}
+              source={{ uri: imageUrl }}
+              style={[styles.cover, { width: cardWidth }]}
+            />
+          )}
+          scrollEnabled={imageUrls.length > 1}
+          showsHorizontalScrollIndicator={false}
+        />
 
         <Pressable
           accessibilityRole="button"
@@ -52,18 +72,24 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
         </Pressable>
 
         <Text style={[styles.category, { backgroundColor: categoryColor, color: colors.background }]}>
-          {typeConfig?.cardLabel ?? estate.type.friendlyName ?? estate.type.key}
+          {estate.type.friendlyName ?? typeConfig?.cardLabel ?? estate.type.key}
         </Text>
+
+        {imageUrls.length > 1 ? (
+          <View accessibilityLabel={`${imageUrls.length} imagens`} style={styles.pagination}>
+            {imageUrls.map((imageUrl, index) => <View key={`${imageUrl}-dot-${index}`} style={[styles.dot, index === activeImageIndex && styles.activeDot]} />)}
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.content}>
-        <Heading level={4} style={styles.title}>{estate.title ?? 'Título não disponível'}</Heading>
+        <Heading level={4} style={styles.title}>{estate.title ?? 'Imóvel sem título'}</Heading>
         <Text style={styles.city}>{estate.address?.city ?? 'Cidade não informada'}</Text>
         <Text style={styles.detail}>{detail}</Text>
 
         {amenities.length > 0 ? (
           <View style={styles.amenities}>
-            {amenities.map((amenity, index) => (
+            {amenities.slice(0, 3).map((amenity, index) => (
               <Text key={amenity.id ?? `${amenity.description ?? 'amenity'}-${index}`} style={styles.amenity}>
                 {amenity.description || 'Diferencial'}
               </Text>
@@ -71,7 +97,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
           </View>
         ) : null}
 
-        <Button onPress={() => {}} style = {styles.learnMoreButton}>Saiba Mais</Button>
+        <Button onPress={() => router.push(`${APP_ROUTES.detalhes}/${advertisement.id}`)} style={styles.learnMoreButton}>Saiba Mais</Button>
       </View>
     </View>
   )
@@ -80,16 +106,17 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.white,
-    borderRadius: 18,
-    marginRight: spacing.md,
+    borderRadius: 12,
+    marginBottom: spacing.md,
+    marginHorizontal: spacing.md,
     overflow: 'hidden',
-    width: 280,
+    width: '100%',
   },
   imageContainer: {
     position: 'relative',
   },
   cover: {
-    height: 180,
+    aspectRatio: 1,
     width: '100%',
   },
   favoriteButton: {
@@ -107,7 +134,6 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   category: {
-    backgroundColor: '#f9edf5',
     borderRadius: 6,
     fontSize: 11,
     fontWeight: '700',
@@ -117,22 +143,46 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 12,
     bottom: 12,
+    width: 'auto',
+  },
+  pagination: {
+    alignItems: 'center',
+    bottom: spacing.sm,
+    flexDirection: 'row',
+    gap: 4,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+  },
+  dot: {
+    backgroundColor: colors.primaryLight,
+    borderRadius: 4,
+    height: 6,
+    opacity: 0.9,
+    width: 6,
+  },
+  activeDot: {
+    backgroundColor: colors.white,
   },
   title: {
-    marginBottom: spacing.sm,
+    fontSize: 16,
+    marginBottom: 2,
   },
   city: {
     color: colors.mutedText,
-    marginBottom: 4,
+    fontSize: 13,
+    marginBottom: 2,
   },
   detail: {
     color: colors.mutedText,
+    fontSize: 12,
     marginBottom: spacing.sm,
   },
   amenities: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -141,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     fontSize: 12,
     marginRight: spacing.sm,
-    marginBottom: spacing.sm,
+    marginBottom: 4,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.sm,
   },

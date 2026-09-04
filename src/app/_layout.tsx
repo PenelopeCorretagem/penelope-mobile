@@ -17,9 +17,7 @@ export default function RootLayout() {
     <AuthProvider>
       <FavoritesProvider>
         <View style={styles.container}>
-          {!isAuth && !isEntry ? <HeaderView /> : null}
           <Stack screenOptions={{ headerShown: false }} />
-          {!isSettings && !isAuth && !isEntry ? <TabNavigator /> : null}
         </View>
       </FavoritesProvider>
     </AuthProvider>

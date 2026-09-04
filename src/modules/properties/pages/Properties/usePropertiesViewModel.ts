@@ -3,7 +3,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ESTATE_TYPES } from '@constant/estateTypes'
 import { APP_ROUTES } from '@constant/routes'
 import { getAllAdvertisements } from '@properties/services/advertisementService'
+import { useFavorites } from '@shared/context/FavoritesContext'
 import {
+  filterFavoriteGroups,
   getAvailableCities,
   getAvailableRegions,
   getFilteredGroups,
@@ -20,8 +22,11 @@ const emptyGroups: PropertyGroups = {
   underConstruction: [],
 }
 
-export function usePropertiesViewModel() {
+const FEED_PAGE_SIZE = 4
+
+export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnly?: boolean } = {}) {
   const router = useRouter()
+  const { favoriteIds } = useFavorites()
   const { city, region, searchTerm, sortOrder, type } = useLocalSearchParams<{
     city?: string | string[]
     region?: string | string[]
@@ -34,15 +39,22 @@ export function usePropertiesViewModel() {
   const [filters, setFilters] = useState<PropertiesFilters>(initialPropertiesFilters)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [visibleCount, setVisibleCount] = useState(FEED_PAGE_SIZE)
 
   useEffect(() => {
+    const normalizeRouteValue = (value: string | string[] | undefined) => {
+      if (Array.isArray(value)) return value[0] ?? ''
+
+      return value ?? ''
+    }
+
     const nextFilters: PropertiesFilters = {
       ...initialPropertiesFilters,
-      searchTerm: typeof searchTerm === 'string' ? searchTerm : '',
-      city: typeof city === 'string' ? city : null,
-      region: typeof region === 'string' ? region : null,
-      type: typeof type === 'string' && type !== '' ? (type as PropertiesFilters['type']) : 'TODOS',
-      sortOrder: typeof sortOrder === 'string' && sortOrder !== '' ? (sortOrder as PropertiesFilters['sortOrder']) : 'none',
+      searchTerm: normalizeRouteValue(searchTerm),
+      city: normalizeRouteValue(city) !== '' ? normalizeRouteValue(city) : null,
+      region: normalizeRouteValue(region) !== '' ? normalizeRouteValue(region) : null,
+      type: normalizeRouteValue(type) !== '' ? (normalizeRouteValue(type) as PropertiesFilters['type']) : 'TODOS',
+      sortOrder: normalizeRouteValue(sortOrder) !== '' ? (normalizeRouteValue(sortOrder) as PropertiesFilters['sortOrder']) : 'none',
     }
 
     setFilters((currentFilters) => {
@@ -88,19 +100,34 @@ export function usePropertiesViewModel() {
     void loadAdvertisements()
   }, [loadAdvertisements])
 
-  const filteredGroups = useMemo(() => getFilteredGroups(groups, filters), [filters, groups])
+  const groupsForDisplay = useMemo(
+    () => favoritesOnly ? filterFavoriteGroups(groups, favoriteIds) : groups,
+    [favoriteIds, favoritesOnly, groups],
+  )
+  const filteredGroups = useMemo(() => getFilteredGroups(groupsForDisplay, filters), [filters, groupsForDisplay])
+  const advertisements = useMemo(() => Object.values(filteredGroups).flat(), [filteredGroups])
+  const visibleAdvertisements = useMemo(() => advertisements.slice(0, visibleCount), [advertisements, visibleCount])
+  const hasMoreAdvertisements = visibleAdvertisements.length < advertisements.length
   const totalResults = useMemo(() => getTotalResults(filteredGroups), [filteredGroups])
-  const availableCities = useMemo(() => getAvailableCities(groups), [groups])
-  const availableRegions = useMemo(() => getAvailableRegions(groups), [groups])
+  const availableCities = useMemo(() => getAvailableCities(groupsForDisplay), [groupsForDisplay])
+  const availableRegions = useMemo(() => getAvailableRegions(groupsForDisplay), [groupsForDisplay])
 
   const updateFilters = useCallback((updates: Partial<PropertiesFilters>) => {
     setFilters((currentFilters) => ({ ...currentFilters, ...updates }))
   }, [])
 
+  useEffect(() => {
+    setVisibleCount(FEED_PAGE_SIZE)
+  }, [filters])
+
+  const loadMoreAdvertisements = useCallback(() => {
+    if (hasMoreAdvertisements) setVisibleCount((currentCount) => currentCount + FEED_PAGE_SIZE)
+  }, [hasMoreAdvertisements])
+
   const clearFilters = useCallback(() => {
     setFilters(initialPropertiesFilters)
     router.replace({
-      pathname: APP_ROUTES.imoveis,
+      pathname: favoritesOnly ? APP_ROUTES.favoritos : APP_ROUTES.imoveis,
       params: {
         city: '',
         region: '',
@@ -109,16 +136,19 @@ export function usePropertiesViewModel() {
         type: 'TODOS',
       },
     })
-  }, [router])
+  }, [favoritesOnly, router])
 
   return {
     availableCities,
     availableRegions,
+    advertisements: visibleAdvertisements,
     clearFilters,
     error,
     filters,
     groups: filteredGroups,
     isLoading,
+      hasMoreAdvertisements,
+      loadMoreAdvertisements,
     retry: loadAdvertisements,
     totalResults,
     updateFilters,

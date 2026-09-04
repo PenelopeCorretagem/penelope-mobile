@@ -5,10 +5,9 @@ import { APP_ROUTES, isAppRouteActive } from '@constant/routes'
 import { colors, spacing } from '@shared/styles/style'
 
 const links = [
-  { label: 'Home', href: APP_ROUTES.home, icon: 'home' as const },
   { label: 'Imóveis', href: APP_ROUTES.imoveis, icon: 'search' as const },
-  { label: 'Dashboard', href: APP_ROUTES.dashboard, icon: 'bar-chart-outline' as const },
   { label: 'Favoritos', href: APP_ROUTES.favoritos, icon: 'heart' as const },
+  { label: 'Dashboard', href: APP_ROUTES.dashboard, icon: 'bar-chart-outline' as const },
   { label: 'Perfil', href: APP_ROUTES.perfil, icon: 'person' as const },
 ]
 

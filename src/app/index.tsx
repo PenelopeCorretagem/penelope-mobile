@@ -8,5 +8,5 @@ export default function Index() {
 
 	if (isLoading) return <LoadingView />
 
-	return <Redirect href={`/${isAuthenticated ? APP_ROUTES.home : APP_ROUTES.auth.login}`} />
+	return <Redirect href={`/${isAuthenticated ? APP_ROUTES.imoveis : APP_ROUTES.auth.login}`} />
 }

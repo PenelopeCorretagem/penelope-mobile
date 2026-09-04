@@ -1,1 +1,0 @@
-export { default, default as FeaturedAdvertisementCard } from './FeaturedAdvertisementCard'

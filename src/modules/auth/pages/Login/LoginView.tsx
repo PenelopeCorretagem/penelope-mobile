@@ -1,7 +1,8 @@
 import { View, Text } from "react-native";
-import { AuthScreen } from "@auth/components/AuthScreen";
+import AuthScreen from "@auth/components/AuthScreen";
 import { colors } from "@shared/styles/style";
 import { useLoginViewModel } from "./useLoginViewModel";
+import { APP_ROUTES } from '@constant/routes'
 
 export function LoginView() {
   const { form, fieldErrors, isSubmitting, updateField, handleSubmit } =
@@ -15,7 +16,7 @@ export function LoginView() {
         {
           key: "email",
           label: "E-mail",
-          placeholder: "seuemail@exemplo.com",
+          placeholder: "Digite seu e-mail",
           value: form.email,
           keyboardType: "email-address",
           autoCapitalize: "none",
@@ -36,11 +37,11 @@ export function LoginView() {
       isSubmitting={isSubmitting}
       onSubmit={handleSubmit}
       helperLabel="Esqueceu a senha?"
-      helperHref="/login"
+      helperHref={ APP_ROUTES.auth.login}
       helperActionLabel="Redefinir senha"
       secondaryPrompt="Não tem conta?"
       secondaryActionLabel="Cadastre-se"
-      secondaryActionHref="/cadastro"
+      secondaryActionHref={ APP_ROUTES.auth.cadastro}
     />
   );
 }

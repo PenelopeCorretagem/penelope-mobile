@@ -26,7 +26,17 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   section: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
     paddingVertical: spacing.xl,
   },
+  paddingHeader: {
+    paddingTop: spacing.md + 30,
+    paddingBottom: spacing.md,
+    paddingHorizontal: spacing.lg,
+  },
+  paddingTab: {
+    paddingBottom: spacing.md + 10,
+    paddingTop: spacing.md,
+    paddingHorizontal: spacing.md,
+  }
 })

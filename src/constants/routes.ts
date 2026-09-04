@@ -1,10 +1,9 @@
 export const APP_ROUTES = {
     auth: {
-        login: 'auth/login',
-        cadastro: 'auth/cadastro',
+        login: 'login',
+        cadastro: 'cadastro',
     },
     root: '',
-    home: 'home',
     perfil: 'perfil',
     conta: 'perfil/configuracoes/conta',
     dashboard: 'dashboard',

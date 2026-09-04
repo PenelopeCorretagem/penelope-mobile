@@ -49,10 +49,9 @@ export function useLoginViewModel() {
     setError(null);
 
     setTimeout(() => {
-      Alert.alert("Login", "Acesso realizado com sucesso!");
       login();
       setIsSubmitting(false);
-      router.replace(APP_ROUTES.home);
+      router.replace(APP_ROUTES.imoveis);
     }, 500);
   };
 

@@ -3,7 +3,7 @@ import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import Section from '@shared/components/layout/Section'
 import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
-import { ContactFormView } from '@shared/components/ui/ContactForm'
+import { ContactFormView } from '../../components/ContactForm'
 import { ContactIconListView } from '@shared/components/ui/ContactIconList'
 import { useContactsViewModel } from './useContactsViewModel'
 
@@ -36,7 +36,7 @@ export function ContactsView() {
             fontWeight: '700',
           }}
         >
-          ENTRE EM CONTATO
+          Entre em contato
         </Heading>
 
         {/* Texto Descritivo */}
@@ -54,13 +54,8 @@ export function ContactsView() {
 
 
         {/* Formulário de Contato */}
-        <View style={{ marginBottom: spacing.xl }}>
+        <View style={{ marginBottom: spacing.xl, width: '100%' }}>
           <ContactFormView />
-        </View>
-
-        {/* Ícones de Contato Circulares */}
-        <View style={{ marginBottom: spacing.xl, alignItems: 'center' }}>
-          <ContactIconListView contacts={contactItems} layout="horizontal" iconSize="large" />
         </View>
       </Section>
     </ScrollView>

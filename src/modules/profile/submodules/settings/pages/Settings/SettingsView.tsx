@@ -20,16 +20,16 @@ const options = [
     href: APP_ROUTES.senha,
   },
   {
-    title: 'Sobre o aplicativo',
-    description: 'Conheça a Penélope Imóveis.',
-    icon: 'information-circle-outline' as const,
-    href: APP_ROUTES.sobre,
-  },
-  {
     title: 'Entre em contato',
     description: 'Fale conosco e veja nossos canais.',
     icon: 'mail-outline' as const,
     href: APP_ROUTES.contato,
+  },
+  {
+    title: 'Sobre o aplicativo',
+    description: 'Conheça a Penélope Imóveis.',
+    icon: 'information-circle-outline' as const,
+    href: APP_ROUTES.sobre,
   },
   {
     title: 'Sair',
@@ -43,7 +43,7 @@ export default function SettingsView() {
   const { logout } = useAuth()
 
   return (
-    <ScrollView style={sharedStyles.screen} contentContainerStyle={styles.content}>
+    <ScrollView style={sharedStyles.screen}>
       <Section>
         <Text style={styles.subtitle}>Conta e aplicativo</Text>
         <View style={styles.list}>
@@ -66,9 +66,6 @@ export default function SettingsView() {
 }
 
 const styles = StyleSheet.create({
-  content: {
-    paddingBottom: spacing.xl,
-  },
   subtitle: {
     color: colors.mutedText,
     fontSize: 14,

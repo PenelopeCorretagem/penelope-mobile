@@ -112,5 +112,25 @@ export const getAvailableRegions = (groups: PropertyGroups) => (
 )
 
 export const getCoverImageUrl = (advertisement: Advertisement) => (
-  advertisement.estate.images?.find((image) => image.type?.id === 1)?.url ?? null
+  getAdvertisementImageUrls(advertisement)[0] ?? null
 )
+
+export const getAdvertisementImageUrls = (advertisement: Advertisement) => {
+  const images = advertisement.estate.images ?? []
+  const coverImages = images.filter((image) => image.type?.id === 1)
+  const otherImages = images.filter((image) => image.type?.id !== 1)
+
+  return [...coverImages, ...otherImages]
+    .map((image) => image.url)
+    .filter((url): url is string => Boolean(url))
+}
+
+export const filterFavoriteGroups = (groups: PropertyGroups, favoriteIds: number[]): PropertyGroups => {
+  const favoriteIdSet = new Set(favoriteIds)
+
+  return {
+    launch: groups.launch.filter((advertisement) => favoriteIdSet.has(advertisement.id)),
+    available: groups.available.filter((advertisement) => favoriteIdSet.has(advertisement.id)),
+    underConstruction: groups.underConstruction.filter((advertisement) => favoriteIdSet.has(advertisement.id)),
+  }
+}
