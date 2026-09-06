@@ -92,7 +92,7 @@ export default function FormView({
                   mode="date"
                   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                   maximumDate={new Date()}
-                  onChange={(_, selectedDate) => handleDateValueChange(field, selectedDate)}
+                  onValueChange={(_, selectedDate) => handleDateValueChange(field, selectedDate)}
                   onDismiss={() => setActiveDateField(null)}
                 />
               ) : null}
@@ -114,7 +114,10 @@ export default function FormView({
       ))}
 
       <View style={styles.actionsRow}>
-        {onBack ? <Pressable onPress={onBack} style={styles.backButton}><Text style={styles.backButtonText}>Voltar</Text></Pressable> : null}
+        {onBack ? <Button onPress={onBack} 
+        label="Voltar"
+        style={styles.backButton}/>
+         : null}
         <Button
           onPress={isLastStep ? onSubmit : onNext}
           disabled={isSubmitting}
@@ -143,19 +146,18 @@ const styles = StyleSheet.create({
   form: { width: '100%' },
   fieldGroup: { marginBottom: spacing.md, width: '100%' },
   label: { color: colors.text, fontSize: 14, fontWeight: '600', marginBottom: spacing.sm, textAlign: 'left' },
-  input: { backgroundColor: colors.surface, borderColor: '#e3dfe0', borderRadius: 12, borderWidth: 1, color: colors.text, fontSize: 16, paddingHorizontal: spacing.md, paddingVertical: spacing.md, width: '100%' },
+  input: { backgroundColor: colors.surface, borderColor: '#e3dfe0', borderRadius: 12, borderWidth: 1, color: colors.text, fontSize: 16, paddingHorizontal: spacing.md, paddingVertical: spacing.md, width: '100%',  textAlign: 'left' },
   inputText: { color: colors.text, fontSize: 16, textAlign: 'left' },
-  placeholderText: { color: colors.mutedText, fontSize: 16 },
+  placeholderText: { color: colors.mutedText, fontSize: 16,  textAlign: 'left' },
   inputError: { backgroundColor: '#fff5f5', borderColor: colors.error },
   errorText: { color: colors.error, fontSize: 12, marginTop: 6 },
-  actionsRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.md },
+  actionsRow: { alignItems: 'stretch', flexDirection: 'row', gap: spacing.md },
   primaryButton: { backgroundColor: colors.primary, borderRadius: 12, flex: 1, marginTop: spacing.md, paddingVertical: spacing.md },
   primaryButtonWithBack: { flex: 1 },
   primaryButtonDisabled: { opacity: 0.7 },
-  backButton: { paddingHorizontal: spacing.sm, paddingVertical: spacing.md },
-  backButtonText: { color: colors.secondary, fontSize: 16, fontWeight: '700' },
+  backButton: { borderRadius: 12, flex: 1, marginTop: spacing.md, paddingVertical: spacing.md },
   statusText: { color: colors.primary, fontSize: 14, marginTop: spacing.md, textAlign: 'center' },
   inlineLinkRow: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center', marginTop: spacing.md, width: '100%' },
   inlineText: { color: colors.secondary, fontSize: 14 },
-  linkText: { color: colors.primary, fontSize: 14, fontWeight: '700' },
+  linkText: { color: colors.primary, fontSize: 14, fontWeight: '700', width: '100%' },
 })
