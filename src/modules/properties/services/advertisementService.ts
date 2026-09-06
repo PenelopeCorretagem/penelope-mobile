@@ -1,4 +1,7 @@
 import { Platform } from 'react-native'
+import { PROPERTY_TYPES } from '@constant/propertyTypes'
+import { Advertisement } from '@dtos/Advertisement'
+import { toAdvertisementList } from '@shared/utils/advertisementNormalizer'
 
 export type AdvertisementQuery = {
   type: string
@@ -22,4 +25,15 @@ export async function getAllAdvertisements(
   }
 
   return response.json() as Promise<unknown[]>
+}
+
+export async function getAdvertisementById(id: number): Promise<Advertisement | undefined> {
+  const responses = await Promise.all(
+    Object.values(PROPERTY_TYPES).map(({ apiValue }) => (
+      getAllAdvertisements({ type: apiValue, active: true })
+    )),
+  )
+  const advertisements = responses.flatMap(toAdvertisementList)
+
+  return advertisements.find((advertisement) => advertisement.id === id)
 }
