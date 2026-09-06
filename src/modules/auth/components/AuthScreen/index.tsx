@@ -1,1 +1,1 @@
-export { default, default as AuthScreenView } from './AuthScreenView';
+export { default, default as AuthScreenView, type AuthInputField } from './AuthScreenView';

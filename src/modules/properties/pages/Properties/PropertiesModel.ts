@@ -1,8 +1,8 @@
-import { EstateTypeKey } from '@constant/estateTypes'
+import { PropertyTypeKey } from '@constant/propertyTypes'
 import { Advertisement } from '@dtos/Advertisement'
 export { toAdvertisementList } from '@shared/utils/advertisementNormalizer'
 
-export type PropertyTypeFilter = 'TODOS' | EstateTypeKey
+export type PropertyTypeFilter = 'TODOS' | PropertyTypeKey
 export type SortOrder = 'none' | 'asc' | 'desc'
 
 export type PropertiesFilters = {

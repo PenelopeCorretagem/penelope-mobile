@@ -2,8 +2,8 @@ import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { FlatList, Image, NativeScrollEvent, NativeSyntheticEvent, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native'
-import { ESTATE_TYPES } from '@constant/estateTypes'
-import { APP_ROUTES } from '@constant/routes'
+import { PROPERTY_TYPES } from '@constant/propertyTypes'
+import { APP_ROUTES } from '@shared/constants/routes'
 import { Advertisement } from '@dtos/Advertisement'
 import Button from '@shared/components/ui/Button'
 import Heading from '@shared/components/ui/Heading'
@@ -26,7 +26,9 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const amenities = estate.amenities?.slice(0, 4) ?? []
   const detail = `${estate.area ?? '?'} m² - ${estate.numberOfRooms ?? '?'} dormitórios`
-  const typeConfig = Object.values(ESTATE_TYPES).find(({ domainKey }) => domainKey === estate.type.key)
+  const typeConfig = estate.type
+    ? Object.values(PROPERTY_TYPES).find(({ domainKey }) => domainKey === estate.type.key)
+    : undefined
   const categoryColor = typeConfig?.cardColor === 'secondary'
     ? colors.secondary
     : typeConfig?.cardColor === 'secondaryLight'
@@ -72,7 +74,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
         </Pressable>
 
         <Text style={[styles.category, { backgroundColor: categoryColor, color: colors.background }]}>
-          {estate.type.friendlyName ?? typeConfig?.cardLabel ?? estate.type.key}
+          {estate.type?.friendlyName ?? typeConfig?.cardLabel ?? estate.type?.key ?? 'Imóvel'}
         </Text>
 
         {imageUrls.length > 1 ? (

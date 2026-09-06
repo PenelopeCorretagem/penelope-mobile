@@ -1,10 +1,13 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react'
+import { router } from 'expo-router'
+import { APP_ROUTES } from '@shared/constants/routes'
 
 type AuthContextValue = {
   isLoading: boolean
   isAuthenticated: boolean
   login: () => void
   logout: () => void
+  deleteAccount: () => void
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -24,6 +27,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
     isAuthenticated,
     login: () => setIsAuthenticated(true),
     logout: () => {
+      router.replace(`/${APP_ROUTES.root}`)
+      setIsLoading(true)
+      setTimeout(() => {
+        setIsAuthenticated(false)
+        setIsLoading(false)
+      }, 1500)
+    },
+    deleteAccount: () => {
+      router.replace(`/${APP_ROUTES.root}`)
       setIsLoading(true)
       setTimeout(() => {
         setIsAuthenticated(false)

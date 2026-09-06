@@ -9,8 +9,8 @@ type LoadingViewProps = {
 export default function LoadingView() {
   return (
     <View style={styles.container}>
-      <LogoView color={colors.primary} height={72} width={172} />
-      <ActivityIndicator color={colors.primary} size="large" />
+      <LogoView color={colors.background} height={72} width={172} />
+      <ActivityIndicator color={colors.background} size="large" />
     </View>
   )
 }
@@ -18,7 +18,7 @@ export default function LoadingView() {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: colors.primary,
     flex: 1,
     gap: spacing.lg,
     justifyContent: 'center',

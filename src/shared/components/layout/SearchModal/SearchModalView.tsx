@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
-import { ESTATE_TYPES } from '@constant/estateTypes'
-import { APP_ROUTES } from '@constant/routes'
+import { PROPERTY_TYPES } from '@constant/propertyTypes'
+import { APP_ROUTES } from '@shared/constants/routes'
 import { PropertiesFilters } from '@properties/pages/Properties/PropertiesModel'
 import ButtonView from '@shared/components/ui/Button'
 import { colors, spacing } from '@shared/styles/style'
@@ -139,7 +139,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
                 onSelect={(type) => setFilters((currentFilters) => ({ ...currentFilters, type: (type ?? 'TODOS') as PropertiesFilters['type'] }))}
                 options={[
                   { label: 'Todos', value: 'TODOS' },
-                  ...Object.values(ESTATE_TYPES).map(({ domainKey, filterLabel }) => ({ label: filterLabel, value: domainKey })),
+                  ...Object.values(PROPERTY_TYPES).map(({ domainKey, filterLabel }) => ({ label: filterLabel, value: domainKey })),
                 ]}
                 value={filters.type}
               />
