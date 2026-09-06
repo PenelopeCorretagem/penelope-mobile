@@ -1,4 +1,4 @@
-import { ESTATE_TYPES } from '@constant/estateTypes'
+import { PROPERTY_TYPES } from '@constant/propertyTypes'
 import { Advertisement, Amenity, EstateImage } from '@dtos/Advertisement'
 
 export type RawImageType = string | number | {
@@ -54,7 +54,7 @@ const normalizeAmenities = (estate: AdvertisementApiResponse['estate']): Amenity
 
 const getEstateType = (rawType: RawEstateType | undefined) => {
   const key = typeof rawType === 'string' ? rawType : rawType?.key ?? ''
-  const config = Object.values(ESTATE_TYPES).find(({ domainKey }) => domainKey === key)
+  const config = Object.values(PROPERTY_TYPES).find(({ domainKey }) => domainKey === key)
 
   return {
     key: config?.domainKey ?? key,

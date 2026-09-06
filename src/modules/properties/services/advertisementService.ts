@@ -1,9 +1,12 @@
+import { Platform } from 'react-native'
+
 export type AdvertisementQuery = {
   type: string
   active: boolean
 }
 
-const apiBaseUrl = 'http://192.168.0.172:3001'
+const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL
+  ?? (Platform.OS === 'web' ? 'http://localhost:3001' : 'http://192.168.0.172:3001')
 
 export async function getAllAdvertisements(
   query: AdvertisementQuery,

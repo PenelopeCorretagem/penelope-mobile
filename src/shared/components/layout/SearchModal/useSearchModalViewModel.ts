@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform, TextInput } from 'react-native'
 import { useLocalSearchParams, usePathname, useRouter } from 'expo-router'
 import Constants from 'expo-constants'
-import { ESTATE_TYPES } from '@constant/estateTypes'
-import { APP_ROUTES, isAppRouteActive } from '@constant/routes'
+import { PROPERTY_TYPES } from '@constant/propertyTypes'
+import { APP_ROUTES, isAppRouteActive } from '@shared/constants/routes'
 import {
   getAvailableCities,
   getAvailableRegions,
@@ -63,9 +63,9 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     const loadOptions = async () => {
       try {
         const [launch, available, underConstruction] = await Promise.all([
-          getAllAdvertisements({ type: ESTATE_TYPES.LANCAMENTO.apiValue, active: true }),
-          getAllAdvertisements({ type: ESTATE_TYPES.DISPONIVEL.apiValue, active: true }),
-          getAllAdvertisements({ type: ESTATE_TYPES.EM_OBRAS.apiValue, active: true }),
+          getAllAdvertisements({ type: PROPERTY_TYPES.LANCAMENTO.apiValue, active: true }),
+          getAllAdvertisements({ type: PROPERTY_TYPES.DISPONIVEL.apiValue, active: true }),
+          getAllAdvertisements({ type: PROPERTY_TYPES.EM_OBRAS.apiValue, active: true }),
         ])
 
         const groups = {

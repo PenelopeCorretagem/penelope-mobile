@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ESTATE_TYPES } from '@constant/estateTypes'
-import { APP_ROUTES } from '@constant/routes'
+import { PROPERTY_TYPES } from '@constant/propertyTypes'
+import { APP_ROUTES } from '@shared/constants/routes'
 import { getAllAdvertisements } from '@properties/services/advertisementService'
 import { useFavorites } from '@shared/context/FavoritesContext'
 import {
@@ -76,9 +76,9 @@ export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnl
 
     try {
       const [launch, available, underConstruction] = await Promise.all([
-        getAllAdvertisements({ type: ESTATE_TYPES.LANCAMENTO.apiValue, active: true }),
-        getAllAdvertisements({ type: ESTATE_TYPES.DISPONIVEL.apiValue, active: true }),
-        getAllAdvertisements({ type: ESTATE_TYPES.EM_OBRAS.apiValue, active: true }),
+        getAllAdvertisements({ type: PROPERTY_TYPES.LANCAMENTO.apiValue, active: true }),
+        getAllAdvertisements({ type: PROPERTY_TYPES.DISPONIVEL.apiValue, active: true }),
+        getAllAdvertisements({ type: PROPERTY_TYPES.EM_OBRAS.apiValue, active: true }),
       ])
 
       setGroups({

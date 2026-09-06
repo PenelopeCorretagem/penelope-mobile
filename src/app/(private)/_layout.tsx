@@ -1,5 +1,4 @@
-import { Stack, usePathname } from 'expo-router'
-import TabNavigator from '@shared/components/layout/TabNavigator'
+import { Stack } from 'expo-router'
 import HeaderView from '@shared/components/layout/Header'
 import { StyleSheet, View } from 'react-native'
 import { colors } from '@shared/styles/style'

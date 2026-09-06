@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import AuthScreen from "@auth/components/AuthScreen/AuthScreenView";
 import { colors } from "@shared/styles/style";
 import { useCadastroViewModel } from "./useCadastroViewModel";
-import { APP_ROUTES } from '@constant/routes'
+import { APP_ROUTES } from '@shared/constants/routes'
 
 export function CadastroView() {
   const {

@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { router, usePathname } from 'expo-router'
 import { useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { APP_ROUTES, isProfileRoute, isSettingsRoute } from '@constant/routes'
+import { isSettingsRootRoute, isSettingsSubmoduleRoute } from '@constant/routes'
 import SearchModalView from '@shared/components/layout/SearchModal'
 import Logo from '@shared/components/ui/Logo'
 import { colors, spacing, styles } from '@shared/styles/style'
@@ -10,20 +10,21 @@ import { colors, spacing, styles } from '@shared/styles/style'
 export default function HeaderView() {
   const pathname = usePathname()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const isProfile = isProfileRoute(pathname)
-  const isSettings = isSettingsRoute(pathname)
+  const isSettingsSubmodule = isSettingsSubmoduleRoute(pathname)
 
-  if (isSettings) {
+  if (isSettingsSubmodule) {
     return (
       <View style={[headerStyles.container, styles.paddingHeader]}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Voltar"
-          onPress={() => router.back()}
-          style={headerStyles.iconButton}
-        >
-          <Ionicons name="arrow-back" size={22} color={colors.secondary} />
-        </Pressable>
+        {isSettingsSubmodule ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Voltar"
+            onPress={() => router.back()}
+            style={headerStyles.iconButton}
+          >
+            <Ionicons name="arrow-back" size={22} color={colors.secondary} />
+          </Pressable>
+        ) : <View style={headerStyles.actionSpacer} />}
         <View style={headerStyles.titleContainer}>
           <Text style={headerStyles.title}>Configurações</Text>
         </View>
@@ -46,17 +47,6 @@ export default function HeaderView() {
           >
             <Ionicons name="search-outline" size={20} color={colors.secondary} />
           </Pressable>
-
-          {isProfile ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Abrir configurações"
-              onPress={() => router.push(APP_ROUTES.configuracoes)}
-              style={headerStyles.iconButton}
-            >
-              <Ionicons name="settings-outline" size={20} color={colors.secondary} />
-            </Pressable>
-          ) : null}
 
           <Pressable
             accessibilityRole="button"

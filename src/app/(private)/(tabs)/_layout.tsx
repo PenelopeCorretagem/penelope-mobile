@@ -64,12 +64,8 @@ export default function TabLayout() {
         options={{ title: 'Favoritos', tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} /> }}
       />
       <Tabs.Screen
-        name="dashboard"
-        options={{ title: 'Dashboard', href: null, tabBarIcon: ({ color, size }) => <Ionicons name="bar-chart-outline" size={size} color={color} /> }}
-      />
-      <Tabs.Screen
-        name="perfil"
-        options={{ title: 'Perfil', tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} /> }}
+        name="configuracoes"
+        options={{ title: 'Configurações', tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} /> }}
       />
     </Tabs>
   )

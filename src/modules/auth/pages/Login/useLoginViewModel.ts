@@ -8,7 +8,7 @@ import {
   LoginFormState,
   validateLoginForm,
 } from "./LoginModel";
-import { APP_ROUTES } from "@constant/routes";
+import { APP_ROUTES } from "@shared/constants/routes";
 import { useAuth } from "@shared/context/AuthContext";
 
 export function useLoginViewModel() {

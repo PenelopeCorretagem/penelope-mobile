@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import AuthScreen from "@auth/components/AuthScreen";
 import { colors } from "@shared/styles/style";
 import { useLoginViewModel } from "./useLoginViewModel";
-import { APP_ROUTES } from '@constant/routes'
+import { APP_ROUTES } from '@shared/constants/routes'
 
 export function LoginView() {
   const { form, fieldErrors, isSubmitting, updateField, handleSubmit } =

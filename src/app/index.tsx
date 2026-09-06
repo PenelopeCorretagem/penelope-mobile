@@ -1,5 +1,5 @@
 import { Redirect } from 'expo-router'
-import { APP_ROUTES } from '@constant/routes'
+import { APP_ROUTES } from '@shared/constants/routes'
 import { useAuth } from '@shared/context/AuthContext'
 import LoadingView from '@shared/pages/Loading/LoadingView'
 
