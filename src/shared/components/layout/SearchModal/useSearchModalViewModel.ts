@@ -110,7 +110,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       || nextFilters.city
       || nextFilters.region
       || nextFilters.type !== 'TODOS'
-      || nextFilters.sortOrder !== 'none',
+      || nextFilters.sortOrder !== 'distance',
     )
 
     const resolvedFilters = hasRouteFilters ? nextFilters : lastAppliedFiltersRef.current
@@ -147,7 +147,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       || nextFilters.city
       || nextFilters.region
       || nextFilters.type !== 'TODOS'
-      || nextFilters.sortOrder !== 'none',
+      || nextFilters.sortOrder !== 'distance',
     )
 
     const resolvedFilters = hasRouteFilters ? nextFilters : lastAppliedFiltersRef.current
@@ -218,13 +218,8 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
   }, [filters, isSearchWithinProperties, onClose, router])
 
   const handleClose = useCallback(() => {
-    if (hasActiveFilterState) {
-      handleSubmitSearch()
-      return
-    }
-
     onClose()
-  }, [handleSubmitSearch, hasActiveFilterState, onClose])
+  }, [onClose])
 
   const handleVoiceSearch = useCallback(async (shouldStart = !isListening) => {
     const module = getSpeechRecognitionModule()
@@ -273,7 +268,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       city: '',
       region: '',
       type: 'TODOS',
-      sortOrder: 'none',
+      sortOrder: 'distance',
     })
   }, [router])
 

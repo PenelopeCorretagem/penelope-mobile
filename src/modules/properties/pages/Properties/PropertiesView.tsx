@@ -60,11 +60,11 @@ export default function PropertiesView({ favoritesOnly = false }: { favoritesOnl
 
 const styles = StyleSheet.create({
   feedContent: {
-    paddingBottom: spacing.lg,
-    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+    paddingTop: spacing.md,
   },
   footer: {
-    paddingVertical: spacing.md,
+    paddingBottom: spacing.md,
   },
   state: {
     alignItems: 'center',

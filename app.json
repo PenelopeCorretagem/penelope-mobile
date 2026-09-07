@@ -23,7 +23,13 @@
       [
         "expo-speech-recognition",
         {
-          "speechRecognitionPermission": "Allow $(PRODUCT_NAME) to use speech recognition."
+          "speechRecognitionPermission": "Permitir que o Penelope use o reconhecimento de fala para que você possa ditar pesquisas."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Permitir que o Penelope use sua localização para calcular a distância até os imóveis."
         }
       ],
       "@react-native-community/datetimepicker"

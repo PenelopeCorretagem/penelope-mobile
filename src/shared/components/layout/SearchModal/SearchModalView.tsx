@@ -145,7 +145,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
               />
               <OptionGroup
                 label="Ordenação"
-                onSelect={(sortOrder) => setFilters((currentFilters) => ({ ...currentFilters, sortOrder: (sortOrder ?? 'none') as PropertiesFilters['sortOrder'] }))}
+                onSelect={(sortOrder) => setFilters((currentFilters) => ({ ...currentFilters, sortOrder: (sortOrder ?? 'distance') as PropertiesFilters['sortOrder'] }))}
                 options={sortOptions}
                 value={filters.sortOrder}
               />
@@ -156,6 +156,17 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
                 onPress={resetFilters}
                 style={({ pressed }) => ({
                   backgroundColor: colors.secondary,
+                  borderRadius: 8,
+                  marginTop: spacing.sm,
+                  opacity: pressed ? 0.8 : 1,
+                })}
+              />
+              <ButtonView
+                accessibilityLabel="Aplicar filtros"
+                label="Aplicar filtros"
+                onPress={handleSubmitSearch}
+                style={({ pressed }) => ({
+                  backgroundColor: colors.primary,
                   borderRadius: 8,
                   marginTop: spacing.sm,
                   opacity: pressed ? 0.8 : 1,

@@ -7,5 +7,7 @@ export type AddressDto = {
   state: string
   region: string
   zipCode: string
+  latitude?: number
+  longitude?: number
   complement?: string | null
 }

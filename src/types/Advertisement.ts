@@ -7,6 +7,8 @@ export type Address = {
   city?: string
   region?: string
   uf?: string
+  latitude?: number
+  longitude?: number
 }
 
 export type EstateImage = {
@@ -41,5 +43,6 @@ export type Advertisement = {
   active?: boolean
   featured?: boolean
   createdAt?: string
+  distanceKm?: number
   estate: Estate
 }

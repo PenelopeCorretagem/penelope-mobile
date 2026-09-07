@@ -3,9 +3,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { PROPERTY_TYPES } from '@constant/propertyTypes'
 import { APP_ROUTES } from '@shared/constants/routes'
 import { getAllAdvertisements } from '@properties/services/advertisementService'
+import { requestDeviceLocation } from '@service-penelopec/locationService'
 import { useFavorites } from '@shared/context/FavoritesContext'
 import {
   filterFavoriteGroups,
+  getAdvertisementDistanceInKm,
   getAvailableCities,
   getAvailableRegions,
   getFilteredGroups,
@@ -13,6 +15,7 @@ import {
   initialPropertiesFilters,
   PropertiesFilters,
   PropertyGroups,
+  sortAdvertisements,
   toAdvertisementList,
 } from './PropertiesModel'
 
@@ -40,6 +43,20 @@ export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnl
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [visibleCount, setVisibleCount] = useState(FEED_PAGE_SIZE)
+  const [deviceLocation, setDeviceLocation] = useState<{ latitude: number; longitude: number } | null>(null)
+
+  useEffect(() => {
+    const loadDeviceLocation = async () => {
+      try {
+        setDeviceLocation(await requestDeviceLocation())
+      } catch (locationError) {
+        console.error('Falha ao obter localizacao do dispositivo', locationError)
+        setDeviceLocation(null)
+      }
+    }
+
+    void loadDeviceLocation()
+  }, [])
 
   useEffect(() => {
     const normalizeRouteValue = (value: string | string[] | undefined) => {
@@ -54,7 +71,7 @@ export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnl
       city: normalizeRouteValue(city) !== '' ? normalizeRouteValue(city) : null,
       region: normalizeRouteValue(region) !== '' ? normalizeRouteValue(region) : null,
       type: normalizeRouteValue(type) !== '' ? (normalizeRouteValue(type) as PropertiesFilters['type']) : 'TODOS',
-      sortOrder: normalizeRouteValue(sortOrder) !== '' ? (normalizeRouteValue(sortOrder) as PropertiesFilters['sortOrder']) : 'none',
+      sortOrder: normalizeRouteValue(sortOrder) !== '' ? (normalizeRouteValue(sortOrder) as PropertiesFilters['sortOrder']) : 'distance',
     }
 
     setFilters((currentFilters) => {
@@ -104,9 +121,18 @@ export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnl
     () => favoritesOnly ? filterFavoriteGroups(groups, favoriteIds) : groups,
     [favoriteIds, favoritesOnly, groups],
   )
-  const filteredGroups = useMemo(() => getFilteredGroups(groupsForDisplay, filters), [filters, groupsForDisplay])
-  const advertisements = useMemo(() => Object.values(filteredGroups).flat(), [filteredGroups])
-  const visibleAdvertisements = useMemo(() => advertisements.slice(0, visibleCount), [advertisements, visibleCount])
+  const filteredGroups = useMemo(() => getFilteredGroups(groupsForDisplay, filters, deviceLocation ?? undefined), [deviceLocation, filters, groupsForDisplay])
+  const advertisements = useMemo(() => sortAdvertisements(
+    Object.values(filteredGroups).flat(),
+    filters.sortOrder,
+    deviceLocation ?? undefined,
+  ), [deviceLocation, filteredGroups, filters.sortOrder])
+  const visibleAdvertisements = useMemo(() => advertisements
+    .map((advertisement) => ({
+      ...advertisement,
+      distanceKm: deviceLocation ? getAdvertisementDistanceInKm(advertisement, deviceLocation) ?? undefined : undefined,
+    }))
+    .slice(0, visibleCount), [advertisements, deviceLocation, visibleCount])
   const hasMoreAdvertisements = visibleAdvertisements.length < advertisements.length
   const totalResults = useMemo(() => getTotalResults(filteredGroups), [filteredGroups])
   const availableCities = useMemo(() => getAvailableCities(groupsForDisplay), [groupsForDisplay])
@@ -132,7 +158,7 @@ export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnl
         city: '',
         region: '',
         searchTerm: '',
-        sortOrder: 'none',
+        sortOrder: 'distance',
         type: 'TODOS',
       },
     })
