@@ -32,6 +32,13 @@
           "locationWhenInUsePermission": "Permitir que o Penelope use sua localização para calcular a distância até os imóveis."
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permitir que o Penelope acesse suas fotos para escolher uma imagem de perfil.",
+          "cameraPermission": "Permitir que o Penelope use a câmera para tirar uma foto de perfil."
+        }
+      ],
       "@react-native-community/datetimepicker"
     ]
   }
