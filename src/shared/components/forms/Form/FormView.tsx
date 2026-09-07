@@ -59,7 +59,7 @@ export default function FormView({
 
   useEffect(() => {
     slideX.setValue(Dimensions.get('window').width)
-    Animated.timing(slideX, { toValue: 0, duration: 280, useNativeDriver: true }).start()
+    Animated.timing(slideX, { toValue: 0, duration: 280, useNativeDriver: Platform.OS !== 'web' }).start()
   }, [fieldKeys, slideX])
 
   const handleDateValueChange = (field: FormField, selectedDate?: Date) => {

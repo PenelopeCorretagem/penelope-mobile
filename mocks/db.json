@@ -12,9 +12,31 @@
         "area": 250.5,
         "numberOfRooms": 3,
         "type": "LANCAMENTO",
-        "address": { "city": "São Paulo", "region": "Sudeste", "uf": "SP", "latitude": -23.5505, "longitude": -46.6333 },
-        "images": [{ "url": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80", "type": "CAPA" }],
-        "amenities": [{ "id": 1, "description": "Varanda", "icon": "Trees" }, { "id": 2, "description": "Piscina", "icon": "Waves" }]
+        "address": {
+          "city": "São Paulo",
+          "region": "Sudeste",
+          "uf": "SP",
+          "latitude": -23.5505,
+          "longitude": -46.6333
+        },
+        "images": [
+          {
+            "url": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80",
+            "type": "CAPA"
+          }
+        ],
+        "amenities": [
+          {
+            "id": 1,
+            "description": "Varanda",
+            "icon": "Trees"
+          },
+          {
+            "id": 2,
+            "description": "Piscina",
+            "icon": "Waves"
+          }
+        ]
       }
     },
     {
@@ -29,9 +51,27 @@
         "area": 180,
         "numberOfRooms": 4,
         "type": "DISPONIVEL",
-        "address": { "city": "Campinas", "region": "Sudeste", "uf": "SP", "latitude": -22.9099, "longitude": -47.0626 },
-        "images": [{ "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", "type": { "id": 1, "description": "Capa" } }],
-        "amenitiesIds": [5, 6, 7]
+        "address": {
+          "city": "Campinas",
+          "region": "Sudeste",
+          "uf": "SP",
+          "latitude": -22.9099,
+          "longitude": -47.0626
+        },
+        "images": [
+          {
+            "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+            "type": {
+              "id": 1,
+              "description": "Capa"
+            }
+          }
+        ],
+        "amenitiesIds": [
+          5,
+          6,
+          7
+        ]
       }
     },
     {
@@ -46,9 +86,29 @@
         "area": 300,
         "numberOfRooms": 0,
         "type": "DISPONIVEL",
-        "address": { "city": "São Paulo", "region": "Sudeste", "uf": "SP", "latitude": -23.5614, "longitude": -46.6559 },
-        "images": [{ "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", "type": { "id": 1, "description": "Capa" } }],
-        "amenities": [{ "id": 8, "description": "Recepção", "icon": "Users" }]
+        "address": {
+          "city": "São Paulo",
+          "region": "Sudeste",
+          "uf": "SP",
+          "latitude": -23.5614,
+          "longitude": -46.6559
+        },
+        "images": [
+          {
+            "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+            "type": {
+              "id": 1,
+              "description": "Capa"
+            }
+          }
+        ],
+        "amenities": [
+          {
+            "id": 8,
+            "description": "Recepção",
+            "icon": "Users"
+          }
+        ]
       }
     },
     {
@@ -63,10 +123,69 @@
         "area": 160,
         "numberOfRooms": 3,
         "type": "EM_OBRAS",
-        "address": { "city": "Jundiaí", "region": "Sudeste", "uf": "SP", "latitude": -23.1857, "longitude": -46.8978 },
-        "images": [{ "url": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=800&q=80", "type": "cover" }],
-        "amenities": [{ "id": 9, "description": "Acessibilidade", "icon": "Accessibility" }]
+        "address": {
+          "city": "Jundiaí",
+          "region": "Sudeste",
+          "uf": "SP",
+          "latitude": -23.1857,
+          "longitude": -46.8978
+        },
+        "images": [
+          {
+            "url": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=800&q=80",
+            "type": "cover"
+          }
+        ],
+        "amenities": [
+          {
+            "id": 9,
+            "description": "Acessibilidade",
+            "icon": "Accessibility"
+          }
+        ]
       }
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Maria da Silva",
+      "email": "maria@penelope.com.br",
+      "password": "mock-password",
+      "birthDate": "01/01/1990",
+      "profileImage": null,
+      "active": true,
+      "createdAt": "2025-01-01T00:00:00Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": 1,
+      "title": "Novo empreendimento disponível",
+      "message": "Confira o novo empreendimento que combina com suas preferências.",
+      "createdAt": "2026-09-06T10:00:00Z"
+    },
+    {
+      "id": 2,
+      "title": "Bem-vinda ao Penelope",
+      "message": "Seu perfil foi configurado com sucesso.",
+      "createdAt": "2026-09-05T10:00:00Z"
+    }
+  ],
+  "userNotifications": [
+    {
+      "id": 1,
+      "userId": 1,
+      "notificationId": 1,
+      "readAt": "2026-09-07T21:37:12.756Z",
+      "deletedAt": "2026-09-07T21:39:05.951Z"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "notificationId": 2,
+      "readAt": "2026-09-05T10:05:00Z",
+      "deletedAt": null
     }
   ]
 }

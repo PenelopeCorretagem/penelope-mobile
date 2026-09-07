@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useAuth } from '@shared/context/AuthContext'
 import { APP_ROUTES } from '@shared/constants/routes'
 import SettingsOption from '../../components/SettingsOption'
-import { DEFAULT_USER_PROFILE } from '@settings/submodules/acount/pages/Account/ProfileModel'
+import { getProfileInitials } from '@settings/submodules/acount/pages/Account/ProfileModel'
+import { useProfileViewModel } from '@settings/submodules/acount/pages/Account/useProfileViewModel'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 
 const options = [
@@ -42,22 +43,18 @@ const options = [
 
 export default function SettingsView() {
   const { deleteAccount, logout } = useAuth()
-  const prepositions = ['da', 'de', 'do', 'das', 'dos', 'e']
-
-  const initials = DEFAULT_USER_PROFILE.name
-    .split(' ')
-    .filter((part) => !prepositions.includes(part.toLowerCase()))
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join('')
+  const { profile, isLoading, error } = useProfileViewModel()
 
   return (
     <ScrollView style={sharedStyles.screen} contentContainerStyle={styles.content}>
       <Pressable style={styles.userHeader} onPress={() => router.push(APP_ROUTES.conta)} accessibilityRole="button">
-        <View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>
+        <View style={styles.avatar}>
+          {profile.profileImage ? <Image source={{ uri: profile.profileImage }} style={styles.avatarImage} /> : <Text style={styles.avatarText}>{getProfileInitials(profile.name)}</Text>}
+        </View>
         <View style={styles.userCopy}>
           <Text style={styles.greeting}>Olá</Text>
-          <Text style={styles.userName}>{DEFAULT_USER_PROFILE.name}</Text>
+          <Text style={styles.userName}>{isLoading ? 'Carregando...' : profile.name}</Text>
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
         <Ionicons name="create-outline" size={22} color={colors.primary} />
       </Pressable>
@@ -141,6 +138,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
   },
+  avatarImage: { height: '100%', width: '100%' },
   userCopy: {
     flex: 1,
   },
@@ -154,6 +152,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 2,
   },
+  errorText: { color: colors.error, fontSize: 12, marginTop: 4 },
   section: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
