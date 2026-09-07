@@ -74,7 +74,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
         </Pressable>
 
         <Text style={[styles.category, { backgroundColor: categoryColor, color: colors.background }]}>
-          {estate.type?.friendlyName ?? typeConfig?.cardLabel ?? estate.type?.key ?? 'Imóvel'}
+          {estate.type?.friendlyName ?? 'Imóvel'}
         </Text>
 
         {imageUrls.length > 1 ? (
@@ -87,6 +87,9 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
       <View style={styles.content}>
         <Heading level={4} style={styles.title}>{estate.title ?? 'Imóvel sem título'}</Heading>
         <Text style={styles.city}>{estate.address?.city ?? 'Cidade não informada'}</Text>
+        {advertisement.distanceKm !== undefined ? (
+          <Text style={styles.distance}>{advertisement.distanceKm < 1 ? 'A menos de 1 km de distância' : `${advertisement.distanceKm.toFixed(1)} km de distância`}</Text>
+        ) : null}
         <Text style={styles.detail}>{detail}</Text>
 
         {amenities.length > 0 ? (
@@ -137,11 +140,11 @@ const styles = StyleSheet.create({
   },
   category: {
     borderRadius: 6,
-    fontSize: 11,
+    fontSize: 14,
     fontWeight: '700',
     overflow: 'hidden',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     position: 'absolute',
     left: 12,
     bottom: 12,
@@ -174,6 +177,12 @@ const styles = StyleSheet.create({
   city: {
     color: colors.mutedText,
     fontSize: 13,
+    marginBottom: 2,
+  },
+  distance: {
+    color: colors.secondary,
+    fontSize: 13,
+    fontWeight: '700',
     marginBottom: 2,
   },
   detail: {

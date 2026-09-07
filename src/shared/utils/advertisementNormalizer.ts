@@ -23,7 +23,7 @@ export type AdvertisementApiResponse = {
     area?: number | string
     numberOfRooms?: number
     type?: RawEstateType
-    address?: { city?: string; region?: string; uf?: string }
+    address?: { city?: string; region?: string; uf?: string; latitude?: number; longitude?: number }
     images?: Array<{ url?: string; type?: RawImageType }>
     amenities?: Amenity[]
     amenitiesIds?: number[]

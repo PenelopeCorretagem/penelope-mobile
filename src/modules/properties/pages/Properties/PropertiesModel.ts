@@ -3,7 +3,12 @@ import { Advertisement } from '@dtos/Advertisement'
 export { toAdvertisementList } from '@shared/utils/advertisementNormalizer'
 
 export type PropertyTypeFilter = 'TODOS' | PropertyTypeKey
-export type SortOrder = 'none' | 'asc' | 'desc'
+export type SortOrder = 'distance' | 'asc' | 'desc'
+
+export type DeviceLocation = {
+  latitude: number
+  longitude: number
+}
 
 export type PropertiesFilters = {
   searchTerm: string
@@ -24,7 +29,7 @@ export const initialPropertiesFilters: PropertiesFilters = {
   city: null,
   region: null,
   type: 'TODOS',
-  sortOrder: 'none',
+  sortOrder: 'distance',
 }
 
 const normalizeText = (value: unknown) => String(value ?? '').trim().toLocaleLowerCase('pt-BR')
@@ -54,8 +59,35 @@ const matchesLocationFilters = (advertisement: Advertisement, filters: Propertie
   && (!filters.region || advertisement.estate.address?.region === filters.region)
 )
 
-const sortAdvertisements = (advertisements: Advertisement[], sortOrder: SortOrder) => {
-  if (sortOrder === 'none') return advertisements
+export const getAdvertisementDistanceInKm = (advertisement: Advertisement, location: DeviceLocation) => {
+  const latitude = advertisement.estate.address?.latitude
+  const longitude = advertisement.estate.address?.longitude
+  if (latitude === undefined || longitude === undefined) return null
+
+  const earthRadiusKm = 6371
+  const toRadians = (value: number) => value * Math.PI / 180
+  const latitudeDelta = toRadians(latitude - location.latitude)
+  const longitudeDelta = toRadians(longitude - location.longitude)
+  const startLatitude = toRadians(location.latitude)
+  const endLatitude = toRadians(latitude)
+  const haversine = Math.sin(latitudeDelta / 2) ** 2
+    + Math.cos(startLatitude) * Math.cos(endLatitude) * Math.sin(longitudeDelta / 2) ** 2
+
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
+}
+
+export const sortAdvertisements = (advertisements: Advertisement[], sortOrder: SortOrder, location?: DeviceLocation) => {
+  if (sortOrder === 'distance') {
+    if (!location) return advertisements
+
+    return [...advertisements].sort((left, right) => {
+      const leftDistance = getAdvertisementDistanceInKm(left, location)
+      const rightDistance = getAdvertisementDistanceInKm(right, location)
+      if (leftDistance === null) return rightDistance === null ? 0 : 1
+      if (rightDistance === null) return -1
+      return leftDistance - rightDistance
+    })
+  }
 
   const direction = sortOrder === 'asc' ? 1 : -1
   return [...advertisements].sort((left, right) => (
@@ -63,21 +95,22 @@ const sortAdvertisements = (advertisements: Advertisement[], sortOrder: SortOrde
   ))
 }
 
-export const filterAdvertisements = (advertisements: Advertisement[], filters: PropertiesFilters) => (
+export const filterAdvertisements = (advertisements: Advertisement[], filters: PropertiesFilters, location?: DeviceLocation) => (
   sortAdvertisements(
     advertisements.filter((advertisement) => (
       includesSearchTerm(advertisement, filters.searchTerm)
       && matchesLocationFilters(advertisement, filters)
     )),
     filters.sortOrder,
+    location,
   )
 )
 
-export const getFilteredGroups = (groups: PropertyGroups, filters: PropertiesFilters): PropertyGroups => {
+export const getFilteredGroups = (groups: PropertyGroups, filters: PropertiesFilters, location?: DeviceLocation): PropertyGroups => {
   const filteredGroups = {
-    launch: filterAdvertisements(groups.launch, filters),
-    available: filterAdvertisements(groups.available, filters),
-    underConstruction: filterAdvertisements(groups.underConstruction, filters),
+    launch: filterAdvertisements(groups.launch, filters, location),
+    available: filterAdvertisements(groups.available, filters, location),
+    underConstruction: filterAdvertisements(groups.underConstruction, filters, location),
   }
 
   if (filters.type === 'TODOS') return filteredGroups

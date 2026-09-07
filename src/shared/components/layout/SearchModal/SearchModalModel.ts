@@ -5,11 +5,11 @@ export const defaultFilters: PropertiesFilters = {
   city: null,
   region: null,
   type: 'TODOS',
-  sortOrder: 'none',
+  sortOrder: 'distance',
 }
 
 export const sortOptions: Array<{ label: string; value: SortOrder }> = [
-  { label: 'Sem ordenação', value: 'none' },
+  { label: 'Mais próximos', value: 'distance' },
   { label: 'A a Z', value: 'asc' },
   { label: 'Z a A', value: 'desc' },
 ]
@@ -47,7 +47,7 @@ export const getFiltersFromRouteParams = (routeParams: {
     city: cityValue !== '' ? cityValue : null,
     region: regionValue !== '' ? regionValue : null,
     type: typeValue !== '' ? (typeValue as PropertiesFilters['type']) : 'TODOS',
-    sortOrder: sortOrderValue !== '' ? (sortOrderValue as PropertiesFilters['sortOrder']) : 'none',
+    sortOrder: sortOrderValue !== '' ? (sortOrderValue as PropertiesFilters['sortOrder']) : 'distance',
   }
 }
 
@@ -56,5 +56,5 @@ export const hasActiveFilters = (filters: PropertiesFilters) => Boolean(
     || filters.city
     || filters.region
     || filters.type !== 'TODOS'
-    || filters.sortOrder !== 'none',
+    || filters.sortOrder !== 'distance',
 )

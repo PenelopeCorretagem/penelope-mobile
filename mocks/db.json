@@ -12,7 +12,7 @@
         "area": 250.5,
         "numberOfRooms": 3,
         "type": "LANCAMENTO",
-        "address": { "city": "São Paulo", "region": "Sudeste", "uf": "SP" },
+        "address": { "city": "São Paulo", "region": "Sudeste", "uf": "SP", "latitude": -23.5505, "longitude": -46.6333 },
         "images": [{ "url": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80", "type": "CAPA" }],
         "amenities": [{ "id": 1, "description": "Varanda", "icon": "Trees" }, { "id": 2, "description": "Piscina", "icon": "Waves" }]
       }
@@ -29,7 +29,7 @@
         "area": 180,
         "numberOfRooms": 4,
         "type": "DISPONIVEL",
-        "address": { "city": "Campinas", "region": "Sudeste", "uf": "SP" },
+        "address": { "city": "Campinas", "region": "Sudeste", "uf": "SP", "latitude": -22.9099, "longitude": -47.0626 },
         "images": [{ "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", "type": { "id": 1, "description": "Capa" } }],
         "amenitiesIds": [5, 6, 7]
       }
@@ -46,7 +46,7 @@
         "area": 300,
         "numberOfRooms": 0,
         "type": "DISPONIVEL",
-        "address": { "city": "São Paulo", "region": "Sudeste", "uf": "SP" },
+        "address": { "city": "São Paulo", "region": "Sudeste", "uf": "SP", "latitude": -23.5614, "longitude": -46.6559 },
         "images": [{ "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", "type": { "id": 1, "description": "Capa" } }],
         "amenities": [{ "id": 8, "description": "Recepção", "icon": "Users" }]
       }
@@ -63,7 +63,7 @@
         "area": 160,
         "numberOfRooms": 3,
         "type": "EM_OBRAS",
-        "address": { "city": "Jundiaí", "region": "Sudeste", "uf": "SP" },
+        "address": { "city": "Jundiaí", "region": "Sudeste", "uf": "SP", "latitude": -23.1857, "longitude": -46.8978 },
         "images": [{ "url": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=800&q=80", "type": "cover" }],
         "amenities": [{ "id": 9, "description": "Acessibilidade", "icon": "Accessibility" }]
       }
