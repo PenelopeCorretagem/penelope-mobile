@@ -4,6 +4,7 @@ export type UserDto = {
   email: string
   password: string
   birthDate?: string | null
+  profileImage?: string | null
   active: boolean
   createdAt: string
   passwordResetToken?: string | null

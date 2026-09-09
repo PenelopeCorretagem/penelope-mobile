@@ -27,7 +27,8 @@ export function useCadastroViewModel() {
     const nextForm = { ...form, [field]: value };
     setForm(nextForm);
 
-    const nextFieldError = getCadastroFieldError(nextForm, field);
+    const shouldValidateField = step === 1 || Boolean(fieldErrors[field]);
+    const nextFieldError = shouldValidateField ? getCadastroFieldError(nextForm, field) : "";
     setFieldErrors((prev) => ({
       ...prev,
       [field]: nextFieldError,
@@ -59,8 +60,14 @@ export function useCadastroViewModel() {
 
   const handleNext = () => {
     const firstStepFields = ["nomeCompleto", "dataNascimento"] as const;
-    const nextErrors = getCadastroFieldErrors(form);
-    setFieldErrors(nextErrors);
+    const firstStepErrors = firstStepFields.reduce(
+      (errors, field) => ({
+        ...errors,
+        [field]: getCadastroFieldError(form, field),
+      }),
+      {} as Pick<typeof fieldErrors, (typeof firstStepFields)[number]>,
+    );
+    setFieldErrors((prev) => ({ ...prev, ...firstStepErrors }));
 
     if (validateCadastroStep(form, [...firstStepFields])) return;
 

@@ -1,16 +1,30 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router, usePathname } from 'expo-router'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { isSettingsRootRoute, isSettingsSubmoduleRoute } from '@constant/routes'
 import SearchModalView from '@shared/components/layout/SearchModal'
+import NotificationsModalView from '@shared/components/layout/NotificationsModal'
+import { getUnreadNotificationCount } from '@service-penelopec/notificationService'
 import Logo from '@shared/components/ui/Logo'
 import { colors, spacing, styles } from '@shared/styles/style'
 
 export default function HeaderView() {
   const pathname = usePathname()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0)
   const isSettingsSubmodule = isSettingsSubmoduleRoute(pathname)
+
+  const refreshUnreadNotificationCount = useCallback(() => {
+    void getUnreadNotificationCount()
+      .then(setUnreadNotificationCount)
+      .catch((error) => console.error('Falha ao carregar contador de notificações', error))
+  }, [])
+
+  useEffect(() => {
+    refreshUnreadNotificationCount()
+  }, [refreshUnreadNotificationCount])
 
   if (isSettingsSubmodule) {
     return (
@@ -51,15 +65,24 @@ export default function HeaderView() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Notificações"
+            onPress={() => setIsNotificationsOpen(true)}
             style={headerStyles.notificationButton}
           >
             <Ionicons name="notifications-outline" size={20} color={colors.secondary} />
-            <View style={headerStyles.notificationDot} />
+            {unreadNotificationCount > 0 ? <View style={headerStyles.notificationDot} /> : null}
           </Pressable>
         </View>
       </View>
 
       <SearchModalView visible={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <NotificationsModalView
+        onClose={() => {
+          setIsNotificationsOpen(false)
+          refreshUnreadNotificationCount()
+        }}
+        onUnreadCountChange={setUnreadNotificationCount}
+        visible={isNotificationsOpen}
+      />
     </>
   )
 }
