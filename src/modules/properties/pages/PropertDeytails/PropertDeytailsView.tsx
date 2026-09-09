@@ -11,6 +11,7 @@ import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import { formatPrice, getLocationLabel } from './PropertDeytailsModel'
 import { usePropertDeytailsViewModel } from './usePropertDeytailsViewModel'
 import { usePropertDeytailsImagens } from './usePropertDeytailsImagens'
+import { LinearGradient } from 'expo-linear-gradient'
 
 export default function PropertDeytailsView() {
   const router = useRouter()
@@ -58,22 +59,35 @@ export default function PropertDeytailsView() {
         </View>
       ) : null}
 
-      <Section style={styles.headerSection}>
-        <Text style={styles.typeBadge}>{typeLabel}</Text>
-        <Heading level={1} style={styles.title}>{estate.title ?? 'Imóvel sem título'}</Heading>
-        <Text style={styles.subtitle}>{getLocationLabel(advertisement)}</Text>
-        {dormitoriesLabel ? <Text style={styles.subtitle}>{dormitoriesLabel}</Text> : null}
-      </Section>
 
-      {firstThreeAmenities.length > 0 ? (
-        <View style={styles.amenitiesRow}>
-          {firstThreeAmenities.map((amenity, index) => (
-            <View key={amenity.id ?? `${amenity.description ?? 'amenity'}-${index}`} style={styles.amenityBadge}>
-              <Text style={styles.amenityBadgeText}>{amenity.description || 'Diferencial'}</Text>
+<LinearGradient
+  colors={[
+    '#B33D8E',
+    '#8E316C',
+    '#47213A',
+    '#281A1F',
+  ]}
+  style={styles.detailsSection}
+>
+      <View style={styles.headerCard}>
+        <Section style={styles.headerSection}>
+          <Text style={styles.typeBadge}>{typeLabel}</Text>
+          <Heading level={1} style={styles.title}>{estate.title ?? 'Imóvel sem título'}</Heading>
+          <Text style={styles.subtitle}>{getLocationLabel(advertisement)}</Text>
+          {dormitoriesLabel ? <Text style={styles.subtitle}>{dormitoriesLabel}</Text> : null}
+
+          {firstThreeAmenities.length > 0 ? (
+            <View style={styles.amenitiesRow}>
+              {firstThreeAmenities.map((amenity, index) => (
+                <View key={amenity.id ?? `${amenity.description ?? 'amenity'}-${index}`} style={styles.amenityBadge}>
+                  <Text style={styles.amenityBadgeText}>{amenity.description || 'Diferencial'}</Text>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-      ) : null}
+          ) : null}
+        </Section>
+      </View>
+
 
       <Section style={styles.actionButtonsSection}>
         <Pressable
@@ -81,16 +95,16 @@ export default function PropertDeytailsView() {
           style={[styles.actionButtonFull, styles.actionButtonFilled]}
           disabled={imagens.length === 0}
         >
-          <Ionicons name="images-outline" size={18} color={colors.white} />
-          <Text style={styles.actionButtonTextFilled}>Ver Galeria</Text>
+          <Ionicons name="images-outline" size={18} color={colors.primary} />
+          <Text style={styles.actionButtonTextFilled}>VER GALERIA</Text>
         </Pressable>
         <Pressable
           onPress={() => router.push(`/imoveis/detalhes-imovel/${params.id}/planta`)}
           style={[styles.actionButtonFull, styles.actionButtonFilled]}
           disabled={plantas.length === 0}
         >
-          <Ionicons name="document-outline" size={18} color={colors.white} />
-          <Text style={styles.actionButtonTextFilled}>Ver Planta</Text>
+          <Ionicons name="document-outline" size={18} color={colors.primary} />
+          <Text style={styles.actionButtonTextFilled}>VER PLANTA</Text>
         </Pressable>
         <Pressable
           onPress={() => {
@@ -101,10 +115,12 @@ export default function PropertDeytailsView() {
           style={[styles.actionButtonFull, styles.actionButtonFilled]}
           disabled={videos.length === 0}
         >
-          <Ionicons name="videocam" size={18} color={colors.white} />
-          <Text style={styles.actionButtonTextFilled}>Assistir Vídeo</Text>
+          <Ionicons name="videocam" size={18} color={colors.primary} />
+          <Text style={styles.actionButtonTextFilled}>ASSISTIR VÍDEO</Text>
         </Pressable>
       </Section>
+
+</LinearGradient>
 
       {estate.description ? (
         <Section style={styles.section}>
@@ -163,10 +179,19 @@ export default function PropertDeytailsView() {
       </Section>
 
       {hasCoordinates ? (
-        <Section style={styles.section}>
-          <Heading level={3} style={styles.sectionTitle}>LOCALIZAÇÃO</Heading>
+        <LinearGradient
+  colors={[
+    '#B33D8E',
+    '#8E316C',
+    '#47213A',
+    '#281A1F',
+  ]}
+  style={styles.detailsSection}
+>
+        <Section style={styles.sectionSecondary}>
+          <Heading level={3} style={styles.sectionTitleSecondary}>LOCALIZAÇÃO</Heading>
         <View style={styles.addressSection}>
-          <Ionicons name="location" size={20} color={colors.primary} />
+          <Ionicons name="location" size={20} color={colors.white} />
           <Text style={styles.addressText}>{getLocationLabel(advertisement)}</Text>
         </View>
           <Pressable
@@ -188,6 +213,7 @@ export default function PropertDeytailsView() {
             </View>
           </Pressable>
         </Section>
+        </LinearGradient>
       ) : null}
     </ScrollView>
   )
@@ -199,29 +225,33 @@ const styles = StyleSheet.create({
   image: { aspectRatio: 1.3, backgroundColor: colors.surface, width: '100%' },
   imageCountBadge: { backgroundColor: colors.primary, borderRadius: 20, paddingHorizontal: spacing.sm, paddingVertical: 4, position: 'absolute', bottom: spacing.md, right: spacing.md },
   imageCountText: { color: colors.white, fontSize: 12, fontWeight: '700' },
+  headerCard: { backgroundColor: colors.white, borderRadius: 8, marginHorizontal: spacing.lg, overflow: 'hidden' },
   headerSection: { alignItems: 'flex-start', paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
-  typeBadge: { backgroundColor: colors.primary, color: colors.white, fontSize: 11, fontWeight: '700', letterSpacing: 1, marginBottom: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: 6 },
+  typeBadge: { borderRadius: 3, backgroundColor: colors.primary, color: colors.white, fontSize: 11, fontWeight: '700', letterSpacing: 1, marginBottom: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: 6 },
   title: { fontSize: 24, fontWeight: '700', marginBottom: spacing.sm, textAlign: 'left' },
   subtitle: { color: colors.mutedText, fontSize: 13, fontWeight: '500', marginBottom: 4 },
-  amenitiesRow: { flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+  amenitiesRow: { flexDirection: 'row', gap: spacing.sm, paddingVertical: spacing.md },
   amenityBadge: { backgroundColor: colors.surface, borderRadius: 4, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   amenityBadgeText: { fontSize: 16, fontWeight: '600', textAlign: 'center' },
   actionButtonsSection: { gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
   actionButtonFull: { alignItems: 'center', borderRadius: 8, flexDirection: 'row', gap: spacing.md, justifyContent: 'center', paddingVertical: spacing.md, width: '100%' },
-  actionButtonFilled: { backgroundColor: colors.primary },
-  actionButtonTextFilled: { color: colors.white, fontSize: 14, fontWeight: '600', textAlign: 'center' },
+  actionButtonFilled: { backgroundColor: colors.white },
+  actionButtonTextFilled: { color: colors.primary, fontSize: 14, fontWeight: '600', textAlign: 'center' },
   section: { alignItems: 'stretch', borderTopColor: colors.surface, borderTopWidth: 1, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
+  sectionSecondary: { alignItems: 'stretch', paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
   sectionTitle: { color: colors.primary, fontSize: 20, fontWeight: '700', letterSpacing: 0.5, marginBottom: spacing.md, textAlign: 'center' },
+  sectionTitleSecondary: { color: colors.white, fontSize: 20, fontWeight: '500', letterSpacing: 0.5, marginBottom: spacing.md, textAlign: 'center' },
   amenitiesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   amenityChip: { backgroundColor: colors.surface, borderRadius: 6, paddingHorizontal: spacing.sm, paddingVertical: 6 },
   amenityText: { fontSize: 12, fontWeight: '600' },
   body: { fontSize: 14, lineHeight: 20, textAlign: 'center' },
-  addressSection: { alignItems: 'flex-start', gap: spacing.sm },
-  addressText: { fontSize: 13, lineHeight: 18, marginBottom: spacing.md},
+  addressSection: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
+  addressText: { color: colors.white, fontSize: 13, lineHeight: 18, marginBottom: spacing.md},
   mapContainer: { borderRadius: 8, overflow: 'hidden', position: 'relative', width: '100%' },
   mapImage: { aspectRatio: 4 / 3, backgroundColor: colors.surface, width: '100%' },
   mapOverlay: { alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.4)', gap: spacing.sm, justifyContent: 'center', paddingVertical: spacing.lg, position: 'absolute', width: '100%', height: '100%' },
   mapText: { color: colors.white, fontSize: 14, fontWeight: '600' },
   state: { alignItems: 'center', flex: 1, gap: spacing.md, justifyContent: 'center' },
   qualityItem: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
+  detailsSection: { width: '100%', paddingVertical: 18 },
 })
