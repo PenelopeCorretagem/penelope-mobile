@@ -82,7 +82,7 @@ export default function PropertDeytailsView() {
           disabled={imagens.length === 0}
         >
           <Ionicons name="images-outline" size={18} color={colors.white} />
-          <Text style={styles.actionButtonTextFilled}>Ver Galeria ({imagens.length})</Text>
+          <Text style={styles.actionButtonTextFilled}>Ver Galeria</Text>
         </Pressable>
         <Pressable
           onPress={() => router.push(`/imoveis/detalhes-imovel/${params.id}/planta`)}
@@ -90,7 +90,7 @@ export default function PropertDeytailsView() {
           disabled={plantas.length === 0}
         >
           <Ionicons name="document-outline" size={18} color={colors.white} />
-          <Text style={styles.actionButtonTextFilled}>Ver Planta ({plantas.length})</Text>
+          <Text style={styles.actionButtonTextFilled}>Ver Planta</Text>
         </Pressable>
         <Pressable
           onPress={() => {
@@ -102,20 +102,20 @@ export default function PropertDeytailsView() {
           disabled={videos.length === 0}
         >
           <Ionicons name="videocam" size={18} color={colors.white} />
-          <Text style={styles.actionButtonTextFilled}>Assistir Vídeo ({videos.length})</Text>
+          <Text style={styles.actionButtonTextFilled}>Assistir Vídeo</Text>
         </Pressable>
       </Section>
 
       {estate.description ? (
         <Section style={styles.section}>
-          <Heading level={3} style={styles.sectionTitle}>Descrição</Heading>
+          <Heading level={3} style={styles.sectionTitle}>DESCRIÇÃO</Heading>
           <Text style={styles.body}>{estate.description}</Text>
         </Section>
       ) : null}
 
       {estate.amenities && estate.amenities.length > 0 ? (
         <Section style={styles.section}>
-          <Heading level={3} style={styles.sectionTitle}>Diferenciais</Heading>
+          <Heading level={3} style={styles.sectionTitle}>DIFERENCIAIS</Heading>
           <View style={styles.amenitiesGrid}>
             {estate.amenities.map((amenity, index) => (
               <View key={amenity.id ?? `${amenity.description ?? 'amenity'}-${index}`} style={styles.amenityChip}>
@@ -127,16 +127,48 @@ export default function PropertDeytailsView() {
       ) : null}
 
       <Section style={styles.section}>
-        <Heading level={3} style={styles.sectionTitle}>Localização</Heading>
-        <View style={styles.addressSection}>
-          <Ionicons name="location" size={20} color={colors.primary} />
-          <Text style={styles.addressText}>{getLocationLabel(advertisement)}</Text>
-        </View>
+        <Heading level={3} style={styles.sectionTitle}>QUALIDADES</Heading>
+  <View style={styles.qualityItem}>
+    <Ionicons
+      name="shield"
+      size={30}
+      color={colors.primary}
+    />
+    <Text style={styles.body}>
+      Segurança
+    </Text>
+  </View>
+
+  <View style={styles.qualityItem}>
+    <Ionicons
+      name="leaf"
+      size={30}
+      color={colors.primary}
+    />
+    <Text style={styles.body}>
+      Área Verde
+    </Text>
+  </View>
+
+  <View style={styles.qualityItem}>
+    <Ionicons
+      name="bus"
+      size={30}
+      color={colors.primary}
+    />
+    <Text style={styles.body}>
+      Transporte
+    </Text>
+  </View>
       </Section>
 
       {hasCoordinates ? (
         <Section style={styles.section}>
-          <Heading level={3} style={styles.sectionTitle}>Mapa</Heading>
+          <Heading level={3} style={styles.sectionTitle}>LOCALIZAÇÃO</Heading>
+        <View style={styles.addressSection}>
+          <Ionicons name="location" size={20} color={colors.primary} />
+          <Text style={styles.addressText}>{getLocationLabel(advertisement)}</Text>
+        </View>
           <Pressable
             onPress={() => {
               const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${estate.address!.latitude},${estate.address!.longitude}`
@@ -179,16 +211,17 @@ const styles = StyleSheet.create({
   actionButtonFilled: { backgroundColor: colors.primary },
   actionButtonTextFilled: { color: colors.white, fontSize: 14, fontWeight: '600', textAlign: 'center' },
   section: { alignItems: 'stretch', borderTopColor: colors.surface, borderTopWidth: 1, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
-  sectionTitle: { color: colors.primary, fontSize: 14, fontWeight: '700', letterSpacing: 0.5, marginBottom: spacing.md, textAlign: 'left' },
+  sectionTitle: { color: colors.primary, fontSize: 20, fontWeight: '700', letterSpacing: 0.5, marginBottom: spacing.md, textAlign: 'center' },
   amenitiesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   amenityChip: { backgroundColor: colors.surface, borderRadius: 6, paddingHorizontal: spacing.sm, paddingVertical: 6 },
   amenityText: { fontSize: 12, fontWeight: '600' },
-  body: { fontSize: 14, lineHeight: 20, textAlign: 'left' },
+  body: { fontSize: 14, lineHeight: 20, textAlign: 'center' },
   addressSection: { alignItems: 'flex-start', gap: spacing.sm },
-  addressText: { fontSize: 13, lineHeight: 18 },
+  addressText: { fontSize: 13, lineHeight: 18, marginBottom: spacing.md, textAlign: 'center'},
   mapContainer: { borderRadius: 8, overflow: 'hidden', position: 'relative', width: '100%' },
   mapImage: { aspectRatio: 4 / 3, backgroundColor: colors.surface, width: '100%' },
   mapOverlay: { alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.4)', gap: spacing.sm, justifyContent: 'center', paddingVertical: spacing.lg, position: 'absolute', width: '100%', height: '100%' },
   mapText: { color: colors.white, fontSize: 14, fontWeight: '600' },
   state: { alignItems: 'center', flex: 1, gap: spacing.md, justifyContent: 'center' },
+  qualityItem: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
 })
