@@ -1,23 +1,31 @@
-import { ActivityIndicator, Image, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native'
-import { useRouter, useLocalSearchParams } from 'expo-router'
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import Alert from '@shared/components/feedback/Alert'
 import Button from '@shared/components/ui/Button'
 import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import Section from '@shared/components/layout/Section'
-import { getAdvertisementImageUrls } from '../Properties/PropertiesModel'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
-import { formatPrice, getLocationLabel } from './PropertDeytailsModel'
+import { getLocationLabel } from './PropertDeytailsModel'
 import { usePropertDeytailsViewModel } from './usePropertDeytailsViewModel'
-import { usePropertDeytailsImagens } from './usePropertDeytailsImagens'
 import { LinearGradient } from 'expo-linear-gradient'
 
 export default function PropertDeytailsView() {
-  const router = useRouter()
-  const params = useLocalSearchParams()
-  const { advertisement, error, isLoading, retry } = usePropertDeytailsViewModel()
-  const { imagens, plantas, videos } = usePropertDeytailsImagens()
+  const {
+    advertisement,
+    error,
+    isLoading,
+    retry,
+    imagens,
+    plantas,
+    videos,
+    presentation,
+    mapImageUrl,
+    openGallery,
+    openFloorPlan,
+    openVideo,
+    openMap,
+  } = usePropertDeytailsViewModel()
 
   if (isLoading) {
     return (
@@ -38,13 +46,7 @@ export default function PropertDeytailsView() {
   }
 
   const { estate } = advertisement
-  const imageUrls = getAdvertisementImageUrls(advertisement)
-  const imageUrl = imageUrls[0]
-  const price = formatPrice(advertisement.price)
-  const typeLabel = estate.type?.friendlyName ?? estate.type?.key ?? 'Tipo não informado'
-  const dormitoriesLabel = estate.numberOfRooms !== undefined ? `${estate.numberOfRooms} DORMITÓRIO${estate.numberOfRooms !== 1 ? 'S' : ''}` : ''
-  const firstThreeAmenities = (estate.amenities ?? []).slice(0, 3)
-  const hasCoordinates = estate.address?.latitude && estate.address?.longitude
+  const { imageUrls, imageUrl, typeLabel, dormitoriesLabel, firstThreeAmenities, hasCoordinates } = presentation!
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={sharedStyles.screen}>
@@ -59,39 +61,35 @@ export default function PropertDeytailsView() {
         </View>
       ) : null}
 
+      <LinearGradient
+        colors={['#B33D8E', '#8E316C', '#47213A', '#281A1F']}
+        style={styles.detailsSection}
+      >
+        <View style={styles.headerCard}>
+          <Section style={styles.headerSection}>
+            <Text style={styles.typeBadge}>{typeLabel}</Text>
+            <Heading level={1} style={styles.title}>
+              {estate.title ?? 'Imóvel sem título'}
+            </Heading>
+            <Text style={styles.subtitle}>{getLocationLabel(advertisement)}</Text>
+            {dormitoriesLabel ? <Text style={styles.subtitle}>{dormitoriesLabel}</Text> : null}
 
-<LinearGradient
-  colors={[
-    '#B33D8E',
-    '#8E316C',
-    '#47213A',
-    '#281A1F',
-  ]}
-  style={styles.detailsSection}
->
-      <View style={styles.headerCard}>
-        <Section style={styles.headerSection}>
-          <Text style={styles.typeBadge}>{typeLabel}</Text>
-          <Heading level={1} style={styles.title}>{estate.title ?? 'Imóvel sem título'}</Heading>
-          <Text style={styles.subtitle}>{getLocationLabel(advertisement)}</Text>
-          {dormitoriesLabel ? <Text style={styles.subtitle}>{dormitoriesLabel}</Text> : null}
-
-          {firstThreeAmenities.length > 0 ? (
-            <View style={styles.amenitiesRow}>
-              {firstThreeAmenities.map((amenity, index) => (
-                <View key={amenity.id ?? `${amenity.description ?? 'amenity'}-${index}`} style={styles.amenityBadge}>
-                  <Text style={styles.amenityBadgeText}>{amenity.description || 'Diferencial'}</Text>
-                </View>
-              ))}
-            </View>
-          ) : null}
-        </Section>
-      </View>
+            {firstThreeAmenities.length > 0 ? (
+              <View style={styles.amenitiesRow}>
+                {firstThreeAmenities.map((amenity, index) => (
+                  <View key={amenity.id ?? `${amenity.description ?? 'amenity'}-${index}`} style={styles.amenityBadge}>
+                    <Text style={styles.amenityBadgeText}>{amenity.description || 'Diferencial'}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : null}
+          </Section>
+        </View>
 
 
       <Section style={styles.actionButtonsSection}>
         <Pressable
-          onPress={() => router.push(`/imoveis/detalhes-imovel/${params.id}/galeria`)}
+          onPress={openGallery}
           style={[styles.actionButtonFull, styles.actionButtonFilled]}
           disabled={imagens.length === 0}
         >
@@ -99,7 +97,7 @@ export default function PropertDeytailsView() {
           <Text style={styles.actionButtonTextFilled}>VER GALERIA</Text>
         </Pressable>
         <Pressable
-          onPress={() => router.push(`/imoveis/detalhes-imovel/${params.id}/planta`)}
+          onPress={openFloorPlan}
           style={[styles.actionButtonFull, styles.actionButtonFilled]}
           disabled={plantas.length === 0}
         >
@@ -107,11 +105,7 @@ export default function PropertDeytailsView() {
           <Text style={styles.actionButtonTextFilled}>VER PLANTA</Text>
         </Pressable>
         <Pressable
-          onPress={() => {
-            if (videos.length > 0) {
-              Linking.openURL(videos[0].url).catch(err => console.error('Failed to open video:', err))
-            }
-          }}
+          onPress={openVideo}
           style={[styles.actionButtonFull, styles.actionButtonFilled]}
           disabled={videos.length === 0}
         >
@@ -120,7 +114,7 @@ export default function PropertDeytailsView() {
         </Pressable>
       </Section>
 
-</LinearGradient>
+  </LinearGradient>
 
       {estate.description ? (
         <Section style={styles.section}>
@@ -144,66 +138,42 @@ export default function PropertDeytailsView() {
 
       <Section style={styles.section}>
         <Heading level={3} style={styles.sectionTitle}>QUALIDADES</Heading>
-  <View style={styles.qualityItem}>
-    <Ionicons
-      name="shield"
-      size={30}
-      color={colors.primary}
-    />
-    <Text style={styles.body}>
-      Segurança
-    </Text>
-  </View>
+        <View style={styles.qualityItem}>
+          <Ionicons name="shield" size={30} color={colors.primary} />
+          <Text style={styles.body}>Segurança</Text>
+        </View>
 
-  <View style={styles.qualityItem}>
-    <Ionicons
-      name="leaf"
-      size={30}
-      color={colors.primary}
-    />
-    <Text style={styles.body}>
-      Área Verde
-    </Text>
-  </View>
+        <View style={styles.qualityItem}>
+          <Ionicons name="leaf" size={30} color={colors.primary} />
+          <Text style={styles.body}>Área Verde</Text>
+        </View>
 
-  <View style={styles.qualityItem}>
-    <Ionicons
-      name="bus"
-      size={30}
-      color={colors.primary}
-    />
-    <Text style={styles.body}>
-      Transporte
-    </Text>
-  </View>
+        <View style={styles.qualityItem}>
+          <Ionicons name="bus" size={30} color={colors.primary} />
+          <Text style={styles.body}>Transporte</Text>
+        </View>
       </Section>
 
       {hasCoordinates ? (
         <LinearGradient
-  colors={[
-    '#B33D8E',
-    '#8E316C',
-    '#47213A',
-    '#281A1F',
-  ]}
-  style={styles.detailsSection}
->
+          colors={['#B33D8E', '#8E316C', '#47213A', '#281A1F']}
+          style={styles.detailsSection}
+        >
         <Section style={styles.sectionSecondary}>
           <Heading level={3} style={styles.sectionTitleSecondary}>LOCALIZAÇÃO</Heading>
-        <View style={styles.addressSection}>
-          <Ionicons name="location" size={20} color={colors.white} />
-          <Text style={styles.addressText}>{getLocationLabel(advertisement)}</Text>
-        </View>
+          <View style={styles.addressSection}>
+            <Ionicons name="location" size={20} color={colors.white} />
+            <Text style={styles.addressText}>{getLocationLabel(advertisement)}</Text>
+          </View>
           <Pressable
             onPress={() => {
-              const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${estate.address!.latitude},${estate.address!.longitude}`
-              Linking.openURL(mapsUrl)
+              openMap()
             }}
             style={styles.mapContainer}
           >
             <Image
               source={{
-                uri: `https://maps.googleapis.com/maps/api/staticmap?center=${estate.address!.latitude},${estate.address!.longitude}&zoom=15&size=400x300&markers=color:red%7C${estate.address!.latitude},${estate.address!.longitude}&key=AIzaSyBa3G7kH2d_VY1xLB_A1zX7qK4J5mQ2pR8`,
+                uri: mapImageUrl ?? undefined,
               }}
               style={styles.mapImage}
             />
@@ -246,7 +216,7 @@ const styles = StyleSheet.create({
   amenityText: { fontSize: 12, fontWeight: '600' },
   body: { fontSize: 14, lineHeight: 20, textAlign: 'center' },
   addressSection: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
-  addressText: { color: colors.white, fontSize: 13, lineHeight: 18, marginBottom: spacing.md},
+  addressText: { color: colors.white, fontSize: 14, lineHeight: 18},
   mapContainer: { borderRadius: 8, overflow: 'hidden', position: 'relative', width: '100%' },
   mapImage: { aspectRatio: 4 / 3, backgroundColor: colors.surface, width: '100%' },
   mapOverlay: { alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.4)', gap: spacing.sm, justifyContent: 'center', paddingVertical: spacing.lg, position: 'absolute', width: '100%', height: '100%' },
