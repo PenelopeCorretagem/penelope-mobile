@@ -1,6 +1,6 @@
 import { ImagemEmpreendimento, TipoImagem } from '@dtos/ImagemEmpreendimento'
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3001'
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://192.168.0.104:3001'
 
 export async function getImagemEmpreendimentoByAdvertisementId(
   advertisementId: number

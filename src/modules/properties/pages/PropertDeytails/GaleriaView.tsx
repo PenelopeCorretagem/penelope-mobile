@@ -1,15 +1,18 @@
-import { FlatList, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { FlatList, Image, Pressable, StyleSheet, View } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import Section from '@shared/components/layout/Section'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
+import ImageCarouselModal from '@properties/components/ImageCarouselModal'
 import { usePropertDeytailsImagens } from './usePropertDeytailsImagens'
 
 export default function GaleriaView() {
   const router = useRouter()
   const { imagens, isLoading } = usePropertDeytailsImagens()
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
 
   return (
     <View style={sharedStyles.screen}>
@@ -36,13 +39,21 @@ export default function GaleriaView() {
           keyExtractor={item => String(item.id)}
           numColumns={2}
           contentContainerStyle={styles.gridContent}
-          renderItem={({ item }) => (
-            <Pressable style={styles.imageItem}>
+          renderItem={({ item, index }) => (
+            <Pressable accessibilityLabel={`Abrir imagem ${index + 1}`} accessibilityRole="button" onPress={() => setSelectedImageIndex(index)} style={styles.imageItem}>
               <Image source={{ uri: item.url }} style={styles.gridImage} />
             </Pressable>
           )}
         />
       )}
+
+      <ImageCarouselModal
+        images={imagens}
+        initialIndex={selectedImageIndex ?? 0}
+        onClose={() => setSelectedImageIndex(null)}
+        title="Imagem da galeria"
+        visible={selectedImageIndex !== null}
+      />
     </View>
   )
 }

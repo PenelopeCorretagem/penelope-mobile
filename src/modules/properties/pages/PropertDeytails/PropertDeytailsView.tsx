@@ -51,14 +51,14 @@ export default function PropertDeytailsView() {
   return (
     <ScrollView contentContainerStyle={styles.content} style={sharedStyles.screen}>
       {imageUrl ? (
-        <View style={styles.imageContainer}>
+        <Pressable accessibilityLabel="Abrir galeria de imagens" accessibilityRole="button" onPress={openGallery} style={styles.imageContainer}>
           <Image accessibilityLabel={`Imagem do imóvel ${estate.title ?? ''}`} source={{ uri: imageUrl }} style={styles.image} />
           {imageUrls.length > 1 ? (
             <View style={styles.imageCountBadge}>
               <Text style={styles.imageCountText}>{imageUrls.length}</Text>
             </View>
           ) : null}
-        </View>
+        </Pressable>
       ) : null}
 
       <LinearGradient
@@ -117,14 +117,14 @@ export default function PropertDeytailsView() {
   </LinearGradient>
 
       {estate.description ? (
-        <Section style={styles.section}>
+        <Section style={[styles.section, styles.lightSection]}>
           <Heading level={3} style={styles.sectionTitle}>DESCRIÇÃO</Heading>
           <Text style={styles.body}>{estate.description}</Text>
         </Section>
       ) : null}
 
       {estate.amenities && estate.amenities.length > 0 ? (
-        <Section style={styles.section}>
+        <Section style={[styles.section, styles.darkSection]}>
           <Heading level={3} style={styles.sectionTitle}>DIFERENCIAIS</Heading>
           <View style={styles.amenitiesGrid}>
             {estate.amenities.map((amenity, index) => (
@@ -136,21 +136,23 @@ export default function PropertDeytailsView() {
         </Section>
       ) : null}
 
-      <Section style={styles.section}>
+      <Section style={[styles.section, styles.lightSection]}>
         <Heading level={3} style={styles.sectionTitle}>QUALIDADES</Heading>
-        <View style={styles.qualityItem}>
-          <Ionicons name="shield" size={30} color={colors.primary} />
-          <Text style={styles.body}>Segurança</Text>
-        </View>
+        <View style={styles.qualitiesGrid}>
+          <View style={styles.qualityItem}>
+            <Ionicons name="shield" size={30} color={colors.primary} />
+            <Text style={styles.body}>Segurança</Text>
+          </View>
 
-        <View style={styles.qualityItem}>
-          <Ionicons name="leaf" size={30} color={colors.primary} />
-          <Text style={styles.body}>Área Verde</Text>
-        </View>
+          <View style={styles.qualityItem}>
+            <Ionicons name="leaf" size={30} color={colors.primary} />
+            <Text style={styles.body}>Área Verde</Text>
+          </View>
 
-        <View style={styles.qualityItem}>
-          <Ionicons name="bus" size={30} color={colors.primary} />
-          <Text style={styles.body}>Transporte</Text>
+          <View style={styles.qualityItem}>
+            <Ionicons name="bus" size={30} color={colors.primary} />
+            <Text style={styles.body}>Transporte</Text>
+          </View>
         </View>
       </Section>
 
@@ -196,32 +198,35 @@ const styles = StyleSheet.create({
   imageCountBadge: { backgroundColor: colors.primary, borderRadius: 20, paddingHorizontal: spacing.sm, paddingVertical: 4, position: 'absolute', bottom: spacing.md, right: spacing.md },
   imageCountText: { color: colors.white, fontSize: 12, fontWeight: '700' },
   headerCard: { backgroundColor: colors.white, borderRadius: 8, marginHorizontal: spacing.lg, overflow: 'hidden' },
-  headerSection: { alignItems: 'flex-start', paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+  headerSection: { alignItems: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
   typeBadge: { borderRadius: 3, backgroundColor: colors.primary, color: colors.white, fontSize: 11, fontWeight: '700', letterSpacing: 1, marginBottom: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: 6 },
-  title: { fontSize: 24, fontWeight: '700', marginBottom: spacing.sm, textAlign: 'left' },
+  title: { fontSize: 24, fontWeight: '700', marginBottom: spacing.sm, textAlign: 'center' },
   subtitle: { color: colors.mutedText, fontSize: 13, fontWeight: '500', marginBottom: 4 },
-  amenitiesRow: { flexDirection: 'row', gap: spacing.sm, paddingVertical: spacing.md },
+  amenitiesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center', paddingVertical: spacing.md },
   amenityBadge: { backgroundColor: colors.surface, borderRadius: 4, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   amenityBadgeText: { fontSize: 16, fontWeight: '600', textAlign: 'center' },
   actionButtonsSection: { gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
   actionButtonFull: { alignItems: 'center', borderRadius: 8, flexDirection: 'row', gap: spacing.md, justifyContent: 'center', paddingVertical: spacing.md, width: '100%' },
   actionButtonFilled: { backgroundColor: colors.white },
   actionButtonTextFilled: { color: colors.primary, fontSize: 14, fontWeight: '600', textAlign: 'center' },
-  section: { alignItems: 'stretch', borderTopColor: colors.surface, borderTopWidth: 1, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
+  section: { alignItems: 'center', borderTopColor: colors.surface, borderTopWidth: 1, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
+  lightSection: { backgroundColor: colors.background },
+  darkSection: { backgroundColor: colors.surface },
   sectionSecondary: { alignItems: 'stretch', paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
   sectionTitle: { color: colors.primary, fontSize: 20, fontWeight: '700', letterSpacing: 0.5, marginBottom: spacing.md, textAlign: 'center' },
   sectionTitleSecondary: { color: colors.white, fontSize: 20, fontWeight: '500', letterSpacing: 0.5, marginBottom: spacing.md, textAlign: 'center' },
-  amenitiesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  amenityChip: { backgroundColor: colors.surface, borderRadius: 6, paddingHorizontal: spacing.sm, paddingVertical: 6 },
-  amenityText: { fontSize: 12, fontWeight: '600' },
+  amenitiesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center' },
+  amenityChip: { backgroundColor: colors.secondary, borderRadius: 6, paddingHorizontal: spacing.sm, paddingVertical: 6 },
+  amenityText: { color: colors.white, fontSize: 12, fontWeight: '600' },
   body: { fontSize: 14, lineHeight: 20, textAlign: 'center' },
-  addressSection: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
+  addressSection: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, justifyContent: 'center', marginBottom: spacing.md },
   addressText: { color: colors.white, fontSize: 14, lineHeight: 18},
   mapContainer: { borderRadius: 8, overflow: 'hidden', position: 'relative', width: '100%' },
   mapImage: { aspectRatio: 4 / 3, backgroundColor: colors.surface, width: '100%' },
   mapOverlay: { alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.4)', gap: spacing.sm, justifyContent: 'center', paddingVertical: spacing.lg, position: 'absolute', width: '100%', height: '100%' },
   mapText: { color: colors.white, fontSize: 14, fontWeight: '600' },
   state: { alignItems: 'center', flex: 1, gap: spacing.md, justifyContent: 'center' },
-  qualityItem: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
+  qualitiesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, justifyContent: 'center', width: '100%' },
+  qualityItem: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center', marginBottom: spacing.sm, width: '46%' },
   detailsSection: { width: '100%', paddingVertical: 18 },
 })

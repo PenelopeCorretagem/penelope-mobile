@@ -1,15 +1,18 @@
 import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import Section from '@shared/components/layout/Section'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
+import ImageCarouselModal from '@properties/components/ImageCarouselModal'
 import { usePropertDeytailsImagens } from './usePropertDeytailsImagens'
 
 export default function PlantaView() {
   const router = useRouter()
   const { plantas, isLoading } = usePropertDeytailsImagens()
+  const [selectedPlantIndex, setSelectedPlantIndex] = useState<number | null>(null)
 
   return (
     <View style={sharedStyles.screen}>
@@ -32,14 +35,24 @@ export default function PlantaView() {
         </Section>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {plantas.map((planta: any, index: number) => (
+          {plantas.map((planta, index) => (
             <Section key={planta.id} style={styles.plantaContainer}>
               <Text style={styles.plantaLabel}>Planta {index + 1}</Text>
-              <Image source={{ uri: planta.url }} style={styles.plantaImage} />
+              <Pressable accessibilityLabel={`Abrir planta ${index + 1}`} accessibilityRole="button" onPress={() => setSelectedPlantIndex(index)}>
+                <Image source={{ uri: planta.url }} style={styles.plantaImage} />
+              </Pressable>
             </Section>
           ))}
         </ScrollView>
       )}
+
+      <ImageCarouselModal
+        images={plantas}
+        initialIndex={selectedPlantIndex ?? 0}
+        onClose={() => setSelectedPlantIndex(null)}
+        title="Planta do imóvel"
+        visible={selectedPlantIndex !== null}
+      />
     </View>
   )
 }
