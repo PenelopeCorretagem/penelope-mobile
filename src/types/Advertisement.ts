@@ -40,6 +40,7 @@ export type Estate = {
 
 export type Advertisement = {
   id: number
+  price?: number | string
   active?: boolean
   featured?: boolean
   createdAt?: string

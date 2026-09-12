@@ -2,7 +2,7 @@ import { Platform } from 'react-native'
 import type { NotificationDto, UserNotificationDto, UserNotificationItemDto } from '@shared/dtos/notification'
 
 const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL
-  ?? (Platform.OS === 'web' ? 'http://localhost:3001' : 'http://192.168.18.45:3001')
+  ?? (Platform.OS === 'web' ? 'http://localhost:3001' : 'http://192.168.0.104:3001')
 
 const defaultUserId = 1
 

@@ -13,6 +13,7 @@ export type RawEstateType = string | {
 
 export type AdvertisementApiResponse = {
   id?: number
+  price?: number | string
   active?: boolean
   featured?: boolean
   createdAt?: string
@@ -67,6 +68,7 @@ export const toAdvertisement = (raw: AdvertisementApiResponse): Advertisement =>
 
   return {
     id: raw.id ?? 0,
+    price: raw.price,
     active: raw.active,
     featured: raw.featured,
     createdAt: raw.createdAt,

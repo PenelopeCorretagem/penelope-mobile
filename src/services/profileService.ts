@@ -3,7 +3,7 @@ import type { UserDto } from '@shared/dtos/user'
 import { DEFAULT_USER_PROFILE, type UserProfile } from '@settings/submodules/acount/pages/Account/ProfileModel'
 
 const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL
-  ?? (Platform.OS === 'web' ? 'http://localhost:3001' : 'http://192.168.18.45:3001')
+  ?? (Platform.OS === 'web' ? 'http://localhost:3001' : 'http://192.168.0.104:3001')
 
 function toProfile(user: UserDto): UserProfile {
   return {
