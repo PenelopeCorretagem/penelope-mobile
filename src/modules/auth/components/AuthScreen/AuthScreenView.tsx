@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native'
 import Section from '@shared/components/layout/Section'
 import Form, { type FormField } from '@shared/components/forms/Form'
@@ -48,9 +49,14 @@ export default function AuthScreenView({
   secondaryActionHref,
   statusMessage,
 }: AuthScreenProps) {
+  const scrollViewRef = useRef<ScrollView>(null)
+  const scrollToFocusedField = () => {
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 250)
+  }
+
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.screen}>
+      <ScrollView ref={scrollViewRef} automaticallyAdjustKeyboardInsets contentContainerStyle={[styles.scrollContent]} keyboardShouldPersistTaps="handled">
         <Section style={styles.formPanel}>
           <Logo width={160} height={62} color={colors.primary} style={styles.logo} />
           <Text style={styles.title}>{title}</Text>
@@ -61,6 +67,7 @@ export default function AuthScreenView({
             submitText={submitText}
             isSubmitting={isSubmitting}
             onSubmit={onSubmit}
+            onFieldFocus={scrollToFocusedField}
             onNext={onNext}
             onBack={onBack}
             isLastStep={isLastStep}
@@ -79,7 +86,7 @@ export default function AuthScreenView({
 }
 
 const styles = StyleSheet.create({
-  screen: { backgroundColor: colors.background, flex: 1, width: '100%' },
+  screen: { backgroundColor: colors.background, flex: 1, width: '100%', height: '100%' },
   scrollContent: { flexGrow: 1, justifyContent: 'center', width: '100%' },
   formPanel: { backgroundColor: colors.white, flex: 1, width: '100%' },
   logo: { marginBottom: spacing.xl },

@@ -1,18 +1,21 @@
 import { PROPERTY_TYPES } from '@constant/propertyTypes'
-import { Advertisement, Amenity, EstateImage } from '@dtos/Advertisement'
+import type { Advertisement } from '@properties/types/advertisement'
+import type { Amenity } from '@properties/types/amenity'
+import type { PropertyImage } from '@properties/types/property-image'
 
 export type RawImageType = string | number | {
   id?: number
   description?: string
 }
 
-export type RawEstateType = string | {
+export type RawPropertyType = string | {
   key?: string
   friendlyName?: string
 }
 
 export type AdvertisementApiResponse = {
   id?: number
+  price?: number | string
   active?: boolean
   featured?: boolean
   createdAt?: string
@@ -22,7 +25,7 @@ export type AdvertisementApiResponse = {
     description?: string
     area?: number | string
     numberOfRooms?: number
-    type?: RawEstateType
+    type?: RawPropertyType
     address?: { city?: string; region?: string; uf?: string; latitude?: number; longitude?: number }
     images?: Array<{ url?: string; type?: RawImageType }>
     amenities?: Amenity[]
@@ -32,7 +35,7 @@ export type AdvertisementApiResponse = {
 
 const normalizeText = (value: unknown) => String(value ?? '').trim().toLocaleLowerCase('pt-BR')
 
-const normalizeImageType = (value: RawImageType | undefined): EstateImage['type'] => {
+const normalizeImageType = (value: RawImageType | undefined): PropertyImage['type'] => {
   const normalized = normalizeText(
     typeof value === 'object' && value !== null ? value.description ?? value.id : value,
   )
@@ -42,17 +45,17 @@ const normalizeImageType = (value: RawImageType | undefined): EstateImage['type'
     : { description: '' }
 }
 
-const normalizeAmenities = (estate: AdvertisementApiResponse['estate']): Amenity[] => {
-  if (estate?.amenities) return estate.amenities
+const normalizeAmenities = (propertyData: AdvertisementApiResponse['estate']): Amenity[] => {
+  if (propertyData?.amenities) return propertyData.amenities
 
-  return (estate?.amenitiesIds ?? []).map((id) => ({
+  return (propertyData?.amenitiesIds ?? []).map((id) => ({
     id,
     description: '',
     icon: '',
   }))
 }
 
-const getEstateType = (rawType: RawEstateType | undefined) => {
+const getPropertyType = (rawType: RawPropertyType | undefined) => {
   const key = typeof rawType === 'string' ? rawType : rawType?.key ?? ''
   const config = Object.values(PROPERTY_TYPES).find(({ domainKey }) => domainKey === key)
 
@@ -63,26 +66,27 @@ const getEstateType = (rawType: RawEstateType | undefined) => {
 }
 
 export const toAdvertisement = (raw: AdvertisementApiResponse): Advertisement => {
-  const estate = raw.estate ?? {}
+  const rawProperty = raw.estate ?? {}
 
   return {
     id: raw.id ?? 0,
+    price: raw.price,
     active: raw.active,
     featured: raw.featured,
     createdAt: raw.createdAt,
-    estate: {
-      title: estate.title,
-      subtitle: estate.subtitle,
-      description: estate.description,
-      area: estate.area,
-      numberOfRooms: estate.numberOfRooms,
-      type: getEstateType(estate.type),
-      address: estate.address,
-      images: (estate.images ?? []).map((image) => ({
+    property: {
+      title: rawProperty.title,
+      subtitle: rawProperty.subtitle,
+      description: rawProperty.description,
+      area: rawProperty.area,
+      numberOfRooms: rawProperty.numberOfRooms,
+      type: getPropertyType(rawProperty.type),
+      address: rawProperty.address,
+      images: (rawProperty.images ?? []).map((image) => ({
         url: image.url,
         type: normalizeImageType(image.type),
       })),
-      amenities: normalizeAmenities(estate),
+      amenities: normalizeAmenities(rawProperty),
     },
   }
 }

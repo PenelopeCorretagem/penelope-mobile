@@ -25,6 +25,7 @@ type FormProps = {
   submitText: string
   isSubmitting: boolean
   onSubmit: () => void
+  onFieldFocus?: () => void
   onNext?: () => void
   onBack?: () => void
   isLastStep?: boolean
@@ -42,6 +43,7 @@ export default function FormView({
   submitText,
   isSubmitting,
   onSubmit,
+  onFieldFocus,
   onNext,
   onBack,
   isLastStep = true,
@@ -106,6 +108,7 @@ export default function FormView({
               autoCapitalize={field.autoCapitalize ?? 'none'}
               keyboardType={field.keyboardType ?? 'default'}
               onChangeText={field.onChangeText}
+              onFocus={onFieldFocus}
               style={[styles.input, { backgroundColor: field.inputBackgroundColor ?? colors.surface }, field.error ? styles.inputError : null]}
             />
           )}

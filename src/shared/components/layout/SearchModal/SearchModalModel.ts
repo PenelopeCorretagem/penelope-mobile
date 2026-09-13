@@ -1,5 +1,10 @@
 import { PropertiesFilters, SortOrder } from '@properties/pages/Properties/PropertiesModel'
 
+export type SearchHistoryEntry = Pick<PropertiesFilters, 'searchTerm' | 'city' | 'region' | 'type' | 'sortOrder'>
+
+export const SEARCH_HISTORY_LIMIT = 5
+export const SEARCH_HISTORY_STORAGE_KEY = '@penelope/search-history'
+
 export const defaultFilters: PropertiesFilters = {
   searchTerm: '',
   city: null,
@@ -57,4 +62,11 @@ export const hasActiveFilters = (filters: PropertiesFilters) => Boolean(
     || filters.region
     || filters.type !== 'TODOS'
     || filters.sortOrder !== 'distance',
+)
+
+export const getSearchHistoryLabel = (entry: SearchHistoryEntry) => (
+  entry.searchTerm.trim()
+  || entry.city
+  || entry.region
+  || (entry.type !== 'TODOS' ? entry.type : 'Pesquisa com filtros')
 )

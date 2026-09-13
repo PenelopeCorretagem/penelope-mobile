@@ -11,7 +11,11 @@ type FormData = {
   message: string
 }
 
-export function ContactFormView() {
+type ContactFormProps = {
+  onFieldFocus?: () => void
+}
+
+export function ContactFormView({ onFieldFocus }: ContactFormProps) {
   const [formData, setFormData] = useState<FormData>({
     subject: '',
     message: '',
@@ -68,6 +72,7 @@ export function ContactFormView() {
         multiline={multiline}
         numberOfLines={multiline ? 5 : 1}
         textAlignVertical={multiline ? 'top' : 'center'}
+        onFocus={onFieldFocus}
         style={{
           borderWidth: 1.5,
           borderColor: errors[field] ? colors.error : colors.mutedText,

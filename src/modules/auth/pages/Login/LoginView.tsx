@@ -37,7 +37,7 @@ export function LoginView() {
       isSubmitting={isSubmitting}
       onSubmit={handleSubmit}
       helperLabel="Esqueceu a senha?"
-      helperHref={ APP_ROUTES.auth.login}
+      helperHref={ APP_ROUTES.auth.recuperar_senha}
       helperActionLabel="Redefinir senha"
       secondaryPrompt="Não tem conta?"
       secondaryActionLabel="Cadastre-se"

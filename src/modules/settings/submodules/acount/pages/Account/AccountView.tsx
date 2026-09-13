@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import Form, { type FormField } from '@shared/components/forms/Form'
 import Section from '@shared/components/layout/Section'
@@ -11,12 +11,17 @@ import { useProfileViewModel } from './useProfileViewModel'
 export default function AccountView() {
   const { profile, isLoading, isSaving, error, successMessage, updateField, pickProfileImage, takeProfileImage, removeProfileImage, saveProfile } = useProfileViewModel()
   const [isImageModalVisible, setIsImageModalVisible] = useState(false)
+  const scrollViewRef = useRef<ScrollView>(null)
 
   const closeImageModal = () => setIsImageModalVisible(false)
 
   const handleImageAction = (action: () => void) => {
     closeImageModal()
     action()
+  }
+
+  const scrollToFocusedField = () => {
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 250)
   }
 
   const fields: FormField[] = [
@@ -50,8 +55,8 @@ export default function AccountView() {
   ]
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.screen}>
+      <ScrollView ref={scrollViewRef} automaticallyAdjustKeyboardInsets contentContainerStyle={[styles.content,]} keyboardShouldPersistTaps="handled">
         <Section>
           <View style={styles.profileImageSection}>
             <View style={styles.avatarWrapper}>
@@ -71,7 +76,7 @@ export default function AccountView() {
           <Text style={styles.title}>Meu perfil</Text>
           <Text style={styles.subtitle}>Atualize seus dados pessoais.</Text>
           {isLoading ? <Text style={styles.statusText}>Carregando perfil...</Text> : null}
-          <Form fields={fields} submitText="Salvar alterações" isSubmitting={isSaving || isLoading} onSubmit={() => void saveProfile()} statusMessage={error ?? successMessage} />
+          <Form fields={fields} submitText="Salvar alterações" isSubmitting={isSaving || isLoading} onSubmit={() => void saveProfile()} onFieldFocus={scrollToFocusedField} statusMessage={error ?? successMessage} />
         </Section>
       </ScrollView>
       <Modal animationType="fade" transparent visible={isImageModalVisible} onRequestClose={closeImageModal}>
@@ -105,7 +110,7 @@ export default function AccountView() {
 }
 
 const styles = StyleSheet.create({
-  screen: { backgroundColor: colors.background, flex: 1 },
+  screen: { backgroundColor: colors.background },
   content: { flexGrow: 1 },
   title: { color: colors.text, fontSize: 32, fontWeight: '700', marginBottom: 8 },
   subtitle: { color: colors.mutedText, fontSize: 16, marginBottom: 24 },
