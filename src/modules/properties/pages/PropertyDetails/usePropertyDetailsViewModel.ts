@@ -11,6 +11,7 @@ export function usePropertyDetailsViewModel() {
   const { id: routeId } = useLocalSearchParams<{ id?: string | string[] }>()
   const router = useRouter()
   const [advertisement, setAdvertisement] = useState<Advertisement | null>(null)
+  const [isVideoModalVisible, setIsVideoModalVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -59,13 +60,7 @@ export function usePropertyDetailsViewModel() {
   }
 
   const openVideo = () => {
-    const videoUrl = mediaState.videos[0]?.url
-
-    if (videoUrl) {
-      Linking.openURL(videoUrl).catch((openError) => {
-        console.error('Failed to open video:', openError)
-      })
-    }
+    if (mediaState.videos.length > 0) setIsVideoModalVisible(true)
   }
 
   const openMap = () => {
@@ -84,11 +79,13 @@ export function usePropertyDetailsViewModel() {
     images: mediaState.images,
     plans: mediaState.plans,
     videos: mediaState.videos,
+    isVideoModalVisible,
     presentation: advertisement ? getDetailsPresentation(advertisement) : null,
     mapImageUrl: advertisement ? getStaticMapUrl(advertisement) : null,
     openGallery,
     openFloorPlan,
     openVideo,
+    closeVideo: () => setIsVideoModalVisible(false),
     openMap,
   }
 }

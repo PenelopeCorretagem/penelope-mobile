@@ -1,4 +1,5 @@
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import YoutubePlayer from 'react-native-youtube-iframe'
 import { Ionicons } from '@expo/vector-icons'
 import Alert from '@shared/components/feedback/Alert'
 import Button from '@shared/components/ui/Button'
@@ -6,7 +7,7 @@ import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import Section from '@shared/components/layout/Section'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
-import { getLocationLabel } from './PropertyDetailsModel'
+import { getLocationLabel, getYouTubeVideoId } from './PropertyDetailsModel'
 import { usePropertyDetailsViewModel } from './usePropertyDetailsViewModel'
 import { LinearGradient } from 'expo-linear-gradient'
 export default function PropertyDetailsView() {
@@ -18,11 +19,13 @@ export default function PropertyDetailsView() {
     images,
     plans,
     videos,
+    isVideoModalVisible,
     presentation,
     mapImageUrl,
     openGallery,
     openFloorPlan,
     openVideo,
+    closeVideo,
     openMap,
   } = usePropertyDetailsViewModel()
 
@@ -48,6 +51,7 @@ export default function PropertyDetailsView() {
   const { imageUrls, imageUrl, typeLabel, dormitoriesLabel, firstThreeAmenities, hasCoordinates } = presentation!
 
   return (
+    <>
     <ScrollView style={sharedStyles.screen}>
       {imageUrl ? (
         <Pressable accessibilityLabel="Abrir galeria de imagens" accessibilityRole="button" onPress={openGallery} style={styles.imageContainer}>
@@ -190,6 +194,31 @@ export default function PropertyDetailsView() {
         </LinearGradient>
       ) : null}
     </ScrollView>
+
+    <Modal animationType="fade" onRequestClose={closeVideo} statusBarTranslucent transparent visible={isVideoModalVisible}>
+      <View style={styles.videoModalBackdrop}>
+        <View style={styles.videoModalHeader}>
+          <Text style={styles.videoModalTitle}>Vídeo do imóvel</Text>
+          <Pressable accessibilityLabel="Fechar vídeo" accessibilityRole="button" onPress={closeVideo} style={styles.videoCloseButton}>
+            <Ionicons name="close" size={28} color={colors.white} />
+          </Pressable>
+        </View>
+        <View style={styles.videoContainer}>
+          {videos[0]?.url && getYouTubeVideoId(videos[0].url) ? (
+            <YoutubePlayer
+              height={220}
+              play={false}
+              videoId={getYouTubeVideoId(videos[0].url) ?? undefined}
+              webViewProps={{
+                allowsFullscreenVideo: true,
+                mediaPlaybackRequiresUserAction: false,
+              }}
+            />
+          ) : null}
+        </View>
+      </View>
+    </Modal>
+    </>
   )
 }
 
@@ -230,4 +259,9 @@ const styles = StyleSheet.create({
   qualitiesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, justifyContent: 'center', width: '100%' },
   qualityItem: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center', marginBottom: spacing.sm, width: '46%' },
   detailsSection: { width: '100%', paddingVertical: 18 },
+  videoModalBackdrop: { backgroundColor: 'rgba(0, 0, 0, 0.96)', flex: 1, justifyContent: 'center', paddingHorizontal: spacing.md },
+  videoModalHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.md },
+  videoModalTitle: { color: colors.white, fontSize: 16, fontWeight: '700' },
+  videoCloseButton: { padding: spacing.sm },
+  videoContainer: { aspectRatio: 16 / 9, backgroundColor: '#000', overflow: 'hidden', width: '100%' },
 })
