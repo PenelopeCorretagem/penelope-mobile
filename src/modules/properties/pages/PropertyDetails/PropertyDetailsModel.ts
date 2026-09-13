@@ -52,3 +52,15 @@ export const getStaticMapUrl = (advertisement: Advertisement) => {
 
   return `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=15&size=400x300&markers=color:red%7C${latitude},${longitude}&key=AIzaSyBa3G7kH2d_VY1xLB_A1zX7qK4J5mQ2pR8`
 }
+
+export const getYouTubeVideoId = (url: string) => {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/)
+
+  return match?.[1] ?? null
+}
+
+export const getYouTubeWatchUrl = (url: string) => {
+  const videoId = getYouTubeVideoId(url)
+
+  return videoId ? `https://www.youtube.com/watch?v=${videoId}` : url
+}
