@@ -1,0 +1,1 @@
+export { default, default as PropertiesView } from './PropertiesView'

@@ -10,7 +10,15 @@ export default function ButtonView({ children, label, style, ...props }: ButtonP
       {...props}
       accessibilityRole="button"
       style={(state: PressableStateCallbackType) => [
-        { alignSelf: 'flex-start', backgroundColor: colors.secondary, borderRadius: 6, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+        { backgroundColor: colors.secondary, 
+          borderRadius: 6, 
+          paddingHorizontal: spacing.lg, 
+          paddingVertical: spacing.md, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          opacity: state.pressed ? 0.8 : 1,
+        },
         typeof style === 'function' ? style(state) : style,
       ]}
     >
