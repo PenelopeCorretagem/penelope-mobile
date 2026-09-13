@@ -48,13 +48,13 @@ export function usePropertyDetailsViewModel() {
 
   const openGallery = () => {
     if (mediaState.images.length > 0 && routeIdValue !== null) {
-      router.push(`/${APP_ROUTES.detalhes}/${routeIdValue}/galeria`)
+      router.push(`/${APP_ROUTES.detalhes}/${routeIdValue}/${APP_ROUTES.detalhesGaleria}`)
     }
   }
 
   const openFloorPlan = () => {
     if (mediaState.plans.length > 0 && routeIdValue !== null) {
-      router.push(`/${APP_ROUTES.detalhes}/${routeIdValue}/planta`)
+      router.push(`/${APP_ROUTES.detalhes}/${routeIdValue}/${APP_ROUTES.detalhesPlanta}`)
     }
   }
 

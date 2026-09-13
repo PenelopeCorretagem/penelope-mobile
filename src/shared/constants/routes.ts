@@ -14,6 +14,8 @@ export const APP_ROUTES = {
     recuperacao_senha: 'configuracoes/recuperar-senha',
     imoveis: 'imoveis',
     detalhes: 'imoveis/detalhes-imovel',
+    detalhesGaleria: 'galeria',
+    detalhesPlanta: 'planta',
     favoritos: 'imoveis/favoritos',
 } as const
 
