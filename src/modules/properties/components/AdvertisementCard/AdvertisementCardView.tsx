@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { FlatList, Image, NativeScrollEvent, NativeSyntheticEvent, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { PROPERTY_TYPES } from '@constant/propertyTypes'
 import { APP_ROUTES } from '@shared/constants/routes'
-import { Advertisement } from '@dtos/Advertisement'
+import type { Advertisement } from '@properties/types/advertisement'
 import Button from '@shared/components/ui/Button'
 import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
@@ -18,16 +18,16 @@ type AdvertisementCardProps = {
 }
 
 export default function AdvertisementCardView({ advertisement, width }: AdvertisementCardProps) {
-  const { estate } = advertisement
+  const { property } = advertisement
   const { isFavorite, toggleFavorite } = useFavorites()
   const { width: windowWidth } = useWindowDimensions()
   const cardWidth = width ?? windowWidth - spacing.md * 2
   const imageUrls = getAdvertisementImageUrls(advertisement)
   const [activeImageIndex, setActiveImageIndex] = useState(0)
-  const amenities = estate.amenities?.slice(0, 4) ?? []
-  const detail = `${estate.area ?? '?'} m² - ${estate.numberOfRooms ?? '?'} dormitórios`
-  const typeConfig = estate.type
-    ? Object.values(PROPERTY_TYPES).find(({ domainKey }) => domainKey === estate.type.key)
+  const amenities = property.amenities?.slice(0, 4) ?? []
+  const detail = `${property.area ?? '?'} m² - ${property.numberOfRooms ?? '?'} dormitórios`
+  const typeConfig = property.type
+    ? Object.values(PROPERTY_TYPES).find(({ domainKey }) => domainKey === property.type.key)
     : undefined
   const categoryColor = typeConfig?.cardColor === 'secondary'
     ? colors.secondary
@@ -55,7 +55,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
           pagingEnabled
           renderItem={({ item: imageUrl }) => (
             <Image
-              accessibilityLabel={`Imagem do imóvel ${estate.title ?? ''}`}
+              accessibilityLabel={`Imagem do imóvel ${property.title ?? ''}`}
               source={{ uri: imageUrl }}
               style={[styles.cover, { width: cardWidth }]}
             />
@@ -74,7 +74,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
         </Pressable>
 
         <Text style={[styles.category, { backgroundColor: categoryColor, color: colors.background }]}>
-          {estate.type?.friendlyName ?? 'Imóvel'}
+          {property.type?.friendlyName ?? 'Imóvel'}
         </Text>
 
         {imageUrls.length > 1 ? (
@@ -85,8 +85,8 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
       </View>
 
       <View style={styles.content}>
-        <Heading level={4} style={styles.title}>{estate.title ?? 'Imóvel sem título'}</Heading>
-        <Text style={styles.city}>{estate.address?.city ?? 'Cidade não informada'}</Text>
+        <Heading level={4} style={styles.title}>{property.title ?? 'Imóvel sem título'}</Heading>
+        <Text style={styles.city}>{property.address?.city ?? 'Cidade não informada'}</Text>
         {advertisement.distanceKm !== undefined ? (
           <Text style={styles.distance}>{advertisement.distanceKm < 1 ? 'A menos de 1 km de distância' : `${advertisement.distanceKm.toFixed(1)} km de distância`}</Text>
         ) : null}

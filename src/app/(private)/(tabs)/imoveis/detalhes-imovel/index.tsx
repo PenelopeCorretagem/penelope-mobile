@@ -1,1 +1,1 @@
-export { default } from '@properties/pages/PropertDeytails'
+export { default } from '@properties/pages/PropertyDetails'

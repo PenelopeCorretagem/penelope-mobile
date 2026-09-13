@@ -1,1 +1,1 @@
-export { default } from '@properties/pages/PropertDeytails/PlantaView'
+export { default } from '@properties/pages/PropertyPlan'

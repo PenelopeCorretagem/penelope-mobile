@@ -11,6 +11,7 @@ export const APP_ROUTES = {
     sobre: 'configuracoes/sobre',
     contato: 'configuracoes/contato',
     senha: 'configuracoes/senha',
+    recuperacao_senha: 'configuracoes/recuperar-senha',
     imoveis: 'imoveis',
     detalhes: 'imoveis/detalhes-imovel',
     favoritos: 'imoveis/favoritos',

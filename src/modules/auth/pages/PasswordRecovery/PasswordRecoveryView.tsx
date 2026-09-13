@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import AuthScreen, { type AuthInputField } from '@auth/components/AuthScreen'
+import { APP_ROUTES } from '@constant/routes'
 
 export default function PasswordRecoveryView() {
   const [email, setEmail] = useState('')
@@ -29,6 +30,9 @@ export default function PasswordRecoveryView() {
       isSubmitting={false}
       onSubmit={() => setSubmitted(true)}
       statusMessage={submitted ? 'Verifique seu e-mail para continuar.' : undefined}
+      secondaryPrompt="Já lembrou sua senha?"
+      secondaryActionLabel="Voltar para o login"
+      secondaryActionHref={APP_ROUTES.auth.login}
     />
   )
 }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform, TextInput } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useLocalSearchParams, usePathname, useRouter } from 'expo-router'
 import Constants from 'expo-constants'
 import { PROPERTY_TYPES } from '@constant/propertyTypes'
@@ -16,6 +17,9 @@ import {
   defaultFilters,
   getFiltersFromRouteParams,
   hasActiveFilters,
+  SEARCH_HISTORY_LIMIT,
+  SEARCH_HISTORY_STORAGE_KEY,
+  SearchHistoryEntry,
   sortOptions,
   toQueryParams,
 } from './SearchModalModel'
@@ -58,6 +62,39 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     cities: [],
     regions: [],
   })
+  const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([])
+
+  const persistSearchHistory = useCallback(async (entry: SearchHistoryEntry) => {
+    const normalizedEntry = {
+      ...entry,
+      searchTerm: entry.searchTerm.trim(),
+    }
+    const currentHistory = searchHistory.filter((item) => JSON.stringify(item) !== JSON.stringify(normalizedEntry))
+    const nextHistory = [normalizedEntry, ...currentHistory].slice(0, SEARCH_HISTORY_LIMIT)
+
+    setSearchHistory(nextHistory)
+    try {
+      await AsyncStorage.setItem(SEARCH_HISTORY_STORAGE_KEY, JSON.stringify(nextHistory))
+    } catch (error) {
+      console.error('Falha ao salvar histórico de pesquisa', error)
+    }
+  }, [searchHistory])
+
+  useEffect(() => {
+    const loadSearchHistory = async () => {
+      try {
+        const storedHistory = await AsyncStorage.getItem(SEARCH_HISTORY_STORAGE_KEY)
+        if (!storedHistory) return
+
+        const parsedHistory = JSON.parse(storedHistory) as unknown
+        if (Array.isArray(parsedHistory)) setSearchHistory(parsedHistory.slice(0, SEARCH_HISTORY_LIMIT))
+      } catch (error) {
+        console.error('Falha ao carregar histórico de pesquisa', error)
+      }
+    }
+
+    void loadSearchHistory()
+  }, [])
 
   useEffect(() => {
     const loadOptions = async () => {
@@ -153,14 +190,8 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     const resolvedFilters = hasRouteFilters ? nextFilters : lastAppliedFiltersRef.current
     lastAppliedFiltersRef.current = resolvedFilters
     setFilters(resolvedFilters)
-    setIsExpanded(true)
+    setIsExpanded(false)
     setSpeechError(null)
-
-    const timeout = setTimeout(() => {
-      inputRef.current?.focus()
-    }, 150)
-
-    return () => clearTimeout(timeout)
   }, [isSearchWithinProperties, routeParams.city, routeParams.region, routeParams.searchTerm, routeParams.sortOrder, routeParams.type, visible])
 
   useEffect(() => {
@@ -205,6 +236,8 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
 
     const params = toQueryParams(normalizedFilters)
 
+    if (hasActiveFilters(normalizedFilters)) void persistSearchHistory(normalizedFilters)
+
     if (isSearchWithinProperties) {
       router.setParams(params)
     } else {
@@ -215,11 +248,28 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     }
 
     onClose()
-  }, [filters, isSearchWithinProperties, onClose, router])
+  }, [filters, isSearchWithinProperties, onClose, persistSearchHistory, router])
 
   const handleClose = useCallback(() => {
+    inputRef.current?.blur()
     onClose()
   }, [onClose])
+
+  const handleSelectSearchHistory = useCallback((entry: SearchHistoryEntry) => {
+    setFilters(entry)
+    lastAppliedFiltersRef.current = entry
+    setIsExpanded(false)
+    inputRef.current?.blur()
+    const params = toQueryParams(entry)
+
+    if (isSearchWithinProperties) {
+      router.setParams(params)
+    } else {
+      router.push({ pathname: APP_ROUTES.imoveis, params })
+    }
+
+    onClose()
+  }, [isSearchWithinProperties, onClose, router])
 
   const handleVoiceSearch = useCallback(async (shouldStart = !isListening) => {
     const module = getSpeechRecognitionModule()
@@ -288,6 +338,8 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     handleSubmitSearch,
     handleVoiceSearch,
     resetFilters,
+    searchHistory,
+    handleSelectSearchHistory,
   }
 }
 

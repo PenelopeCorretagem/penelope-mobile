@@ -1,1 +1,1 @@
-export { default } from '@properties/pages/PropertDeytails/VideoView'
+export { default } from '@properties/pages/PropertyVideo'

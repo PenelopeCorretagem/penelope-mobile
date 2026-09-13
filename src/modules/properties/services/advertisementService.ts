@@ -1,6 +1,6 @@
 import { Platform } from 'react-native'
 import { PROPERTY_TYPES } from '@constant/propertyTypes'
-import { Advertisement } from '@dtos/Advertisement'
+import type { Advertisement } from '@properties/types/advertisement'
 import { toAdvertisementList } from '@shared/utils/advertisementNormalizer'
 
 export type AdvertisementQuery = {

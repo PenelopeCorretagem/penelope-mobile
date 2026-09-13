@@ -1,5 +1,5 @@
 import { PropertyTypeKey } from '@constant/propertyTypes'
-import { Advertisement } from '@dtos/Advertisement'
+import type { Advertisement } from '@properties/types/advertisement'
 export { toAdvertisementList } from '@shared/utils/advertisementNormalizer'
 
 export type PropertyTypeFilter = 'TODOS' | PropertyTypeKey
@@ -38,30 +38,30 @@ const includesSearchTerm = (advertisement: Advertisement, searchTerm: string) =>
   const term = normalizeText(searchTerm)
   if (!term) return true
 
-  const { estate } = advertisement
+  const { property } = advertisement
   const fields = [
-    estate.title,
-    estate.subtitle,
-    estate.description,
-    estate.type.key,
-    estate.type.friendlyName,
-    estate.address?.city,
-    estate.address?.region,
-    estate.address?.uf,
-    ...(estate.amenities ?? []).map((amenity) => amenity.description),
+    property.title,
+    property.subtitle,
+    property.description,
+    property.type.key,
+    property.type.friendlyName,
+    property.address?.city,
+    property.address?.region,
+    property.address?.uf,
+    ...(property.amenities ?? []).map((amenity) => amenity.description),
   ]
 
   return fields.some((field) => normalizeText(field).includes(term))
 }
 
 const matchesLocationFilters = (advertisement: Advertisement, filters: PropertiesFilters) => (
-  (!filters.city || advertisement.estate.address?.city === filters.city)
-  && (!filters.region || advertisement.estate.address?.region === filters.region)
+  (!filters.city || advertisement.property.address?.city === filters.city)
+  && (!filters.region || advertisement.property.address?.region === filters.region)
 )
 
 export const getAdvertisementDistanceInKm = (advertisement: Advertisement, location: DeviceLocation) => {
-  const latitude = advertisement.estate.address?.latitude
-  const longitude = advertisement.estate.address?.longitude
+  const latitude = advertisement.property.address?.latitude
+  const longitude = advertisement.property.address?.longitude
   if (latitude === undefined || longitude === undefined) return null
 
   const earthRadiusKm = 6371
@@ -91,7 +91,7 @@ export const sortAdvertisements = (advertisements: Advertisement[], sortOrder: S
 
   const direction = sortOrder === 'asc' ? 1 : -1
   return [...advertisements].sort((left, right) => (
-    (left.estate.title ?? '').localeCompare(right.estate.title ?? '', 'pt-BR') * direction
+    (left.property.title ?? '').localeCompare(right.property.title ?? '', 'pt-BR') * direction
   ))
 }
 
@@ -134,13 +134,13 @@ const getUniqueValues = (values: Array<string | undefined>) => (
 
 export const getAvailableCities = (groups: PropertyGroups) => (
   getUniqueValues(Object.values(groups).flatMap((advertisements) => (
-    advertisements.map((advertisement) => advertisement.estate.address?.city)
+    advertisements.map((advertisement) => advertisement.property.address?.city)
   )))
 )
 
 export const getAvailableRegions = (groups: PropertyGroups) => (
   getUniqueValues(Object.values(groups).flatMap((advertisements) => (
-    advertisements.map((advertisement) => advertisement.estate.address?.region)
+    advertisements.map((advertisement) => advertisement.property.address?.region)
   )))
 )
 
@@ -149,7 +149,7 @@ export const getCoverImageUrl = (advertisement: Advertisement) => (
 )
 
 export const getAdvertisementImageUrls = (advertisement: Advertisement) => {
-  const images = advertisement.estate.images ?? []
+  const images = advertisement.property.images ?? []
   const coverImages = images.filter((image) => image.type?.id === 1)
   const otherImages = images.filter((image) => image.type?.id !== 1)
 

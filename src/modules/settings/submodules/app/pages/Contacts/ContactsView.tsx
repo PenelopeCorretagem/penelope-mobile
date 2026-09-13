@@ -1,11 +1,10 @@
-import { ScrollView, View } from 'react-native'
+import { useRef } from 'react'
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import Section from '@shared/components/layout/Section'
 import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import { ContactFormView } from '../../components/ContactForm'
-import { ContactIconListView } from '@shared/components/ui/ContactIconList'
-import { useContactsViewModel } from './useContactsViewModel'
 
 /**
  * ContactsView - Página institucional de contato.
@@ -20,10 +19,14 @@ import { useContactsViewModel } from './useContactsViewModel'
  * 4. Ícones circulares de contato
  */
 export function ContactsView() {
-  const { contactItems } = useContactsViewModel()
+  const scrollViewRef = useRef<ScrollView>(null)
+  const scrollToFocusedField = () => {
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 250)
+  }
 
   return (
-    <ScrollView style={sharedStyles.screen}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={sharedStyles.screen}>
+      <ScrollView ref={scrollViewRef} automaticallyAdjustKeyboardInsets keyboardShouldPersistTaps="handled">
       <Section>
         {/* Cabeçalho */}
         <Heading
@@ -55,10 +58,11 @@ export function ContactsView() {
 
         {/* Formulário de Contato */}
         <View style={{ width: '100%' }}>
-          <ContactFormView />
+          <ContactFormView onFieldFocus={scrollToFocusedField} />
         </View>
       </Section>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 

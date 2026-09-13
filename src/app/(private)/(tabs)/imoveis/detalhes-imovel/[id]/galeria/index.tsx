@@ -1,1 +1,1 @@
-export { default } from '@properties/pages/PropertDeytails/GaleriaView'
+export { default } from '@properties/pages/PropertyGallery'

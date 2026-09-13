@@ -6,6 +6,7 @@ import { PropertiesFilters } from '@properties/pages/Properties/PropertiesModel'
 import ButtonView from '@shared/components/ui/Button'
 import { colors, spacing } from '@shared/styles/style'
 import { useSearchModalViewModel } from './useSearchModalViewModel'
+import { getSearchHistoryLabel } from './SearchModalModel'
 
 type SearchModalViewProps = {
   visible: boolean
@@ -59,6 +60,8 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
     inputRef,
     hasActiveFilters,
     resetFilters,
+    searchHistory,
+    handleSelectSearchHistory,
   } = useSearchModalViewModel({ visible, onClose })
 
   return (
@@ -69,7 +72,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
       visible={visible}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
         <View style={styles.header}>
@@ -173,6 +176,21 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
                 })}
               />
             </View>
+          ) : searchHistory.length > 0 ? (
+            <View style={styles.historyPanel}>
+              <Text style={styles.historyTitle}>Pesquisas recentes</Text>
+              {searchHistory.map((entry, index) => (
+                <Pressable
+                  accessibilityRole="button"
+                  key={`${entry.searchTerm}-${entry.city}-${entry.region}-${entry.type}-${index}`}
+                  onPress={() => handleSelectSearchHistory(entry)}
+                  style={styles.historyItem}
+                >
+                  <Ionicons name="time-outline" size={18} color={colors.mutedText} />
+                  <Text style={styles.historyText}>{getSearchHistoryLabel(entry)}</Text>
+                </Pressable>
+              ))}
+            </View>
           ) : null}
         </ScrollView>
       </KeyboardAvoidingView>
@@ -218,11 +236,35 @@ const styles = StyleSheet.create({
   },
   bodyContent: {
     padding: spacing.md,
+    paddingBottom: 160,
   },
   filterPanel: {
     backgroundColor: '#f9f9f9',
     borderRadius: 12,
     padding: spacing.md,
+  },
+  historyPanel: {
+    backgroundColor: colors.white,
+    paddingVertical: spacing.sm,
+  },
+  historyTitle: {
+    color: colors.mutedText,
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: spacing.sm,
+  },
+  historyItem: {
+    alignItems: 'center',
+    borderBottomColor: colors.primaryLight,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+  },
+  historyText: {
+    color: colors.text,
+    flex: 1,
+    fontSize: 15,
   },
   optionGroup: {
     marginBottom: spacing.md,
