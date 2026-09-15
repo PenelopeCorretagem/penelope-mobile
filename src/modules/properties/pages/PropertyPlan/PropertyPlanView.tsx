@@ -5,13 +5,15 @@ import { Ionicons } from '@expo/vector-icons'
 import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import Section from '@shared/components/layout/Section'
+import Alert from '@shared/components/feedback/Alert'
+import Button from '@shared/components/ui/Button'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import ImageCarouselModal from '@properties/components/ImageCarouselModal'
 import { usePropertyMediaViewModel } from '../PropertyDetails/usePropertyMediaViewModel'
 
 export default function PropertyPlanView() {
   const router = useRouter()
-  const { plans, isLoading } = usePropertyMediaViewModel()
+  const { plans, error, isLoading, retry } = usePropertyMediaViewModel()
   const [selectedPlantIndex, setSelectedPlantIndex] = useState<number | null>(null)
 
   return (
@@ -27,6 +29,11 @@ export default function PropertyPlanView() {
       {isLoading ? (
         <Section style={styles.loadingContainer}>
           <Text>Carregando plantas...</Text>
+        </Section>
+      ) : error ? (
+        <Section style={styles.emptyContainer}>
+          <Alert message={error} />
+          <Button onPress={retry}>Tentar novamente</Button>
         </Section>
       ) : plans.length === 0 ? (
         <Section style={styles.emptyContainer}>

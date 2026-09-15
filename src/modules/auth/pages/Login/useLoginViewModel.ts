@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Alert } from "react-native";
 import { router } from "expo-router";
 import {
   createEmptyLoginForm,
@@ -31,28 +30,28 @@ export function useLoginViewModel() {
     setError(null);
   };
 
-  const handleSubmit = () => {
-    //Comentar para logar sem precisar escrever nada
-    //apenas apertar no entrar
-    // const nextErrors = getLoginFieldErrors(form)
-    // setFieldErrors(nextErrors)
+  const handleSubmit = async () => {
+    const nextErrors = getLoginFieldErrors(form);
+    setFieldErrors(nextErrors);
 
-    // const validationError = validateLoginForm(form)
+    const validationError = validateLoginForm(form);
 
-    // if (validationError) {
-    //   setError(validationError)
-    //   return
-    // }
-    // COmente ate aqui
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);
 
-    setTimeout(() => {
-      login();
-      setIsSubmitting(false);
+    try {
+      await login(form.email.trim(), form.senha);
       router.replace(APP_ROUTES.imoveis);
-    }, 500);
+    } catch (loginError) {
+      setError(loginError instanceof Error ? loginError.message : "Nao foi possivel entrar.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return {
