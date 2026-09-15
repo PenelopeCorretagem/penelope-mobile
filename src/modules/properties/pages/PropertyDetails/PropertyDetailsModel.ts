@@ -49,8 +49,11 @@ export const getGoogleMapsUrl = (advertisement: Advertisement) => {
 
 export const getStaticMapUrl = (advertisement: Advertisement) => {
   const { latitude, longitude } = advertisement.property.address ?? {}
+  const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
 
-  return `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=15&size=400x300&markers=color:red%7C${latitude},${longitude}&key=AIzaSyBa3G7kH2d_VY1xLB_A1zX7qK4J5mQ2pR8`
+  if (!apiKey) return undefined
+
+  return `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=15&size=400x300&markers=color:red%7C${latitude},${longitude}&key=${apiKey}`
 }
 
 export const getYouTubeVideoId = (url: string) => {

@@ -45,7 +45,7 @@ export function usePropertyDetailsViewModel() {
   }, [loadAdvertisement])
 
   const routeIdValue = getRouteId(routeId)
-  const mediaState = usePropertyMediaViewModel()
+  const mediaState = usePropertyMediaViewModel({ advertisement, loadFromRoute: false })
 
   const openGallery = () => {
     if (mediaState.images.length > 0 && routeIdValue !== null) {

@@ -1,48 +1,73 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react'
 import { router } from 'expo-router'
 import { APP_ROUTES } from '@shared/constants/routes'
+import { authenticate, validateAccessToken } from '@auth/services/authService'
+import { clearAccessToken, getAccessToken, saveAccessToken, setSessionExpiredHandler } from '@shared/infrastructure/authTokenStorage'
 
 type AuthContextValue = {
   isLoading: boolean
   isAuthenticated: boolean
-  login: () => void
-  logout: () => void
-  deleteAccount: () => void
+  accessToken: string | null
+  login: (email: string, password: string) => Promise<void>
+  logout: () => Promise<void>
+  deleteAccount: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState(true)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500)
+    async function hydrateSession() {
+      try {
+        const token = await getAccessToken()
 
-    return () => clearTimeout(timer)
+        if (token && await validateAccessToken(token)) {
+          setAccessToken(token)
+        } else {
+          await clearAccessToken()
+        }
+      } catch {
+        await clearAccessToken()
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    void hydrateSession()
+  }, [])
+
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      setAccessToken(null)
+      router.replace(`/${APP_ROUTES.root}`)
+    })
+
+    return () => setSessionExpiredHandler(null)
   }, [])
 
   const value = useMemo(() => ({
     isLoading,
-    isAuthenticated,
-    login: () => setIsAuthenticated(true),
-    logout: () => {
-      router.replace(`/${APP_ROUTES.root}`)
-      setIsLoading(true)
-      setTimeout(() => {
-        setIsAuthenticated(false)
-        setIsLoading(false)
-      }, 1500)
+    isAuthenticated: accessToken !== null,
+    accessToken,
+    login: async (email: string, password: string) => {
+      const token = await authenticate(email, password)
+      await saveAccessToken(token)
+      setAccessToken(token)
     },
-    deleteAccount: () => {
+    logout: async () => {
+      await clearAccessToken()
+      setAccessToken(null)
       router.replace(`/${APP_ROUTES.root}`)
-      setIsLoading(true)
-      setTimeout(() => {
-        setIsAuthenticated(false)
-        setIsLoading(false)
-      }, 1500)
     },
-  }), [isAuthenticated, isLoading])
+    deleteAccount: async () => {
+      await clearAccessToken()
+      setAccessToken(null)
+      router.replace(`/${APP_ROUTES.root}`)
+    },
+  }), [accessToken, isLoading])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

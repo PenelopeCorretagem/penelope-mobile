@@ -3,7 +3,7 @@ import type { MediaTypeDto } from './media-type'
 
 export type PropertyMediaDto = {
   id: number
-  propertyId: number
+  advertisementId: number
   mediaTypeId: MediaTypeId
   url: string
   mediaType?: MediaTypeDto
@@ -15,7 +15,7 @@ export function isPropertyMediaDto(value: unknown): value is PropertyMediaDto {
   const media = value as Partial<PropertyMediaDto>
 
   return typeof media.id === 'number'
-    && typeof media.propertyId === 'number'
+    && typeof media.advertisementId === 'number'
     && isMediaTypeId(media.mediaTypeId)
     && typeof media.url === 'string'
 }
