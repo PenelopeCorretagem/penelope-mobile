@@ -60,7 +60,7 @@ const toPropertyMediaDto = (
   mediaType: MediaTypeDto,
 ): PropertyMediaDto => ({
   id: rawMedia.id,
-  propertyId: rawMedia.fk_empreendimento,
+  advertisementId: rawMedia.fk_empreendimento,
   mediaTypeId: mediaType.id,
   url: rawMedia.url,
   mediaType,
@@ -118,7 +118,7 @@ export async function getAllPropertyMedia(): Promise<PropertyMediaDto[]> {
     const data = await response.json() as RawPropertyMedia[]
     return data.map((media) => ({
       id: media.id,
-      propertyId: media.fk_empreendimento,
+      advertisementId: media.fk_empreendimento,
       mediaTypeId: MEDIA_TYPES.GALLERY,
       url: media.url,
     }))

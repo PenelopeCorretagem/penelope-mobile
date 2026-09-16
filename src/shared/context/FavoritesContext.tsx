@@ -3,28 +3,44 @@ import {
   PropsWithChildren,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react'
+import { addFavorite, getFavoriteIds, removeFavorite } from '@service-penelopec/favoriteService'
+import { useAuth } from '@shared/context/AuthContext'
 
 type FavoritesContextValue = {
   favoriteIds: number[]
   isFavorite: (id: number) => boolean
-  toggleFavorite: (id: number) => void
+  toggleFavorite: (id: number) => Promise<void>
 }
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null)
 
 export function FavoritesProvider({ children }: PropsWithChildren) {
+  const { accessToken } = useAuth()
   const [favoriteIds, setFavoriteIds] = useState<number[]>([])
 
-  const toggleFavorite = useCallback((id: number) => {
-    setFavoriteIds((current) => (
-      current.includes(id)
-        ? current.filter((favoriteId) => favoriteId !== id)
-        : [...current, id]
-    ))
-  }, [])
+  useEffect(() => {
+    if (!accessToken) {
+      setFavoriteIds([])
+      return
+    }
+
+    void getFavoriteIds().then(setFavoriteIds).catch(() => setFavoriteIds([]))
+  }, [accessToken])
+
+  const toggleFavorite = useCallback(async (id: number) => {
+    if (favoriteIds.includes(id)) {
+      await removeFavorite(id)
+      setFavoriteIds((current) => current.filter((favoriteId) => favoriteId !== id))
+      return
+    }
+
+    await addFavorite(id)
+    setFavoriteIds((current) => current.includes(id) ? current : [...current, id])
+  }, [favoriteIds])
 
   const isFavorite = useCallback(
     (id: number) => favoriteIds.includes(id),

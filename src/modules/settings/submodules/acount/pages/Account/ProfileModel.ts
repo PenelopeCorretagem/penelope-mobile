@@ -6,9 +6,9 @@ export type UserProfile = {
 }
 
 export const DEFAULT_USER_PROFILE: UserProfile = {
-  name: 'Maria da Silva',
-  email: 'maria@penelope.com.br',
-  birthDate: '01/01/1990',
+  name: '',
+  email: '',
+  birthDate: '',
   profileImage: null,
 }
 

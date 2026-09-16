@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { FlatList, Image, NativeScrollEvent, NativeSyntheticEvent, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native'
+import { Alert, FlatList, Image, NativeScrollEvent, NativeSyntheticEvent, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { PROPERTY_TYPES } from '@constant/propertyTypes'
 import { APP_ROUTES } from '@shared/constants/routes'
 import type { Advertisement } from '@properties/types/advertisement'
@@ -24,6 +24,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
   const cardWidth = width ?? windowWidth - spacing.md * 2
   const imageUrls = getAdvertisementImageUrls(advertisement)
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const [isFavoriteUpdating, setIsFavoriteUpdating] = useState(false)
   const amenities = property.amenities?.slice(0, 4) ?? []
   const detail = `${property.area ?? '?'} m² - ${property.numberOfRooms ?? '?'} dormitórios`
   const typeConfig = property.type
@@ -35,6 +36,19 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
       ? colors.secondaryLight
       : colors.primary
   const isSaved = isFavorite(advertisement.id)
+
+  const handleToggleFavorite = async () => {
+    setIsFavoriteUpdating(true)
+
+    try {
+      await toggleFavorite(advertisement.id)
+    } catch (error) {
+      console.error('Falha ao atualizar favorito', error)
+      Alert.alert('Não foi possível atualizar favoritos.', 'Tente novamente.')
+    } finally {
+      setIsFavoriteUpdating(false)
+    }
+  }
 
   return (
     <View
@@ -67,7 +81,8 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={isSaved ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-          onPress={() => toggleFavorite(advertisement.id)}
+          disabled={isFavoriteUpdating}
+          onPress={() => void handleToggleFavorite()}
           style={styles.favoriteButton}
         >
           <Ionicons name={isSaved ? 'heart' : 'heart-outline'} size={18} color={colors.primary} />

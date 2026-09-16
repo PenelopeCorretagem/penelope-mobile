@@ -1,44 +1,58 @@
-import { Platform } from 'react-native'
-import type { UserDto } from '@shared/dtos/user'
+import { authenticatedApiRequest } from '@shared/infrastructure/apiClient'
+import { saveAccessToken } from '@shared/infrastructure/authTokenStorage'
 import { DEFAULT_USER_PROFILE, type UserProfile } from '@settings/submodules/acount/pages/Account/ProfileModel'
 
-const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL
-  ?? (Platform.OS === 'web' ? 'http://localhost:3001' : 'http://192.168.0.104:3001')
+type UserProfileResponse = {
+  name: string
+  email: string
+  birthDate: string | null
+}
 
-function toProfile(user: UserDto): UserProfile {
+type UpdateUserProfileResponse = {
+  profile: UserProfileResponse
+  token: string | null
+}
+
+function toDisplayDate(value: string | null) {
+  if (!value) return ''
+
+  const [year, month, day] = value.split('-')
+  return year && month && day ? `${day}/${month}/${year}` : value
+}
+
+function toApiDate(value: string) {
+  if (!value) return null
+
+  const [day, month, year] = value.split('/')
+  return day && month && year ? `${year}-${month}-${day}` : value
+}
+
+function toProfile(user: UserProfileResponse): UserProfile {
   return {
     name: user.name,
     email: user.email,
-    birthDate: user.birthDate ?? '',
-    profileImage: user.profileImage ?? null,
-  }
-}
-
-async function assertResponse(response: Response, action: string): Promise<void> {
-  if (!response.ok) {
-    throw new Error(`Não foi possível ${action}: ${response.status}`)
+    birthDate: toDisplayDate(user.birthDate),
+    profileImage: null,
   }
 }
 
 export async function getUserProfile(): Promise<UserProfile> {
-  const response = await fetch(`${apiBaseUrl}/users/1`)
-  await assertResponse(response, 'carregar o perfil')
-  return toProfile(await response.json() as UserDto)
+  return toProfile(await authenticatedApiRequest<UserProfileResponse>('/v1/users/me'))
 }
 
 export async function updateUserProfile(profile: UserProfile): Promise<UserProfile> {
-  const response = await fetch(`${apiBaseUrl}/users/1`, {
+  const response = await authenticatedApiRequest<UpdateUserProfileResponse>('/v1/users/me', {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+    body: {
       name: profile.name,
       email: profile.email,
-      birthDate: profile.birthDate,
-      profileImage: profile.profileImage,
-    }),
+      birthDate: toApiDate(profile.birthDate),
+    },
   })
-  await assertResponse(response, 'salvar o perfil')
-  return toProfile(await response.json() as UserDto)
+
+  if (response.token) await saveAccessToken(response.token)
+
+  return toProfile(response.profile)
 }
 
 export { DEFAULT_USER_PROFILE }

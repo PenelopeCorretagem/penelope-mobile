@@ -27,7 +27,7 @@ export type AdvertisementApiResponse = {
     numberOfRooms?: number
     type?: RawPropertyType
     address?: { city?: string; region?: string; uf?: string; latitude?: number; longitude?: number }
-    images?: Array<{ url?: string; type?: RawImageType }>
+    images?: Array<{ id?: number; url?: string; type?: RawImageType }>
     amenities?: Amenity[]
     amenitiesIds?: number[]
   }
@@ -40,9 +40,23 @@ const normalizeImageType = (value: RawImageType | undefined): PropertyImage['typ
     typeof value === 'object' && value !== null ? value.description ?? value.id : value,
   )
 
-  return normalized === '1' || normalized === 'capa' || normalized === 'cover'
-    ? { id: 1, description: 'Capa' }
-    : { description: '' }
+  if (normalized === '1' || normalized === 'capa' || normalized === 'cover') {
+    return { id: 1, description: 'Capa' }
+  }
+
+  if (normalized === 'imagem') {
+    return { id: 2, description: 'Imagem' }
+  }
+
+  if (normalized === 'planta') {
+    return { id: 3, description: 'Planta' }
+  }
+
+  if (normalized === 'video' || normalized === 'vídeo') {
+    return { id: 4, description: 'Vídeo' }
+  }
+
+  return { description: '' }
 }
 
 const normalizeAmenities = (propertyData: AdvertisementApiResponse['estate']): Amenity[] => {
@@ -83,6 +97,7 @@ export const toAdvertisement = (raw: AdvertisementApiResponse): Advertisement =>
       type: getPropertyType(rawProperty.type),
       address: rawProperty.address,
       images: (rawProperty.images ?? []).map((image) => ({
+        id: image.id,
         url: image.url,
         type: normalizeImageType(image.type),
       })),
