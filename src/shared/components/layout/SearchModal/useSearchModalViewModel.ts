@@ -5,6 +5,7 @@ import { useLocalSearchParams, usePathname, useRouter } from 'expo-router'
 import Constants from 'expo-constants'
 import { PROPERTY_TYPES } from '@constant/propertyTypes'
 import { APP_ROUTES, isAppRouteActive } from '@shared/constants/routes'
+import { interpretPropertySearch } from '@properties/services/propertySearchService'
 import {
   getAvailableCities,
   getAvailableRegions,
@@ -35,7 +36,7 @@ let speechRecognitionModule: SpeechRecognitionModule | null = null
 
 const getSpeechRecognitionModule = () => {
   if (speechRecognitionModule) return speechRecognitionModule
-  if (Platform.OS === 'web' || Constants.appOwnership === 'expo') return null
+  if (Platform.OS !== 'web' && Constants.appOwnership === 'expo') return null
 
   try {
     speechRecognitionModule = require('expo-speech-recognition').ExpoSpeechRecognitionModule as SpeechRecognitionModule
@@ -48,7 +49,15 @@ const getSpeechRecognitionModule = () => {
 export function useSearchModalViewModel({ visible, onClose }: SearchModalViewModelProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const routeParams = useLocalSearchParams<{ city?: string | string[]; region?: string | string[]; searchTerm?: string | string[]; sortOrder?: string | string[]; type?: string | string[] }>()
+  const routeParams = useLocalSearchParams<{
+    city?: string | string[]
+    maxPrice?: string | string[]
+    minBedrooms?: string | string[]
+    region?: string | string[]
+    searchTerm?: string | string[]
+    sortOrder?: string | string[]
+    type?: string | string[]
+  }>()
   const isFavoritesRoute = isAppRouteActive(pathname, APP_ROUTES.favoritos)
   const isPropertiesListRoute = isAppRouteActive(pathname, APP_ROUTES.imoveis)
   const isSearchWithinProperties = isFavoritesRoute || isPropertiesListRoute
@@ -57,12 +66,16 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
   const [filters, setFilters] = useState<PropertiesFilters>(() => getFiltersFromRouteParams(routeParams))
   const [isExpanded, setIsExpanded] = useState(false)
   const [isListening, setIsListening] = useState(false)
+  const [isInterpretingSearch, setIsInterpretingSearch] = useState(false)
   const [speechError, setSpeechError] = useState<string | null>(null)
   const [countryOptions, setCountryOptions] = useState<{ cities: string[]; regions: string[] }>({
     cities: [],
     regions: [],
   })
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([])
+  const latestTranscriptRef = useRef('')
+  const submitVoiceSearchRef = useRef(false)
+  const handleAiSearchRef = useRef<((transcript: string) => Promise<void>) | null>(null)
 
   const persistSearchHistory = useCallback(async (entry: SearchHistoryEntry) => {
     const normalizedEntry = {
@@ -87,7 +100,15 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
         if (!storedHistory) return
 
         const parsedHistory = JSON.parse(storedHistory) as unknown
-        if (Array.isArray(parsedHistory)) setSearchHistory(parsedHistory.slice(0, SEARCH_HISTORY_LIMIT))
+        if (Array.isArray(parsedHistory)) {
+          const historyEntries = parsedHistory
+            .filter((entry): entry is Partial<SearchHistoryEntry> => (
+              typeof entry === 'object' && entry !== null && !Array.isArray(entry)
+            ))
+            .slice(0, SEARCH_HISTORY_LIMIT)
+            .map((entry) => ({ ...defaultFilters, ...entry }))
+          setSearchHistory(historyEntries)
+        }
       } catch (error) {
         console.error('Falha ao carregar histórico de pesquisa', error)
       }
@@ -147,7 +168,9 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       || nextFilters.city
       || nextFilters.region
       || nextFilters.type !== 'TODOS'
-      || nextFilters.sortOrder !== 'distance',
+      || nextFilters.sortOrder !== 'distance'
+      || nextFilters.minBedrooms !== null
+      || nextFilters.maxPrice !== null,
     )
 
     const resolvedFilters = hasRouteFilters ? nextFilters : lastAppliedFiltersRef.current
@@ -160,11 +183,13 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
         || currentFilters.region !== resolvedFilters.region
         || currentFilters.type !== resolvedFilters.type
         || currentFilters.sortOrder !== resolvedFilters.sortOrder
+        || currentFilters.minBedrooms !== resolvedFilters.minBedrooms
+        || currentFilters.maxPrice !== resolvedFilters.maxPrice
       )
 
       return hasChanged ? resolvedFilters : currentFilters
     })
-  }, [isSearchWithinProperties, routeParams.city, routeParams.region, routeParams.searchTerm, routeParams.sortOrder, routeParams.type])
+  }, [isSearchWithinProperties, routeParams.city, routeParams.maxPrice, routeParams.minBedrooms, routeParams.region, routeParams.searchTerm, routeParams.sortOrder, routeParams.type])
 
   useEffect(() => {
     if (!visible) return
@@ -184,7 +209,9 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       || nextFilters.city
       || nextFilters.region
       || nextFilters.type !== 'TODOS'
-      || nextFilters.sortOrder !== 'distance',
+      || nextFilters.sortOrder !== 'distance'
+      || nextFilters.minBedrooms !== null
+      || nextFilters.maxPrice !== null,
     )
 
     const resolvedFilters = hasRouteFilters ? nextFilters : lastAppliedFiltersRef.current
@@ -192,43 +219,15 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     setFilters(resolvedFilters)
     setIsExpanded(false)
     setSpeechError(null)
-  }, [isSearchWithinProperties, routeParams.city, routeParams.region, routeParams.searchTerm, routeParams.sortOrder, routeParams.type, visible])
-
-  useEffect(() => {
-    if (!visible) return
-
-    const module = getSpeechRecognitionModule()
-    if (!module) return
-
-    const startListener = module.addListener('start', () => setIsListening(true))
-    const endListener = module.addListener('end', () => setIsListening(false))
-    const resultListener = module.addListener('result', (event) => {
-      const transcript = event.results[0]?.transcript?.trim()
-      if (!transcript) return
-
-      setFilters((currentFilters) => ({ ...currentFilters, searchTerm: transcript }))
-    })
-    const errorListener = module.addListener('error', (event) => {
-      setSpeechError(event.message ?? 'Não foi possível reconhecer sua fala.')
-      setIsListening(false)
-    })
-
-    return () => {
-      startListener.remove()
-      endListener.remove()
-      resultListener.remove()
-      errorListener.remove()
-      module.stop()
-    }
-  }, [visible])
+  }, [isSearchWithinProperties, routeParams.city, routeParams.maxPrice, routeParams.minBedrooms, routeParams.region, routeParams.searchTerm, routeParams.sortOrder, routeParams.type, visible])
 
   const hasActiveFilterState = hasActiveFilters(filters)
 
-  const handleSubmitSearch = useCallback(() => {
+  const submitSearch = useCallback((searchFilters: PropertiesFilters) => {
     const normalizedFilters = {
       ...defaultFilters,
-      ...filters,
-      searchTerm: filters.searchTerm.trim(),
+      ...searchFilters,
+      searchTerm: searchFilters.searchTerm.trim(),
     }
 
     lastAppliedFiltersRef.current = normalizedFilters
@@ -248,7 +247,80 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     }
 
     onClose()
-  }, [filters, isSearchWithinProperties, onClose, persistSearchHistory, router])
+  }, [isSearchWithinProperties, onClose, persistSearchHistory, router])
+
+  const handleSubmitSearch = useCallback(() => {
+    submitSearch(filters)
+  }, [filters, submitSearch])
+
+  const handleAiSearch = useCallback(async (transcript: string) => {
+    setIsInterpretingSearch(true)
+    setSpeechError(null)
+
+    try {
+      const interpretedFilters = await interpretPropertySearch({
+        transcript,
+        cities: countryOptions.cities,
+        regions: countryOptions.regions,
+      })
+      submitSearch({
+        ...defaultFilters,
+        ...interpretedFilters,
+      })
+    } catch (error) {
+      console.error('Falha ao interpretar a pesquisa por voz', error)
+      setSpeechError(error instanceof Error
+        ? error.message
+        : 'Não foi possível interpretar a pesquisa por voz.')
+    } finally {
+      setIsInterpretingSearch(false)
+    }
+  }, [countryOptions.cities, countryOptions.regions, submitSearch])
+
+  handleAiSearchRef.current = handleAiSearch
+
+  useEffect(() => {
+    if (!visible) return
+
+    const module = getSpeechRecognitionModule()
+    if (!module) return
+
+    const startListener = module.addListener('start', () => setIsListening(true))
+    const endListener = module.addListener('end', () => {
+      setIsListening(false)
+      if (!submitVoiceSearchRef.current) return
+
+      submitVoiceSearchRef.current = false
+      const transcript = latestTranscriptRef.current.trim()
+      if (!transcript) {
+        setSpeechError('Não foi possível reconhecer uma pesquisa. Tente novamente.')
+        return
+      }
+
+      void handleAiSearchRef.current?.(transcript)
+    })
+    const resultListener = module.addListener('result', (event) => {
+      const transcript = event.results[0]?.transcript?.trim()
+      if (!transcript) return
+
+      latestTranscriptRef.current = transcript
+      setFilters((currentFilters) => ({ ...currentFilters, searchTerm: transcript }))
+    })
+    const errorListener = module.addListener('error', (event) => {
+      submitVoiceSearchRef.current = false
+      setSpeechError(event.message ?? 'Não foi possível reconhecer sua fala.')
+      setIsListening(false)
+    })
+
+    return () => {
+      submitVoiceSearchRef.current = false
+      startListener.remove()
+      endListener.remove()
+      resultListener.remove()
+      errorListener.remove()
+      module.stop()
+    }
+  }, [visible])
 
   const handleClose = useCallback(() => {
     inputRef.current?.blur()
@@ -275,14 +347,24 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     const module = getSpeechRecognitionModule()
 
     if (!module) {
-      setSpeechError('Pesquisa por voz indisponível neste ambiente. Use um development build do aplicativo.')
+      setSpeechError('O reconhecimento de fala não está disponível neste navegador ou dispositivo.')
+      return
+    }
+
+    if (!module.isRecognitionAvailable()) {
+      setSpeechError('O reconhecimento de fala não está disponível neste navegador ou dispositivo.')
       return
     }
 
     if (!shouldStart) {
-      setIsListening(false)
-      module.stop()
-      handleSubmitSearch()
+      try {
+        module.stop()
+      } catch (error) {
+        console.error('Erro ao parar o reconhecimento de voz', error)
+        submitVoiceSearchRef.current = false
+        setSpeechError('Não foi possível encerrar a pesquisa por voz.')
+        setIsListening(false)
+      }
       return
     }
 
@@ -294,6 +376,9 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       }
 
       setSpeechError(null)
+      latestTranscriptRef.current = ''
+      submitVoiceSearchRef.current = true
+      setFilters((currentFilters) => ({ ...currentFilters, searchTerm: '' }))
       setIsListening(true)
       module.start({
         lang: 'pt-BR',
@@ -302,10 +387,11 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       })
     } catch (error) {
       console.error('Erro ao iniciar reconhecimento de voz', error)
+      submitVoiceSearchRef.current = false
       setSpeechError('Não foi possível iniciar a pesquisa por voz.')
       setIsListening(false)
     }
-  }, [handleSubmitSearch, isListening])
+  }, [isListening])
 
   const resetFilters = useCallback(() => {
     setFilters((currentFilters) => ({
@@ -319,6 +405,8 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       region: '',
       type: 'TODOS',
       sortOrder: 'distance',
+      minBedrooms: '',
+      maxPrice: '',
     })
   }, [router])
 
@@ -328,6 +416,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     isExpanded,
     setIsExpanded,
     isListening,
+    isInterpretingSearch,
     speechError,
     cityOptions,
     regionOptions,

@@ -14,6 +14,7 @@ export class ApiRequestError extends Error {
 
 type ApiRequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
+  baseUrl?: string;
   token?: string | null;
 };
 
@@ -37,7 +38,7 @@ async function resolveErrorMessage(response: Response) {
 
 export async function apiRequest<T>(
   path: string,
-  { body, token, ...options }: ApiRequestOptions = {},
+  { baseUrl, body, token, ...options }: ApiRequestOptions = {},
 ): Promise<T> {
   const headers = new Headers(options.headers);
   headers.set("Accept", "application/json");
@@ -50,7 +51,8 @@ export async function apiRequest<T>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(`${resolveApiBaseUrl()}${path}`, {
+  const requestBaseUrl = (baseUrl ?? resolveApiBaseUrl()).replace(/\/+$/, "");
+  const response = await fetch(`${requestBaseUrl}${path}`, {
     ...options,
     body: body === undefined ? undefined : JSON.stringify(body),
     headers,
