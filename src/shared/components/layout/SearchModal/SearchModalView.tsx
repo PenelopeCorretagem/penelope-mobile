@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { PROPERTY_TYPES } from '@constant/propertyTypes'
 import { APP_ROUTES } from '@shared/constants/routes'
 import { PropertiesFilters } from '@properties/pages/Properties/PropertiesModel'
@@ -50,6 +50,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
     handleSubmitSearch,
     handleVoiceSearch,
     isExpanded,
+    isInterpretingSearch,
     isListening,
     speechError,
     cityOptions,
@@ -104,6 +105,8 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={isListening ? 'Parar pesquisa por voz' : 'Pesquisa por voz'}
+            accessibilityState={{ disabled: isInterpretingSearch }}
+            disabled={isInterpretingSearch}
             onPress={isListening ? () => handleVoiceSearch(false) : () => handleVoiceSearch(true)}
             style={styles.actionButton}
           >
@@ -122,6 +125,20 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
 
         <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
           {speechError ? <Text style={styles.errorText}>{speechError}</Text> : null}
+          {isListening ? (
+            <Text accessibilityLiveRegion="polite" style={styles.listeningText}>
+              Ouvindo... fale agora
+            </Text>
+          ) : null}
+          {isInterpretingSearch ? (
+            <View accessibilityLiveRegion="polite" style={styles.loading}>
+              <ActivityIndicator color={colors.primary} />
+              <Text style={styles.helperText}>Interpretando sua busca por imóveis...</Text>
+            </View>
+          ) : null}
+          <Text style={styles.helperText}>
+            O texto reconhecido é enviado ao serviço de IA para interpretar os filtros.
+          </Text>
 
           {isExpanded ? (
             <View style={styles.filterPanel}>
@@ -146,6 +163,36 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
                 ]}
                 value={filters.type}
               />
+              <View style={styles.numericFilters}>
+                <View style={styles.numericFilter}>
+                  <Text style={styles.optionLabel}>Dormitórios mínimos</Text>
+                  <TextInput
+                    accessibilityLabel="Quantidade mínima de dormitórios"
+                    keyboardType="number-pad"
+                    onChangeText={(value) => setFilters((currentFilters) => ({
+                      ...currentFilters,
+                      minBedrooms: value.trim() ? Number(value) || null : null,
+                    }))}
+                    placeholder="Ex.: 2"
+                    style={styles.numericInput}
+                    value={filters.minBedrooms === null ? '' : String(filters.minBedrooms)}
+                  />
+                </View>
+                <View style={styles.numericFilter}>
+                  <Text style={styles.optionLabel}>Preço máximo (R$)</Text>
+                  <TextInput
+                    accessibilityLabel="Preço máximo em reais"
+                    keyboardType="number-pad"
+                    onChangeText={(value) => setFilters((currentFilters) => ({
+                      ...currentFilters,
+                      maxPrice: value.trim() ? Number(value) || null : null,
+                    }))}
+                    placeholder="Ex.: 500000"
+                    style={styles.numericInput}
+                    value={filters.maxPrice === null ? '' : String(filters.maxPrice)}
+                  />
+                </View>
+              </View>
               <OptionGroup
                 label="Ordenação"
                 onSelect={(sortOrder) => setFilters((currentFilters) => ({ ...currentFilters, sortOrder: (sortOrder ?? 'distance') as PropertiesFilters['sortOrder'] }))}
@@ -269,6 +316,34 @@ const styles = StyleSheet.create({
   optionGroup: {
     marginBottom: spacing.md,
   },
+  numericFilters: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  numericFilter: {
+    flex: 1,
+  },
+  numericInput: {
+    backgroundColor: colors.white,
+    borderColor: colors.secondaryLight,
+    borderRadius: 6,
+    borderWidth: 1,
+    color: colors.text,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+  },
+  loading: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  helperText: {
+    color: colors.mutedText,
+    fontSize: 12,
+    marginBottom: spacing.sm,
+  },
   optionLabel: {
     color: colors.text,
     fontSize: 14,
@@ -303,6 +378,12 @@ const styles = StyleSheet.create({
   errorText: {
     color: colors.primary,
     fontSize: 13,
+    marginBottom: spacing.sm,
+  },
+  listeningText: {
+    color: colors.primary,
+    fontSize: 13,
+    fontWeight: '700',
     marginBottom: spacing.sm,
   },
 })

@@ -1,6 +1,9 @@
 import { PropertiesFilters, SortOrder } from '@properties/pages/Properties/PropertiesModel'
 
-export type SearchHistoryEntry = Pick<PropertiesFilters, 'searchTerm' | 'city' | 'region' | 'type' | 'sortOrder'>
+export type SearchHistoryEntry = Pick<
+  PropertiesFilters,
+  'searchTerm' | 'city' | 'region' | 'type' | 'sortOrder' | 'minBedrooms' | 'maxPrice'
+>
 
 export const SEARCH_HISTORY_LIMIT = 5
 export const SEARCH_HISTORY_STORAGE_KEY = '@penelope/search-history'
@@ -11,6 +14,8 @@ export const defaultFilters: PropertiesFilters = {
   region: null,
   type: 'TODOS',
   sortOrder: 'distance',
+  minBedrooms: null,
+  maxPrice: null,
 }
 
 export const sortOptions: Array<{ label: string; value: SortOrder }> = [
@@ -31,10 +36,14 @@ export const toQueryParams = (filters: PropertiesFilters) => ({
   region: filters.region ?? '',
   type: filters.type,
   sortOrder: filters.sortOrder,
+  minBedrooms: filters.minBedrooms === null ? '' : String(filters.minBedrooms),
+  maxPrice: filters.maxPrice === null ? '' : String(filters.maxPrice),
 })
 
 export const getFiltersFromRouteParams = (routeParams: {
   city?: string | string[]
+  maxPrice?: string | string[]
+  minBedrooms?: string | string[]
   region?: string | string[]
   searchTerm?: string | string[]
   sortOrder?: string | string[]
@@ -45,6 +54,8 @@ export const getFiltersFromRouteParams = (routeParams: {
   const searchTermValue = normalizeRouteStringValue(routeParams.searchTerm)
   const typeValue = normalizeRouteStringValue(routeParams.type)
   const sortOrderValue = normalizeRouteStringValue(routeParams.sortOrder)
+  const minBedroomsValue = Number(normalizeRouteStringValue(routeParams.minBedrooms))
+  const maxPriceValue = Number(normalizeRouteStringValue(routeParams.maxPrice))
 
   return {
     ...defaultFilters,
@@ -53,6 +64,8 @@ export const getFiltersFromRouteParams = (routeParams: {
     region: regionValue !== '' ? regionValue : null,
     type: typeValue !== '' ? (typeValue as PropertiesFilters['type']) : 'TODOS',
     sortOrder: sortOrderValue !== '' ? (sortOrderValue as PropertiesFilters['sortOrder']) : 'distance',
+    minBedrooms: Number.isInteger(minBedroomsValue) && minBedroomsValue > 0 ? minBedroomsValue : null,
+    maxPrice: Number.isFinite(maxPriceValue) && maxPriceValue > 0 ? maxPriceValue : null,
   }
 }
 
@@ -61,12 +74,18 @@ export const hasActiveFilters = (filters: PropertiesFilters) => Boolean(
     || filters.city
     || filters.region
     || filters.type !== 'TODOS'
-    || filters.sortOrder !== 'distance',
+    || filters.sortOrder !== 'distance'
+    || filters.minBedrooms !== null
+    || filters.maxPrice !== null,
 )
 
 export const getSearchHistoryLabel = (entry: SearchHistoryEntry) => (
   entry.searchTerm.trim()
   || entry.city
   || entry.region
+  || (typeof entry.minBedrooms === 'number' ? `${entry.minBedrooms}+ dormitórios` : '')
+  || (typeof entry.maxPrice === 'number'
+    ? `Até ${entry.maxPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`
+    : '')
   || (entry.type !== 'TODOS' ? entry.type : 'Pesquisa com filtros')
 )

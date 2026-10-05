@@ -30,8 +30,10 @@ const FEED_PAGE_SIZE = 4
 export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnly?: boolean } = {}) {
   const router = useRouter()
   const { favoriteIds } = useFavorites()
-  const { city, region, searchTerm, sortOrder, type } = useLocalSearchParams<{
+  const { city, maxPrice, minBedrooms, region, searchTerm, sortOrder, type } = useLocalSearchParams<{
     city?: string | string[]
+    maxPrice?: string | string[]
+    minBedrooms?: string | string[]
     region?: string | string[]
     searchTerm?: string | string[]
     sortOrder?: string | string[]
@@ -65,6 +67,8 @@ export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnl
       return value ?? ''
     }
 
+    const minBedroomsValue = Number(normalizeRouteValue(minBedrooms))
+    const maxPriceValue = Number(normalizeRouteValue(maxPrice))
     const nextFilters: PropertiesFilters = {
       ...initialPropertiesFilters,
       searchTerm: normalizeRouteValue(searchTerm),
@@ -72,6 +76,8 @@ export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnl
       region: normalizeRouteValue(region) !== '' ? normalizeRouteValue(region) : null,
       type: normalizeRouteValue(type) !== '' ? (normalizeRouteValue(type) as PropertiesFilters['type']) : 'TODOS',
       sortOrder: normalizeRouteValue(sortOrder) !== '' ? (normalizeRouteValue(sortOrder) as PropertiesFilters['sortOrder']) : 'distance',
+      minBedrooms: Number.isInteger(minBedroomsValue) && minBedroomsValue > 0 ? minBedroomsValue : null,
+      maxPrice: Number.isFinite(maxPriceValue) && maxPriceValue > 0 ? maxPriceValue : null,
     }
 
     setFilters((currentFilters) => {
@@ -81,11 +87,13 @@ export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnl
         || currentFilters.region !== nextFilters.region
         || currentFilters.type !== nextFilters.type
         || currentFilters.sortOrder !== nextFilters.sortOrder
+        || currentFilters.minBedrooms !== nextFilters.minBedrooms
+        || currentFilters.maxPrice !== nextFilters.maxPrice
       )
 
       return hasChanged ? nextFilters : currentFilters
     })
-  }, [city, region, searchTerm, sortOrder, type])
+  }, [city, maxPrice, minBedrooms, region, searchTerm, sortOrder, type])
 
   const loadAdvertisements = useCallback(async () => {
     setIsLoading(true)
@@ -160,6 +168,8 @@ export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnl
         searchTerm: '',
         sortOrder: 'distance',
         type: 'TODOS',
+        minBedrooms: '',
+        maxPrice: '',
       },
     })
   }, [favoritesOnly, router])

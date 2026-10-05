@@ -16,6 +16,8 @@ export type PropertiesFilters = {
   region: string | null
   type: PropertyTypeFilter
   sortOrder: SortOrder
+  minBedrooms: number | null
+  maxPrice: number | null
 }
 
 export type PropertyGroups = {
@@ -30,6 +32,8 @@ export const initialPropertiesFilters: PropertiesFilters = {
   region: null,
   type: 'TODOS',
   sortOrder: 'distance',
+  minBedrooms: null,
+  maxPrice: null,
 }
 
 const normalizeText = (value: unknown) => String(value ?? '').trim().toLocaleLowerCase('pt-BR')
@@ -58,6 +62,38 @@ const matchesLocationFilters = (advertisement: Advertisement, filters: Propertie
   (!filters.city || advertisement.property.address?.city === filters.city)
   && (!filters.region || advertisement.property.address?.region === filters.region)
 )
+
+const normalizePrice = (price: Advertisement['price']) => {
+  if (typeof price === 'number') return Number.isFinite(price) ? price : null
+  if (typeof price !== 'string' || !price.trim()) return null
+
+  const normalized = price.trim().replace(/[^\d,.-]/g, '')
+  const normalizedNumber = normalized.includes(',')
+    ? normalized.replace(/\./g, '').replace(',', '.')
+    : /^\d{1,3}(?:\.\d{3})+$/.test(normalized)
+      ? normalized.replace(/\./g, '')
+      : normalized
+  const numericPrice = Number(normalizedNumber)
+
+  return Number.isFinite(numericPrice) ? numericPrice : null
+}
+
+const matchesPropertyDetails = (advertisement: Advertisement, filters: PropertiesFilters) => {
+  if (
+    filters.minBedrooms !== null
+    && (advertisement.property.numberOfRooms === undefined
+      || advertisement.property.numberOfRooms < filters.minBedrooms)
+  ) {
+    return false
+  }
+
+  if (filters.maxPrice !== null) {
+    const price = normalizePrice(advertisement.price)
+    if (price === null || price > filters.maxPrice) return false
+  }
+
+  return true
+}
 
 export const getAdvertisementDistanceInKm = (advertisement: Advertisement, location: DeviceLocation) => {
   const latitude = advertisement.property.address?.latitude
@@ -100,6 +136,7 @@ export const filterAdvertisements = (advertisements: Advertisement[], filters: P
     advertisements.filter((advertisement) => (
       includesSearchTerm(advertisement, filters.searchTerm)
       && matchesLocationFilters(advertisement, filters)
+      && matchesPropertyDetails(advertisement, filters)
     )),
     filters.sortOrder,
     location,
