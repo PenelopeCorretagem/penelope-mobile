@@ -4,6 +4,7 @@ import Section from '@shared/components/layout/Section'
 import Form, { type FormField } from '@shared/components/forms/Form'
 import Logo from '@shared/components/ui/Logo'
 import Text from '@shared/components/ui/Text'
+import type { AlertVariant } from '@shared/components/feedback/Alert'
 import { colors, spacing } from '@shared/styles/style'
 
 export type AuthInputField = FormField
@@ -27,6 +28,8 @@ type AuthScreenProps = {
   secondaryActionLabel?: string
   secondaryActionHref?: string
   statusMessage?: string
+  statusVariant?: AlertVariant
+  statusLoading?: boolean
 }
 
 export default function AuthScreenView({
@@ -48,6 +51,8 @@ export default function AuthScreenView({
   secondaryActionLabel,
   secondaryActionHref,
   statusMessage,
+  statusVariant,
+  statusLoading,
 }: AuthScreenProps) {
   const scrollViewRef = useRef<ScrollView>(null)
   const scrollToFocusedField = () => {
@@ -78,6 +83,8 @@ export default function AuthScreenView({
             secondaryActionLabel={secondaryActionLabel}
             secondaryActionHref={secondaryActionHref}
             statusMessage={statusMessage}
+            statusVariant={statusVariant}
+            statusLoading={statusLoading}
           />
         </Section>
       </ScrollView>
@@ -90,7 +97,7 @@ const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1, justifyContent: 'center', width: '100%' },
   formPanel: { backgroundColor: colors.white, flex: 1, width: '100%' },
   logo: { marginBottom: spacing.xl },
-  title: { color: colors.text, fontSize: 32, fontWeight: '700', marginBottom: spacing.sm },
+  title: { color: colors.text, fontSize: 32, fontWeight: '700', marginBottom: spacing.sm, textTransform: 'uppercase'},
   subtitle: { color: colors.mutedText, fontSize: 16, marginBottom: spacing.xl },
   stepIndicator: { color: colors.primary, fontSize: 13, fontWeight: '700', marginBottom: spacing.md },
 })

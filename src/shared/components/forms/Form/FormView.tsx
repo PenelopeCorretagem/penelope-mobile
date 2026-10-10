@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Animated, Dimensions, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native'
 import Button from '@shared/components/ui/Button'
 import Text from '@shared/components/ui/Text'
+import Alert, { type AlertVariant } from '@shared/components/feedback/Alert'
+import { APP_ROUTES } from '@constant/routes'
 import { colors, spacing } from '@shared/styles/style'
 
 export type FormField = {
@@ -14,7 +16,7 @@ export type FormField = {
   type?: 'text' | 'date'
   secureTextEntry?: boolean
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters'
-  keyboardType?: 'default' | 'email-address'
+  keyboardType?: 'default' | 'email-address' | 'numeric'
   inputBackgroundColor?: string
   error?: string
   onChangeText: (value: string) => void
@@ -36,6 +38,8 @@ type FormProps = {
   secondaryActionLabel?: string
   secondaryActionHref?: string
   statusMessage?: string
+  statusVariant?: AlertVariant
+  statusLoading?: boolean
 }
 
 export default function FormView({
@@ -48,12 +52,14 @@ export default function FormView({
   onBack,
   isLastStep = true,
   helperLabel,
-  helperHref = '/login',
+  helperHref = `/${APP_ROUTES.auth.login}`,
   helperActionLabel,
   secondaryPrompt,
   secondaryActionLabel,
   secondaryActionHref,
   statusMessage,
+  statusVariant,
+  statusLoading = false,
 }: FormProps) {
   const [activeDateField, setActiveDateField] = useState<string | null>(null)
   const slideX = useRef(new Animated.Value(0)).current
@@ -124,12 +130,16 @@ export default function FormView({
         <Button
           onPress={isLastStep ? onSubmit : onNext}
           disabled={isSubmitting}
-          label={isSubmitting ? 'Enviando...' : isLastStep ? submitText : 'Continuar'}
+          label={statusVariant === 'success' ? 'Concluído' : isSubmitting ? 'Cadastrando...' : isLastStep ? submitText : 'Continuar'}
           style={[styles.primaryButton, !isLastStep && styles.primaryButtonWithBack, isSubmitting && styles.primaryButtonDisabled]}
         />
       </View>
 
-      {statusMessage ? <Text style={styles.statusText}>{statusMessage}</Text> : null}
+      {statusMessage ? (
+        <View style={styles.statusContainer}>
+          <Alert message={statusMessage} presentation="modal" variant={statusVariant} loading={statusLoading} />
+        </View>
+      ) : null}
       {helperLabel && helperActionLabel ? <LinkRow label={helperLabel} actionLabel={helperActionLabel} href={helperHref} /> : null}
       {secondaryPrompt && secondaryActionLabel && secondaryActionHref ? <LinkRow label={secondaryPrompt} actionLabel={secondaryActionLabel} href={secondaryActionHref} /> : null}
     </Animated.View>
@@ -159,8 +169,8 @@ const styles = StyleSheet.create({
   primaryButtonWithBack: { flex: 1 },
   primaryButtonDisabled: { opacity: 0.7 },
   backButton: { borderRadius: 12, flex: 1, marginTop: spacing.md, paddingVertical: spacing.md },
-  statusText: { color: colors.primary, fontSize: 14, marginTop: spacing.md, textAlign: 'center' },
+  statusContainer: { marginTop: spacing.md },
   inlineLinkRow: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center', marginTop: spacing.md, width: '100%' },
   inlineText: { color: colors.secondary, fontSize: 14 },
-  linkText: { color: colors.primary, fontSize: 14, fontWeight: '700', width: '100%' },
+  linkText: { color: colors.primary, fontSize: 14, fontWeight: '700' },
 })

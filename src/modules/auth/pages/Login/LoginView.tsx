@@ -5,8 +5,15 @@ import { useLoginViewModel } from "./useLoginViewModel";
 import { APP_ROUTES } from '@shared/constants/routes'
 
 export function LoginView() {
-  const { form, fieldErrors, isSubmitting, updateField, handleSubmit } =
-    useLoginViewModel();
+  const {
+    form,
+    error,
+    successMessage,
+    fieldErrors,
+    isSubmitting,
+    updateField,
+    handleSubmit,
+  } = useLoginViewModel();
 
   return (
     <AuthScreen
@@ -36,6 +43,9 @@ export function LoginView() {
       submitText="Entrar"
       isSubmitting={isSubmitting}
       onSubmit={handleSubmit}
+      statusMessage={successMessage ?? (isSubmitting ? "Entrando na sua conta..." : error ?? undefined)}
+      statusVariant={successMessage ? "success" : error ? "error" : "info"}
+      statusLoading={isSubmitting && !successMessage && !error}
       helperLabel="Esqueceu a senha?"
       helperHref={ APP_ROUTES.auth.recuperar_senha}
       helperActionLabel="Redefinir senha"

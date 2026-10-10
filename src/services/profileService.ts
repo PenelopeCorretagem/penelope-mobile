@@ -1,5 +1,6 @@
 import { authenticatedApiRequest } from '@shared/infrastructure/apiClient'
 import { saveAccessToken } from '@shared/infrastructure/authTokenStorage'
+import { API_ROUTES } from '@constant/apiRoutes'
 import { DEFAULT_USER_PROFILE, type UserProfile } from '@settings/submodules/acount/pages/Account/ProfileModel'
 
 type UserProfileResponse = {
@@ -37,11 +38,11 @@ function toProfile(user: UserProfileResponse): UserProfile {
 }
 
 export async function getUserProfile(): Promise<UserProfile> {
-  return toProfile(await authenticatedApiRequest<UserProfileResponse>('/v1/users/me'))
+  return toProfile(await authenticatedApiRequest<UserProfileResponse>(API_ROUTES.users.me))
 }
 
 export async function updateUserProfile(profile: UserProfile): Promise<UserProfile> {
-  const response = await authenticatedApiRequest<UpdateUserProfileResponse>('/v1/users/me', {
+  const response = await authenticatedApiRequest<UpdateUserProfileResponse>(API_ROUTES.users.me, {
     method: 'PATCH',
     body: {
       name: profile.name,

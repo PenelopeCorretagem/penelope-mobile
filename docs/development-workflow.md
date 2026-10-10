@@ -39,8 +39,9 @@ Direção de dependência: `View -> ViewModel -> Service -> Infrastructure -> si
 - Mantenha componentes e assets específicos próximos ao módulo.
 - Mova algo para `shared` somente quando houver reutilização real entre módulos.
 - Siga a organização atual dos módulos: `auth`, `home`, `properties` e `profile`.
-- Use `src/constants/routes.ts` como fonte única dos destinos. Telas, componentes,
-	ViewModels e services não devem repetir strings de rota; importem `APP_ROUTES`.
+- Use `src/shared/constants/routes.ts` (`APP_ROUTES`) como fonte dos destinos do
+	Expo Router. Use `src/shared/constants/apiRoutes.ts` (`API_ROUTES`) para paths
+	HTTP do backend. Não misture os dois tipos nem repita paths em services.
 - Mantenha os valores de `APP_ROUTES` sincronizados com os caminhos reais em
 	`src/app`. Ao criar ou renomear uma rota, atualize a constante e seus usos.
 - A navegação principal fica no layout de `src/app/app` e usa o `TabNavigator`
@@ -51,6 +52,33 @@ Direção de dependência: `View -> ViewModel -> Service -> Infrastructure -> si
 	uma decisão explícita de produto; imports existentes em telas legadas devem ser
 	tratados em tarefa própria de limpeza.
 - Não crie `navigation/`, navigator paralelo, estado global ou abstrações sem problema concreto.
+
+### Como configurar uma rota
+
+Rotas de tela e rotas HTTP são configurações diferentes:
+
+- **Tela Expo Router:** crie o arquivo em `src/app`, por exemplo
+	`src/app/(private)/(tabs)/imoveis/index.tsx`, que corresponde a `/imoveis`.
+	Segmentos entre parênteses, como `(private)` e `(tabs)`, organizam layouts e
+	não aparecem na URL. Um arquivo `[id].tsx` cria um segmento dinâmico.
+- **Destino de tela:** adicione o path sem barra inicial em `APP_ROUTES`, em
+	`src/shared/constants/routes.ts`; use `APP_ROUTES` em `router.push`, `Redirect`
+	ou `router.replace`. A constante sozinha não cria uma tela: o arquivo precisa
+	existir em `src/app`.
+- **URL-base da API:** configure `EXPO_PUBLIC_API_BASE_URL` em `.env.local` ou no
+	ambiente EAS. Inclua o context path do Spring, por exemplo
+	`http://<host-acessivel>:8080/api`. No dispositivo físico, use um IP acessível
+	pela rede do aparelho.
+- **Endpoint HTTP:** adicione o sufixo sem `/api` em `API_ROUTES` e chame-o no
+	service por `apiRequest` ou `authenticatedApiRequest`. Exemplo:
+	`API_ROUTES.auth.login` vale `/v1/auth/login`; combinada com a URL-base, a
+	requisição final vai para `http://<host>:8080/api/v1/auth/login`.
+- Mantenha métodos e query params no service. Não coloque chaves privadas em
+	`EXPO_PUBLIC_*`: seus valores são embutidos no bundle do aplicativo.
+
+O `TabLayout` atual registra Imóveis, Favoritos e Configurações, enquanto as
+instruções de produto acima descrevem cinco abas. Não altere o shell ao apenas
+centralizar paths; alinhe essa diferença antes de criar ou remover abas.
 
 ## Procedimento
 

@@ -7,6 +7,8 @@ import { APP_ROUTES } from '@shared/constants/routes'
 export function CadastroView() {
   const {
     form,
+    error,
+    successMessage,
     fieldErrors,
     isSubmitting,
     step,
@@ -30,9 +32,10 @@ export function CadastroView() {
         {
           key: "dataNascimento",
           label: "Data de nascimento",
-          placeholder: "Digite sua data de nascimento",
+          placeholder: "DD/MM/AAAA",
           value: form.dataNascimento,
-          type: "date" as const,
+          type: "text" as const,
+          keyboardType: "numeric" as const,
           error: fieldErrors.dataNascimento,
           onChangeText: (value: string) => updateField("dataNascimento", value),
         },
@@ -81,6 +84,9 @@ export function CadastroView() {
       isLastStep={step === 2}
       step={step}
       totalSteps={2}
+      statusMessage={successMessage ?? (isSubmitting ? "Cadastrando sua conta..." : error ?? undefined)}
+      statusVariant={successMessage ? "success" : error ? "error" : "info"}
+      statusLoading={isSubmitting && !successMessage && !error}
       secondaryPrompt="Já tem conta?"
       secondaryActionLabel="Acessar"
       secondaryActionHref={ APP_ROUTES.auth.login }
