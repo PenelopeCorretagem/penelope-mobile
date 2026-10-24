@@ -1,4 +1,7 @@
+import { useRef } from 'react'
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native'
+import { useScrollToTop } from 'expo-router'
+import type { Advertisement } from '@properties/types/advertisement'
 import Alert from '@shared/components/feedback/Alert'
 import Button from '@shared/components/ui/Button'
 import Text from '@shared/components/ui/Text'
@@ -8,6 +11,9 @@ import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import { usePropertiesViewModel } from './usePropertiesViewModel'
 
 export default function PropertiesView({ favoritesOnly = false }: { favoritesOnly?: boolean }) {
+  const listRef = useRef<FlatList<Advertisement>>(null)
+  useScrollToTop(listRef)
+
   const {
     advertisements,
     clearFilters,
@@ -45,6 +51,7 @@ export default function PropertiesView({ favoritesOnly = false }: { favoritesOnl
       </Section>
     ) : (
       <FlatList
+        ref={listRef}
         contentContainerStyle={styles.feedContent}
         data={advertisements}
         keyExtractor={(advertisement) => String(advertisement.id)}

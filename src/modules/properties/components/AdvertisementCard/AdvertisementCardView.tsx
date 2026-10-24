@@ -5,12 +5,11 @@ import { Alert, FlatList, Image, NativeScrollEvent, NativeSyntheticEvent, Pressa
 import { PROPERTY_TYPES } from '@constant/propertyTypes'
 import { APP_ROUTES } from '@shared/constants/routes'
 import type { Advertisement } from '@properties/types/advertisement'
-import Button from '@shared/components/ui/Button'
 import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import { useFavorites } from '@shared/context/FavoritesContext'
 import { colors, spacing } from '@shared/styles/style'
-import { getAdvertisementImageUrls } from '@properties/pages/Properties/PropertiesModel'
+import { getAdvertisementCardImageUrls } from '@properties/pages/Properties/PropertiesModel'
 
 type AdvertisementCardProps = {
   advertisement: Advertisement
@@ -22,7 +21,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
   const { isFavorite, toggleFavorite } = useFavorites()
   const { width: windowWidth } = useWindowDimensions()
   const cardWidth = width ?? windowWidth - spacing.md * 2
-  const imageUrls = getAdvertisementImageUrls(advertisement)
+  const imageUrls = getAdvertisementCardImageUrls(advertisement)
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [isFavoriteUpdating, setIsFavoriteUpdating] = useState(false)
   const amenities = property.amenities?.slice(0, 4) ?? []
@@ -51,10 +50,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
   }
 
   return (
-    <View
-      accessibilityRole="summary"
-      style={[styles.card, { width: cardWidth }]}
-    >
+    <View style={[styles.card, { width: cardWidth }]}>
       <View style={styles.imageContainer}>
         <FlatList
           data={imageUrls}
@@ -82,6 +78,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
           accessibilityRole="button"
           accessibilityLabel={isSaved ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
           disabled={isFavoriteUpdating}
+          onStartShouldSetResponder={() => true}
           onPress={() => void handleToggleFavorite()}
           style={styles.favoriteButton}
         >
@@ -99,7 +96,12 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
         ) : null}
       </View>
 
-      <View style={styles.content}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Abrir detalhes de ${property.title ?? 'imóvel'}`}
+        onPress={() => router.push(`${APP_ROUTES.detalhes}/${advertisement.id}`)}
+        style={styles.content}
+      >
         <Heading level={4} style={styles.title}>{property.title ?? 'Imóvel sem título'}</Heading>
         <Text style={styles.city}>{property.address?.city ?? 'Cidade não informada'}</Text>
         {advertisement.distanceKm !== undefined ? (
@@ -117,8 +119,8 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
           </View>
         ) : null}
 
-        <Button onPress={() => router.push(`${APP_ROUTES.detalhes}/${advertisement.id}`)} style={styles.learnMoreButton}>Saiba Mais</Button>
-      </View>
+        <Text style={styles.learnMoreButton}>Saiba Mais</Text>
+      </Pressable>
     </View>
   )
 }
@@ -223,5 +225,13 @@ const styles = StyleSheet.create({
   },
   learnMoreButton: {
     backgroundColor: colors.primary,
+    borderRadius: 6,
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '700',
+    marginTop: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    textAlign: 'center',
   },
 })

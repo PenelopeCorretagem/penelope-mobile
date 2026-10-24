@@ -16,6 +16,8 @@ export type PropertiesFilters = {
   region: string | null
   type: PropertyTypeFilter
   sortOrder: SortOrder
+  minBedrooms: number | null
+  maxPrice: number | null
 }
 
 export type PropertyGroups = {
@@ -30,6 +32,8 @@ export const initialPropertiesFilters: PropertiesFilters = {
   region: null,
   type: 'TODOS',
   sortOrder: 'distance',
+  minBedrooms: null,
+  maxPrice: null,
 }
 
 const normalizeText = (value: unknown) => String(value ?? '').trim().toLocaleLowerCase('pt-BR')
@@ -58,6 +62,39 @@ const matchesLocationFilters = (advertisement: Advertisement, filters: Propertie
   (!filters.city || advertisement.property.address?.city === filters.city)
   && (!filters.region || advertisement.property.address?.region === filters.region)
 )
+
+const getComparablePrice = (price: Advertisement['price']) => {
+  if (typeof price === 'number') return Number.isFinite(price) ? price : null
+  if (typeof price !== 'string' || !price.trim()) return null
+
+  let normalizedPrice = price.trim().replace(/[^\d,.-]/g, '')
+  if (normalizedPrice.includes(',') && normalizedPrice.includes('.')) {
+    normalizedPrice = normalizedPrice.replace(/\./g, '').replace(',', '.')
+  } else if (normalizedPrice.includes(',')) {
+    normalizedPrice = /,\d{3}$/.test(normalizedPrice)
+      ? normalizedPrice.replace(/,/g, '')
+      : normalizedPrice.replace(',', '.')
+  } else if (/^\d{1,3}(?:\.\d{3})+$/.test(normalizedPrice)) {
+    normalizedPrice = normalizedPrice.replace(/\./g, '')
+  }
+
+  const parsedPrice = Number(normalizedPrice)
+  return Number.isFinite(parsedPrice) ? parsedPrice : null
+}
+
+const matchesRoomAndPriceFilters = (advertisement: Advertisement, filters: PropertiesFilters) => {
+  const roomCount = advertisement.property.numberOfRooms
+  if (filters.minBedrooms !== null && (roomCount === undefined || roomCount < filters.minBedrooms)) {
+    return false
+  }
+
+  if (filters.maxPrice !== null) {
+    const price = getComparablePrice(advertisement.price)
+    if (price === null || price > filters.maxPrice) return false
+  }
+
+  return true
+}
 
 export const getAdvertisementDistanceInKm = (advertisement: Advertisement, location: DeviceLocation) => {
   const latitude = advertisement.property.address?.latitude
@@ -100,6 +137,7 @@ export const filterAdvertisements = (advertisements: Advertisement[], filters: P
     advertisements.filter((advertisement) => (
       includesSearchTerm(advertisement, filters.searchTerm)
       && matchesLocationFilters(advertisement, filters)
+      && matchesRoomAndPriceFilters(advertisement, filters)
     )),
     filters.sortOrder,
     location,
@@ -154,6 +192,15 @@ export const getAdvertisementImageUrls = (advertisement: Advertisement) => {
   const otherImages = images.filter((image) => image.type?.id !== 1)
 
   return [...coverImages, ...otherImages]
+    .map((image) => image.url)
+    .filter((url): url is string => Boolean(url))
+}
+
+export const getAdvertisementCardImageUrls = (advertisement: Advertisement) => {
+  const images = advertisement.property.images ?? []
+  const galleryImages = images.filter((image) => image.type?.id === 1 || image.type?.id === 2)
+
+  return galleryImages
     .map((image) => image.url)
     .filter((url): url is string => Boolean(url))
 }

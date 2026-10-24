@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import Alert from '@shared/components/feedback/Alert'
 import { colors, spacing } from '@shared/styles/style'
 import { getNotificationPreview } from './NotificationsModalModel'
 import { useNotificationsModalViewModel } from './useNotificationsModalViewModel'
@@ -32,20 +33,30 @@ export default function NotificationsModalView(props: NotificationsModalViewProp
 
           <ScrollView contentContainerStyle={styles.list}>
             {viewModel.notifications.map((notification) => (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityState={{ busy: viewModel.isUpdating }}
-                key={notification.userNotificationId}
-                onPress={() => void viewModel.handleSelectNotification(notification)}
-                style={[styles.notificationItem, !notification.readAt && styles.unreadItem]}
-              >
-                <View style={styles.itemHeader}>
-                  <Text style={styles.itemTitle}>{notification.title}</Text>
-                  {!notification.readAt ? <View style={styles.unreadDot} /> : null}
-                </View>
-                <Text numberOfLines={2} style={styles.itemPreview}>{getNotificationPreview(notification)}</Text>
-                <Text style={styles.itemDate}>{new Date(notification.createdAt).toLocaleDateString('pt-BR')}</Text>
-              </Pressable>
+              <View key={notification.userNotificationId} style={[styles.notificationItem, !notification.readAt && styles.unreadItem]}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ busy: viewModel.isUpdating }}
+                  onPress={() => void viewModel.handleSelectNotification(notification)}
+                  style={styles.notificationContent}
+                >
+                  <View style={styles.itemHeader}>
+                    <Text style={styles.itemTitle}>{notification.title}</Text>
+                    {!notification.readAt ? <View style={styles.unreadDot} /> : null}
+                  </View>
+                  <Text numberOfLines={2} style={styles.itemPreview}>{getNotificationPreview(notification)}</Text>
+                  <Text style={styles.itemDate}>{new Date(notification.createdAt).toLocaleDateString('pt-BR')}</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityLabel="Excluir notificação"
+                  accessibilityRole="button"
+                  disabled={viewModel.isUpdating}
+                  onPress={() => void viewModel.handleDeleteNotification(notification)}
+                  style={styles.dismissButton}
+                >
+                  <Ionicons name="close" size={20} color={colors.secondary} />
+                </Pressable>
+              </View>
             ))}
           </ScrollView>
         </View>
@@ -65,6 +76,7 @@ export default function NotificationsModalView(props: NotificationsModalViewProp
 
           {selectedNotification ? (
             <ScrollView contentContainerStyle={styles.detailContent}>
+              {viewModel.error ? <Alert message={viewModel.error} /> : null}
               <Text style={styles.detailTitle}>{selectedNotification.title}</Text>
               <Text style={styles.itemDate}>{new Date(selectedNotification.createdAt).toLocaleDateString('pt-BR')}</Text>
               <Text style={styles.detailMessage}>{selectedNotification.message}</Text>
@@ -87,13 +99,15 @@ const styles = StyleSheet.create({
   iconButton: { alignItems: 'center', justifyContent: 'center', minWidth: 38, minHeight: 38 },
   title: { color: colors.text, fontSize: 18, fontWeight: '700' },
   list: { gap: spacing.sm, padding: spacing.md },
-  notificationItem: { borderColor: colors.surface, borderRadius: 10, borderWidth: 1, padding: spacing.md },
+  notificationItem: { borderColor: colors.surface, borderRadius: 10, borderWidth: 1, flexDirection: 'row', padding: spacing.md },
+  notificationContent: { flex: 1 },
   unreadItem: { borderColor: colors.primaryLight, backgroundColor: '#fff8fc' },
   itemHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   itemTitle: { color: colors.text, flex: 1, fontSize: 16, fontWeight: '700' },
   itemPreview: { color: colors.mutedText, fontSize: 14, lineHeight: 20, marginTop: spacing.sm },
   itemDate: { color: colors.mutedText, fontSize: 12, marginTop: spacing.sm },
   unreadDot: { backgroundColor: colors.primary, borderRadius: 999, height: 8, marginLeft: spacing.sm, width: 8 },
+  dismissButton: { alignItems: 'center', justifyContent: 'flex-start', marginLeft: spacing.sm, minHeight: 28, minWidth: 28 },
   statusText: { color: colors.mutedText, padding: spacing.lg, textAlign: 'center' },
   errorText: { color: colors.error, paddingHorizontal: spacing.md, paddingTop: spacing.md },
   detailContent: { padding: spacing.lg },

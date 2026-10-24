@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Tabs } from 'expo-router'
+import { StackActions } from 'expo-router/react-navigation'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { colors, spacing, styles } from '@shared/styles/style'
 
@@ -22,7 +23,27 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
                 target: route.key,
                 canPreventDefault: true,
               })
-              if (!isActive && !event.defaultPrevented) {
+              if (event.defaultPrevented) return
+
+              if (isActive) {
+                const nestedState = route.state
+                if (nestedState?.type === 'stack' && nestedState.index > 0) {
+                  navigation.dispatch({
+                    ...StackActions.popToTop(),
+                    target: nestedState.key,
+                  })
+                  requestAnimationFrame(() => {
+                    navigation.emit({
+                      type: 'tabPress',
+                      target: route.key,
+                      canPreventDefault: true,
+                    })
+                  })
+                }
+                return
+              }
+
+              if (!isActive) {
                 navigation.navigate(route.name)
               }
             }}

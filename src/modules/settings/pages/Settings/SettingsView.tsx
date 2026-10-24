@@ -1,5 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { useScrollToTop } from 'expo-router'
+import { useRef } from 'react'
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useAuth } from '@shared/context/AuthContext'
 import { APP_ROUTES } from '@shared/constants/routes'
@@ -42,11 +44,13 @@ const options = [
 ]
 
 export default function SettingsView() {
+  const scrollRef = useRef<ScrollView>(null)
+  useScrollToTop(scrollRef)
   const { deleteAccount, logout } = useAuth()
   const { profile, isLoading, error } = useProfileViewModel()
 
   return (
-    <ScrollView style={sharedStyles.screen} contentContainerStyle={styles.content}>
+    <ScrollView ref={scrollRef} style={sharedStyles.screen} contentContainerStyle={styles.content}>
       <Pressable style={styles.userHeader} onPress={() => router.push(APP_ROUTES.conta)} accessibilityRole="button">
         <View style={styles.avatar}>
           {profile.profileImage ? <Image source={{ uri: profile.profileImage }} style={styles.avatarImage} /> : <Text style={styles.avatarText}>{getProfileInitials(profile.name)}</Text>}
@@ -131,6 +135,7 @@ const styles = StyleSheet.create({
     height: 64,
     justifyContent: 'center',
     marginRight: spacing.md,
+    overflow: 'hidden',
     width: 64,
   },
   avatarText: {
