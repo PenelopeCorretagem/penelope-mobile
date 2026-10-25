@@ -9,46 +9,56 @@ import { useDashboardViewModel } from './useDashboardViewModel'
 function FilterControl({
   filter,
   value,
+  expanded,
+  onToggle,
   onSelect,
 }: {
   filter: TrendFilter
   value: string
+  expanded: boolean
+  onToggle: (key: TrendFilterKey) => void
   onSelect: (key: TrendFilterKey, value: string) => void
 }) {
-  const nextOption = filter.options[(filter.options.indexOf(value) + 1) % filter.options.length]
-
   return (
-    <Pressable
-      accessibilityHint="Toque para alternar a opção"
-      accessibilityLabel={`${filter.label}: ${value}`}
-      accessibilityRole="button"
-      onPress={() => onSelect(filter.key, nextOption)}
-      style={styles.filterControl}
-    >
-      <Text style={styles.filterLabel}>{filter.label}</Text>
-      <View style={styles.filterValueRow}>
-        <Text style={styles.filterValue}>{value}</Text>
-        <Ionicons name="chevron-down" size={16} color={colors.secondaryLight} />
-      </View>
-    </Pressable>
-  )
-}
-
-function PeriodControl({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.periodControl}>
-      <Text style={styles.periodLabel}>{label}</Text>
-      <View style={styles.periodValueRow}>
-        <Text style={styles.periodValue}>{value}</Text>
-        <Ionicons name="calendar-outline" size={16} color={colors.primary} />
-      </View>
+    <View style={styles.filterControl}>
+      <Pressable
+        accessibilityHint={expanded ? 'Toque para fechar as opções' : 'Toque para abrir as opções'}
+        accessibilityLabel={`${filter.label}: ${value}`}
+        accessibilityRole="button"
+        accessibilityState={{ expanded }}
+        onPress={() => onToggle(filter.key)}
+        style={styles.filterTrigger}
+      >
+        <Text style={styles.filterLabel}>{filter.label}</Text>
+        <View style={styles.filterValueRow}>
+          <Text style={styles.filterValue}>{value}</Text>
+          <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={16} color={colors.secondaryLight} />
+        </View>
+      </Pressable>
+      {expanded && (
+        <View accessibilityLabel={`Opções de ${filter.label}`} style={styles.optionsList}>
+          {filter.options.map((option) => (
+            <Pressable
+              accessibilityLabel={`${filter.label}: ${option}`}
+              accessibilityRole="button"
+              accessibilityState={{ selected: option === value }}
+              key={option}
+              onPress={() => onSelect(filter.key, option)}
+              style={[styles.option, option === value && styles.selectedOption]}
+            >
+              <Text style={[styles.optionText, option === value && styles.selectedOptionText]}>{option}</Text>
+              {option === value && <Ionicons name="checkmark" size={16} color={colors.primary} />}
+            </Pressable>
+          ))}
+        </View>
+      )}
     </View>
   )
 }
 
 export default function DashboardView() {
   const { width } = useWindowDimensions()
-  const { points, indicators, filters: filterValues, filterDefinitions, clearFilters, selectFilter } = useDashboardViewModel()
+  const { points, indicators, filters: filterValues, filterDefinitions, expandedFilter, clearFilters, toggleFilter, selectFilter } = useDashboardViewModel()
   const chartWidth = Math.max(width - spacing.lg * 2 - spacing.md * 2, 260)
   const plotWidth = chartWidth - 34
   const plotHeight = 112
@@ -83,8 +93,8 @@ export default function DashboardView() {
           </Pressable>
         </View>
         <View style={styles.divider} />
-        <FilterControl filter={filterDefinitions[1]} value={filterValues.neighborhood} onSelect={selectFilter} />
-        <FilterControl filter={filterDefinitions[2]} value={filterValues.area} onSelect={selectFilter} />
+        <FilterControl expanded={expandedFilter === 'neighborhood'} filter={filterDefinitions[1]} value={filterValues.neighborhood} onSelect={selectFilter} onToggle={toggleFilter} />
+        <FilterControl expanded={expandedFilter === 'area'} filter={filterDefinitions[2]} value={filterValues.area} onSelect={selectFilter} onToggle={toggleFilter} />
         <Text style={styles.filterNote}>Os filtros serão aplicados ao gráfico e aos indicadores simultaneamente.</Text>
       </View>
 
@@ -97,7 +107,7 @@ export default function DashboardView() {
           <View key={indicator.title} style={[styles.indicatorCard, indicator.spansTwoColumns && styles.indicatorCardWide]}>
             <View style={styles.indicatorHeader}>
               <Text style={styles.indicatorTitle}>{indicator.title}</Text>
-              <View style={[styles.indicatorIcon, indicator.tone === 'green' && styles.greenIcon, indicator.tone === 'neutral' && styles.neutralIcon]}>
+              <View style={[styles.indicatorIcon, indicator.tone === 'green' && styles.greenIcon]}>
                 <Ionicons name={indicator.icon} size={16} color={indicator.tone === 'green' ? '#009b68' : colors.primary} />
               </View>
             </View>
@@ -156,17 +166,16 @@ const styles = StyleSheet.create({
   sectionTitle: { color: colors.text, fontSize: 15, fontWeight: '700', textAlign: 'left' },
   clearText: { color: colors.primary, fontSize: 12, fontWeight: '700' },
   divider: { backgroundColor: '#edf0f5', height: 1, marginVertical: spacing.sm },
-  filterGroupLabel: { color: colors.secondaryLight, fontSize: 12, fontWeight: '600', marginBottom: spacing.sm, textAlign: 'left' },
-  periodRow: { flexDirection: 'row', gap: spacing.sm },
-  periodControl: { backgroundColor: '#f7f9fc', borderColor: '#dfe5ee', borderRadius: 12, borderWidth: 1, flex: 1, padding: spacing.sm },
-  periodLabel: { color: '#9aa6b8', fontSize: 10, fontWeight: '700', textAlign: 'left' },
-  periodValueRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
-  periodValue: { color: colors.text, fontSize: 13, fontWeight: '700', textAlign: 'left' },
-  helperText: { color: '#8a98ab', fontSize: 10, fontStyle: 'italic', lineHeight: 15, marginBottom: spacing.md, marginTop: spacing.sm, textAlign: 'left' },
-  filterControl: { backgroundColor: '#f7f9fc', borderColor: '#dfe5ee', borderRadius: 12, borderWidth: 1, marginBottom: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: 10 },
+  filterControl: { backgroundColor: '#f7f9fc', borderColor: '#dfe5ee', borderRadius: 12, borderWidth: 1, marginBottom: spacing.sm, overflow: 'hidden' },
+  filterTrigger: { paddingHorizontal: spacing.md, paddingVertical: 10 },
   filterLabel: { color: colors.secondaryLight, fontSize: 11, marginBottom: 4, textAlign: 'left' },
   filterValueRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   filterValue: { color: colors.text, fontSize: 13, textAlign: 'left' },
+  optionsList: { borderColor: '#dfe5ee', borderTopWidth: 1, paddingVertical: 4 },
+  option: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: spacing.md, paddingVertical: 10 },
+  selectedOption: { backgroundColor: '#fff0f8' },
+  optionText: { color: colors.text, fontSize: 13, textAlign: 'left' },
+  selectedOptionText: { color: colors.primary, fontWeight: '700' },
   filterNote: { color: '#8a98ab', fontSize: 11, lineHeight: 16, marginTop: spacing.sm, textAlign: 'center' },
   indicatorsHeading: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing.sm },
   updated: { color: '#8a98ab', fontSize: 11 },
@@ -176,7 +185,6 @@ const styles = StyleSheet.create({
   indicatorHeader: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm },
   indicatorIcon: { alignItems: 'center', backgroundColor: '#fff0f8', borderRadius: 8, flexShrink: 0, height: 28, justifyContent: 'center', width: 28 },
   greenIcon: { backgroundColor: '#e6faf2' },
-  neutralIcon: { backgroundColor: '#eef2f7' },
   indicatorTitle: { color: colors.secondaryLight, flex: 1, flexShrink: 1, fontSize: 11, textAlign: 'left' },
   indicatorValue: { color: colors.primary, fontSize: 18, fontWeight: '700', marginTop: 7, textAlign: 'left' },
   greenValue: { color: '#009b68' },
@@ -194,8 +202,6 @@ const styles = StyleSheet.create({
   areaFill: { backgroundColor: '#f6ddec', bottom: 0, left: 0, opacity: 0.72, position: 'absolute', right: 0, top: 42 },
   lineSegment: { backgroundColor: colors.primary, height: 3, position: 'absolute', transformOrigin: 'left center' },
   point: { backgroundColor: colors.white, borderColor: colors.primary, borderRadius: 6, borderWidth: 3, height: 8, position: 'absolute', width: 8 },
-  tooltip: { backgroundColor: '#25293a', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 5, position: 'absolute' },
-  tooltipText: { color: colors.white, fontSize: 10, fontWeight: '700' },
   xLabels: { bottom: 0, flexDirection: 'row', justifyContent: 'space-between', left: 34, position: 'absolute' },
   legend: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center', marginTop: spacing.sm },
   legendDot: { backgroundColor: colors.primary, borderRadius: 5, height: 10, width: 10 },

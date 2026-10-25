@@ -1,5 +1,3 @@
-export type TrendDirection = 'up' | 'down'
-
 export type TrendFilterKey = 'period' | 'neighborhood' | 'area'
 
 export type TrendFilter = {
@@ -12,21 +10,14 @@ export type TrendMetric = {
   title: string
   value: string
   caption: string
-  icon: 'card' | 'trending-up' | 'business' | 'calendar'
-  tone: 'pink' | 'green' | 'neutral'
+  icon: 'card' | 'trending-up' | 'business'
+  tone: 'pink' | 'green'
   spansTwoColumns?: boolean
 }
 
 export type TrendPoint = {
   label: string
   value: number
-}
-
-export type TrendIndicator = {
-  title: string
-  value: string
-  caption: string
-  direction: TrendDirection
 }
 
 export type DashboardData = {
