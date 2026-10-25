@@ -14,6 +14,7 @@ export type TrendMetric = {
   caption: string
   icon: 'card' | 'trending-up' | 'business' | 'calendar'
   tone: 'pink' | 'green' | 'neutral'
+  spansTwoColumns?: boolean
 }
 
 export type TrendPoint = {
@@ -41,19 +42,17 @@ export const localDashboardData: DashboardData = {
     { key: 'area', label: 'Faixa de área construída', options: ['Todas as áreas', 'Até 100 m²', 'Acima de 100 m²'] },
   ],
   indicators: [
+    { title: 'Analise da IA', value: '', caption: 'Com base na análise dos dados, observa-se uma tendência de valorização dos imóveis, impulsionada pela demanda, localização estratégica e pelo aquecimento gradual do mercado imobiliário.', icon: "business", tone: 'pink', spansTwoColumns: true },
     { title: 'Preço mediano m²', value: 'R$ 11.450', caption: 'Último mês disponível', icon: 'card', tone: 'pink' },
     { title: 'Variação anual', value: '+8,4%', caption: 'Mesmo mês ano anterior', icon: 'trending-up', tone: 'green' },
-    { title: 'Transações', value: '14.820', caption: 'No período selecionado', icon: 'business', tone: 'pink' },
-    { title: 'Atualização', value: '15/Ago/2024', caption: 'Data da base cadastral', icon: 'calendar', tone: 'neutral' },
   ],
   points: [
-    { label: 'Jan', value: 72 },
-    { label: 'Fev', value: 76 },
-    { label: 'Mar', value: 74 },
-    { label: 'Abr', value: 84 },
-    { label: 'Mai', value: 81 },
-    { label: 'Jun', value: 94 },
-    { label: 'Jul', value: 103 },
-    { label: 'Ago', value: 115 },
+  { label: '2020', value: 81 },
+  { label: '2021', value: 84 },
+  { label: '2022', value: 88 },
+  { label: '2023', value: 92 },
+  { label: '2024', value: 95 },
+  { label: '2025', value: 99 },
+  { label: '2026', value: 103 },
   ],
 }

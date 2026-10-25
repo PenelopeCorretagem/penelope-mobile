@@ -83,12 +83,6 @@ export default function DashboardView() {
           </Pressable>
         </View>
         <View style={styles.divider} />
-        <Text style={styles.filterGroupLabel}>Período de análise</Text>
-        <View style={styles.periodRow}>
-          <PeriodControl label="DE" value="Jan/2022" />
-          <PeriodControl label="ATÉ" value="Ago/2026" />
-        </View>
-        <Text style={styles.helperText}>Período ilustrativo; a seleção real dependerá dos arquivos históricos disponíveis.</Text>
         <FilterControl filter={filterDefinitions[1]} value={filterValues.neighborhood} onSelect={selectFilter} />
         <FilterControl filter={filterDefinitions[2]} value={filterValues.area} onSelect={selectFilter} />
         <Text style={styles.filterNote}>Os filtros serão aplicados ao gráfico e aos indicadores simultaneamente.</Text>
@@ -100,11 +94,13 @@ export default function DashboardView() {
       </View>
       <View style={styles.indicators}>
         {indicators.map((indicator) => (
-          <View key={indicator.title} style={styles.indicatorCard}>
-            <View style={[styles.indicatorIcon, indicator.tone === 'green' && styles.greenIcon, indicator.tone === 'neutral' && styles.neutralIcon]}>
-              <Ionicons name={indicator.icon} size={16} color={indicator.tone === 'green' ? '#009b68' : colors.primary} />
+          <View key={indicator.title} style={[styles.indicatorCard, indicator.spansTwoColumns && styles.indicatorCardWide]}>
+            <View style={styles.indicatorHeader}>
+              <Text style={styles.indicatorTitle}>{indicator.title}</Text>
+              <View style={[styles.indicatorIcon, indicator.tone === 'green' && styles.greenIcon, indicator.tone === 'neutral' && styles.neutralIcon]}>
+                <Ionicons name={indicator.icon} size={16} color={indicator.tone === 'green' ? '#009b68' : colors.primary} />
+              </View>
             </View>
-            <Text style={styles.indicatorTitle}>{indicator.title}</Text>
             <Text style={[styles.indicatorValue, indicator.tone === 'green' && styles.greenValue]}>{indicator.value}</Text>
             <Text style={styles.indicatorCaption}>{indicator.caption}</Text>
           </View>
@@ -134,9 +130,6 @@ export default function DashboardView() {
               return <View key={`segment-${points[index].label}`} style={[styles.lineSegment, { left: point.x, top: point.y, width: segmentLength, transform: [{ rotate: `${angle}rad` }] }]} />
             })}
             {pointPositions.map((point, index) => <View key={points[index].label} style={[styles.point, { left: point.x - 4, top: point.y - 4 }]} />)}
-            <View style={[styles.tooltip, { left: Math.max(pointPositions[pointPositions.length - 1].x - 104, 4), top: 2 }]}>
-              <Text style={styles.tooltipText}>Ago: R$ 11.450/m²</Text>
-            </View>
           </View>
           <View style={[styles.xLabels, { width: plotWidth }]}>
             {points.map((point, index) => <Text key={point.label} style={[styles.axisLabel, index === points.length - 1 && styles.lastAxisLabel]}>{point.label}</Text>)}
@@ -177,12 +170,14 @@ const styles = StyleSheet.create({
   filterNote: { color: '#8a98ab', fontSize: 11, lineHeight: 16, marginTop: spacing.sm, textAlign: 'center' },
   indicatorsHeading: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing.sm },
   updated: { color: '#8a98ab', fontSize: 11 },
-  indicators: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  indicatorCard: { backgroundColor: colors.white, borderRadius: 14, minHeight: 108, padding: spacing.sm, width: '48%' },
-  indicatorIcon: { alignItems: 'center', alignSelf: 'flex-end', backgroundColor: '#fff0f8', borderRadius: 8, height: 28, justifyContent: 'center', width: 28 },
+  indicators: { alignItems: 'stretch', flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'space-between' },
+  indicatorCard: { backgroundColor: colors.white, borderRadius: 14, minHeight: 108, padding: spacing.sm, width: '48.5%' },
+  indicatorCardWide: { width: '100%' },
+  indicatorHeader: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm },
+  indicatorIcon: { alignItems: 'center', backgroundColor: '#fff0f8', borderRadius: 8, flexShrink: 0, height: 28, justifyContent: 'center', width: 28 },
   greenIcon: { backgroundColor: '#e6faf2' },
   neutralIcon: { backgroundColor: '#eef2f7' },
-  indicatorTitle: { color: colors.secondaryLight, fontSize: 11, textAlign: 'left' },
+  indicatorTitle: { color: colors.secondaryLight, flex: 1, flexShrink: 1, fontSize: 11, textAlign: 'left' },
   indicatorValue: { color: colors.primary, fontSize: 18, fontWeight: '700', marginTop: 7, textAlign: 'left' },
   greenValue: { color: '#009b68' },
   indicatorCaption: { color: '#8a98ab', fontSize: 10, marginTop: 4, textAlign: 'left' },
