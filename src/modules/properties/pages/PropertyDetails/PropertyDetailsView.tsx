@@ -1,6 +1,7 @@
-import { ActivityIndicator, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, FlatList, Image, Modal, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 import YoutubePlayer from 'react-native-youtube-iframe'
 import { Ionicons } from '@expo/vector-icons'
+import { useEffect, useState } from 'react'
 import Alert from '@shared/components/feedback/Alert'
 import Button from '@shared/components/ui/Button'
 import Heading from '@shared/components/ui/Heading'
@@ -11,6 +12,8 @@ import { getLocationLabel, getYouTubeVideoId } from './PropertyDetailsModel'
 import { usePropertyDetailsViewModel } from './usePropertyDetailsViewModel'
 import { LinearGradient } from 'expo-linear-gradient'
 export default function PropertyDetailsView() {
+  const { width } = useWindowDimensions()
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
   const {
     advertisement,
     error,
@@ -28,6 +31,10 @@ export default function PropertyDetailsView() {
     closeVideo,
     openMap,
   } = usePropertyDetailsViewModel()
+
+  useEffect(() => {
+    setActiveImageIndex(0)
+  }, [advertisement?.id])
 
   if (isLoading) {
     return (
@@ -48,20 +55,43 @@ export default function PropertyDetailsView() {
   }
 
   const { property } = advertisement
-  const { imageUrls, imageUrl, typeLabel, dormitoriesLabel, firstThreeAmenities, hasCoordinates } = presentation!
+  const { imageUrls, typeLabel, dormitoriesLabel, firstThreeAmenities, hasCoordinates } = presentation!
 
   return (
     <>
     <ScrollView style={sharedStyles.screen}>
-      {imageUrl ? (
-        <Pressable accessibilityLabel="Abrir galeria de imagens" accessibilityRole="button" onPress={openGallery} style={styles.imageContainer}>
-          <Image accessibilityLabel={`Imagem do imóvel ${property.title ?? ''}`} source={{ uri: imageUrl }} style={styles.image} />
+      {imageUrls.length > 0 ? (
+        <View style={styles.imageContainer}>
+          <FlatList
+            key={String(advertisement.id)}
+            data={imageUrls}
+            decelerationRate="fast"
+            horizontal
+            keyExtractor={(url, index) => `${url}-${index}`}
+            nestedScrollEnabled
+            onMomentumScrollEnd={(event) => {
+              const pageWidth = event.nativeEvent.layoutMeasurement.width
+              if (pageWidth > 0) {
+                setActiveImageIndex(Math.round(event.nativeEvent.contentOffset.x / pageWidth))
+              }
+            }}
+            pagingEnabled
+            renderItem={({ item: imageUrl }) => (
+              <Image
+                accessibilityLabel={`Imagem do imóvel ${property.title ?? ''}`}
+                source={{ uri: imageUrl }}
+                style={[styles.image, { width }]}
+              />
+            )}
+            scrollEnabled={imageUrls.length > 1}
+            showsHorizontalScrollIndicator={false}
+          />
           {imageUrls.length > 1 ? (
-            <View style={styles.imageCountBadge}>
-              <Text style={styles.imageCountText}>{imageUrls.length}</Text>
+            <View accessibilityLabel={`Imagem ${activeImageIndex + 1} de ${imageUrls.length}`} style={styles.imageCountBadge}>
+              <Text style={styles.imageCountText}>{activeImageIndex + 1} / {imageUrls.length}</Text>
             </View>
           ) : null}
-        </Pressable>
+        </View>
       ) : null}
 
       <LinearGradient

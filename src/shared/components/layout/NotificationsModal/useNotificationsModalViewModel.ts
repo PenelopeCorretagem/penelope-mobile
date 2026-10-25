@@ -50,6 +50,7 @@ export function useNotificationsModalViewModel({ visible, onClose, onUnreadCount
   }, [onClose])
 
   const handleSelectNotification = useCallback(async (notification: UserNotificationItemDto) => {
+    setError(null)
     setSelectedNotification(notification)
 
     if (notification.readAt) return
@@ -75,15 +76,17 @@ export function useNotificationsModalViewModel({ visible, onClose, onUnreadCount
     }
   }, [notifications, publishUnreadCount])
 
-  const handleDeleteNotification = useCallback(async () => {
-    if (!selectedNotification) return
+  const handleDeleteNotification = useCallback(async (notification?: UserNotificationItemDto) => {
+    const notificationToDelete = notification ?? selectedNotification
+    if (!notificationToDelete) return
 
+    setError(null)
     setIsUpdating(true)
     try {
-      await softDeleteNotification(selectedNotification.userNotificationId)
-      const nextNotifications = notifications.filter((notification) => notification.userNotificationId !== selectedNotification.userNotificationId)
+      await softDeleteNotification(notificationToDelete.userNotificationId)
+      const nextNotifications = notifications.filter((currentNotification) => currentNotification.userNotificationId !== notificationToDelete.userNotificationId)
       setNotifications(nextNotifications)
-      setSelectedNotification(null)
+      setSelectedNotification((currentNotification) => currentNotification?.userNotificationId === notificationToDelete.userNotificationId ? null : currentNotification)
       publishUnreadCount(nextNotifications)
     } catch (updateError) {
       console.error('Falha ao excluir notificação', updateError)

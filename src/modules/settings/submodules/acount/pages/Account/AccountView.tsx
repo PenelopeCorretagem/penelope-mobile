@@ -1,19 +1,30 @@
 import { Ionicons } from '@expo/vector-icons'
+import { router } from 'expo-router'
 import { useRef, useState } from 'react'
 import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import Form, { type FormField } from '@shared/components/forms/Form'
 import Section from '@shared/components/layout/Section'
 import Text from '@shared/components/ui/Text'
 import { colors, spacing } from '@shared/styles/style'
+import { APP_ROUTES } from '@shared/constants/routes'
 import { getProfileInitials } from './ProfileModel'
 import { useProfileViewModel } from './useProfileViewModel'
 
 export default function AccountView() {
   const { profile, isLoading, isSaving, error, successMessage, updateField, pickProfileImage, takeProfileImage, removeProfileImage, saveProfile } = useProfileViewModel()
   const [isImageModalVisible, setIsImageModalVisible] = useState(false)
+  const [isRedirecting, setIsRedirecting] = useState(false)
   const scrollViewRef = useRef<ScrollView>(null)
 
   const closeImageModal = () => setIsImageModalVisible(false)
+
+  const handleSaveProfile = async () => {
+    if (!await saveProfile()) return
+
+    setIsRedirecting(true)
+    await new Promise<void>((resolve) => setTimeout(resolve, 1500))
+    router.replace(APP_ROUTES.configuracoes)
+  }
 
   const handleImageAction = (action: () => void) => {
     closeImageModal()
@@ -59,24 +70,19 @@ export default function AccountView() {
       <ScrollView ref={scrollViewRef} automaticallyAdjustKeyboardInsets contentContainerStyle={[styles.content,]} keyboardShouldPersistTaps="handled">
         <Section>
           <View style={styles.profileImageSection}>
-            <View style={styles.avatarWrapper}>
+            <Pressable accessibilityLabel="Editar imagem de perfil" accessibilityRole="button" onPress={() => setIsImageModalVisible(true)} style={styles.avatarWrapper}>
               <View style={styles.avatar}>
               {profile.profileImage ? <Image source={{ uri: profile.profileImage }} style={styles.avatarImage} /> : <Text style={styles.avatarText}>{getProfileInitials(profile.name)}</Text>}
               </View>
-              <Pressable
-                accessibilityLabel="Alterar imagem de perfil"
-                accessibilityRole="button"
-                onPress={() => setIsImageModalVisible(true)}
-                style={styles.cameraButton}
-              >
+              <View style={styles.cameraButton}>
                 <Ionicons name="camera-outline" size={18} color={colors.white} />
-              </Pressable>
-            </View>
+              </View>
+            </Pressable>
           </View>
           <Text style={styles.title}>Meu perfil</Text>
           <Text style={styles.subtitle}>Atualize seus dados pessoais.</Text>
           {isLoading ? <Text style={styles.statusText}>Carregando perfil...</Text> : null}
-          <Form fields={fields} submitText="Salvar alterações" isSubmitting={isSaving || isLoading} onSubmit={() => void saveProfile()} onFieldFocus={scrollToFocusedField} statusMessage={error ?? successMessage} />
+          <Form fields={fields} submitText="Salvar alterações" isSubmitting={isSaving || isLoading || isRedirecting} onSubmit={() => void handleSaveProfile()} onFieldFocus={scrollToFocusedField} statusMessage={error ?? successMessage} statusVariant={successMessage ? 'success' : 'error'} />
         </Section>
       </ScrollView>
       <Modal animationType="fade" transparent visible={isImageModalVisible} onRequestClose={closeImageModal}>

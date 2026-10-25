@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Alert } from "react-native";
 import { router } from "expo-router";
+import { APP_ROUTES } from "@shared/constants/routes";
+import { registerAccount } from "@auth/services/authService";
 import {
   createEmptyCadastroForm,
   CadastroFormState,
@@ -8,7 +9,12 @@ import {
   getCadastroFieldErrors,
   validateCadastroStep,
   validateCadastroForm,
+  maskCadastroDateInput,
+  toCadastroApiBirthDate,
 } from "./CadastroModel";
+
+const MINIMUM_LOADING_VISIBLE_MS = 1000;
+const SUCCESS_MESSAGE_VISIBLE_MS = 1000;
 
 export function useCadastroViewModel() {
   const [form, setForm] = useState<CadastroFormState>(createEmptyCadastroForm);
@@ -22,9 +28,11 @@ export function useCadastroViewModel() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const updateField = (field: keyof CadastroFormState, value: string) => {
-    const nextForm = { ...form, [field]: value };
+    const fieldValue = field === "dataNascimento" ? maskCadastroDateInput(value) : value;
+    const nextForm = { ...form, [field]: fieldValue };
     setForm(nextForm);
 
     const shouldValidateField = step === 1 || Boolean(fieldErrors[field]);
@@ -35,9 +43,10 @@ export function useCadastroViewModel() {
     }));
 
     setError(null);
+    setSuccessMessage(null);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const nextErrors = getCadastroFieldErrors(form);
     setFieldErrors(nextErrors);
 
@@ -50,12 +59,42 @@ export function useCadastroViewModel() {
 
     setIsSubmitting(true);
     setError(null);
+    setSuccessMessage(null);
+    const loadingStartedAt = Date.now();
 
-    setTimeout(() => {
-      Alert.alert("Cadastro", "Cadastro realizado com sucesso!");
+    try {
+      let registrationFailed = false;
+      let registrationError: unknown;
+      try {
+        await registerAccount({
+          name: form.nomeCompleto.trim(),
+          birthDate: toCadastroApiBirthDate(form.dataNascimento),
+          email: form.email.trim(),
+          password: form.senha,
+        });
+      } catch (requestError) {
+        registrationFailed = true;
+        registrationError = requestError;
+      }
+
+      const remainingLoadingTime = MINIMUM_LOADING_VISIBLE_MS - (Date.now() - loadingStartedAt);
+      if (remainingLoadingTime > 0) {
+        await new Promise<void>((resolve) => setTimeout(resolve, remainingLoadingTime));
+      }
+
+      if (registrationFailed) {
+        setError(registrationError instanceof Error
+          ? registrationError.message
+          : "Não foi possível concluir o cadastro.");
+        return;
+      }
+
+      setSuccessMessage("Cadastro realizado com sucesso! Você será redirecionado para o login.");
+      await new Promise<void>((resolve) => setTimeout(resolve, SUCCESS_MESSAGE_VISIBLE_MS));
+      router.replace(APP_ROUTES.auth.login);
+    } finally {
       setIsSubmitting(false);
-      router.replace("/login");
-    }, 500);
+    }
   };
 
   const handleNext = () => {
@@ -79,6 +118,7 @@ export function useCadastroViewModel() {
   return {
     form,
     error,
+    successMessage,
     fieldErrors,
     isSubmitting,
     step,

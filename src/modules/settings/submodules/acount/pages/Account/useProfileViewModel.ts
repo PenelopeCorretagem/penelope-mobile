@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker'
 import { useCallback, useEffect, useState } from 'react'
 import { getUserProfile, updateUserProfile } from '@service-penelopec/profileService'
-import { DEFAULT_USER_PROFILE, type UserProfile } from './ProfileModel'
+import { DEFAULT_USER_PROFILE, type UserProfile, validateUserProfile } from './ProfileModel'
 
 export function useProfileViewModel() {
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_USER_PROFILE)
@@ -77,6 +77,13 @@ export function useProfileViewModel() {
   }, [])
 
   const saveProfile = useCallback(async () => {
+    const validationError = validateUserProfile(profile)
+    if (validationError) {
+      setError(validationError)
+      setSuccessMessage(undefined)
+      return false
+    }
+
     setIsSaving(true)
     setError(undefined)
     setSuccessMessage(undefined)

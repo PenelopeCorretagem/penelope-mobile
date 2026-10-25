@@ -1,10 +1,8 @@
-import { Platform } from 'react-native'
 import { MEDIA_TYPES, type MediaTypeId } from '@shared/constants/mediaTypes'
 import type { MediaTypeDto } from '@properties/dtos/media-type'
 import type { PropertyMediaDto } from '@properties/dtos/media'
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL
-  ?? (Platform.OS === 'web' ? 'http://localhost:3001' : 'http://192.168.0.104:3001')
+import { apiRequest } from '@shared/infrastructure/apiClient'
+import { API_ROUTES } from '@constant/apiRoutes'
 
 type RawPropertyMedia = {
   id: number
@@ -70,18 +68,12 @@ export async function getPropertyMediaByAdvertisementId(
   advertisementId: number
 ): Promise<MediaCollections> {
   try {
-    const mediaResponse = await fetch(`${API_BASE_URL}/imagem_empreendimento?fk_empreendimento=${advertisementId}`)
-    const mediaTypesResponse = await fetch(`${API_BASE_URL}/tipo_imagem`)
-
-    if (!mediaResponse.ok || !mediaTypesResponse.ok) {
-      throw new Error('Failed to fetch images or types')
-    }
-
-    const rawMediaItemsResponse = await mediaResponse.json() as unknown
+    const query = new URLSearchParams({ fk_empreendimento: String(advertisementId) })
+    const rawMediaItemsResponse = await apiRequest<unknown>(`${API_ROUTES.propertyMedia.collection}?${query.toString()}`)
     const rawMediaItems = Array.isArray(rawMediaItemsResponse)
       ? rawMediaItemsResponse as RawPropertyMedia[]
       : []
-    const rawMediaTypes = await mediaTypesResponse.json() as unknown
+    const rawMediaTypes = await apiRequest<unknown>(API_ROUTES.propertyMedia.types)
     const mediaTypes = Array.isArray(rawMediaTypes) ? rawMediaTypes as RawMediaType[] : []
 
     const mediaByLegacyTypeId = new Map(
@@ -109,13 +101,7 @@ export async function getPropertyMediaByAdvertisementId(
 
 export async function getAllPropertyMedia(): Promise<PropertyMediaDto[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/imagem_empreendimento`)
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch images')
-    }
-
-    const data = await response.json() as RawPropertyMedia[]
+    const data = await apiRequest<RawPropertyMedia[]>(API_ROUTES.propertyMedia.collection)
     return data.map((media) => ({
       id: media.id,
       advertisementId: media.fk_empreendimento,

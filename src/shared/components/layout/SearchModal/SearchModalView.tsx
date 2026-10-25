@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { PROPERTY_TYPES } from '@constant/propertyTypes'
 import { APP_ROUTES } from '@shared/constants/routes'
 import { PropertiesFilters } from '@properties/pages/Properties/PropertiesModel'
@@ -52,10 +52,12 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
     isExpanded,
     isListening,
     speechError,
+    aiSearchError,
+    isInterpretingSearch,
     cityOptions,
     regionOptions,
     sortOptions,
-    setFilters,
+    updateFilters,
     setIsExpanded,
     inputRef,
     hasActiveFilters,
@@ -91,7 +93,9 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
               autoCapitalize="none"
               autoCorrect={false}
               clearButtonMode="while-editing"
-              onChangeText={(searchTerm) => setFilters((currentFilters) => ({ ...currentFilters, searchTerm }))}
+              editable={!isInterpretingSearch}
+              maxLength={500}
+              onChangeText={(searchTerm) => updateFilters((currentFilters) => ({ ...currentFilters, searchTerm }))}
               onSubmitEditing={handleSubmitSearch}
               placeholder="Pesquisar imóveis"
               placeholderTextColor={colors.mutedText}
@@ -104,6 +108,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={isListening ? 'Parar pesquisa por voz' : 'Pesquisa por voz'}
+            disabled={isInterpretingSearch}
             onPress={isListening ? () => handleVoiceSearch(false) : () => handleVoiceSearch(true)}
             style={styles.actionButton}
           >
@@ -122,24 +127,30 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
 
         <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
           {speechError ? <Text style={styles.errorText}>{speechError}</Text> : null}
-
+          {aiSearchError ? <Text style={styles.errorText}>{aiSearchError}</Text> : null}
+          {isInterpretingSearch ? (
+            <View style={styles.aiLoading}>
+              <ActivityIndicator color={colors.primary} size="small" />
+              <Text style={styles.aiLoadingText}>Interpretando sua busca...</Text>
+            </View>
+          ) : null}
           {isExpanded ? (
             <View style={styles.filterPanel}>
               <OptionGroup
                 label="Cidade"
-                onSelect={(city) => setFilters((currentFilters) => ({ ...currentFilters, city }))}
+                onSelect={(city) => updateFilters((currentFilters) => ({ ...currentFilters, city }))}
                 options={cityOptions}
                 value={filters.city}
               />
               <OptionGroup
                 label="Região"
-                onSelect={(region) => setFilters((currentFilters) => ({ ...currentFilters, region }))}
+                onSelect={(region) => updateFilters((currentFilters) => ({ ...currentFilters, region }))}
                 options={regionOptions}
                 value={filters.region}
               />
               <OptionGroup
                 label="Tipo"
-                onSelect={(type) => setFilters((currentFilters) => ({ ...currentFilters, type: (type ?? 'TODOS') as PropertiesFilters['type'] }))}
+                onSelect={(type) => updateFilters((currentFilters) => ({ ...currentFilters, type: (type ?? 'TODOS') as PropertiesFilters['type'] }))}
                 options={[
                   { label: 'Todos', value: 'TODOS' },
                   ...Object.values(PROPERTY_TYPES).map(({ domainKey, filterLabel }) => ({ label: filterLabel, value: domainKey })),
@@ -148,7 +159,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
               />
               <OptionGroup
                 label="Ordenação"
-                onSelect={(sortOrder) => setFilters((currentFilters) => ({ ...currentFilters, sortOrder: (sortOrder ?? 'distance') as PropertiesFilters['sortOrder'] }))}
+                onSelect={(sortOrder) => updateFilters((currentFilters) => ({ ...currentFilters, sortOrder: (sortOrder ?? 'distance') as PropertiesFilters['sortOrder'] }))}
                 options={sortOptions}
                 value={filters.sortOrder}
               />
@@ -166,7 +177,8 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
               />
               <ButtonView
                 accessibilityLabel="Aplicar filtros"
-                label="Aplicar filtros"
+                disabled={isInterpretingSearch}
+                label={isInterpretingSearch ? 'Interpretando...' : filters.searchTerm.trim() ? 'Pesquisar com IA' : 'Aplicar filtros'}
                 onPress={handleSubmitSearch}
                 style={({ pressed }) => ({
                   backgroundColor: colors.primary,
@@ -305,4 +317,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginBottom: spacing.sm,
   },
+  aiLoading: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm },
+  aiLoadingText: { color: colors.mutedText, fontSize: 13 },
 })

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type SetStateAction } from 'react'
 import { Platform, TextInput } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useLocalSearchParams, usePathname, useRouter } from 'expo-router'
@@ -8,11 +8,13 @@ import { APP_ROUTES, isAppRouteActive } from '@shared/constants/routes'
 import {
   getAvailableCities,
   getAvailableRegions,
+  PropertyTypeFilter,
   PropertiesFilters,
   SortOrder,
   toAdvertisementList,
 } from '@properties/pages/Properties/PropertiesModel'
 import { getAllAdvertisements } from '@properties/services/advertisementService'
+import { interpretPropertySearch } from '@properties/services/propertySearchService'
 import {
   defaultFilters,
   getFiltersFromRouteParams,
@@ -48,7 +50,7 @@ const getSpeechRecognitionModule = () => {
 export function useSearchModalViewModel({ visible, onClose }: SearchModalViewModelProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const routeParams = useLocalSearchParams<{ city?: string | string[]; region?: string | string[]; searchTerm?: string | string[]; sortOrder?: string | string[]; type?: string | string[] }>()
+  const routeParams = useLocalSearchParams<{ city?: string | string[]; maxPrice?: string | string[]; minBedrooms?: string | string[]; region?: string | string[]; searchTerm?: string | string[]; sortOrder?: string | string[]; type?: string | string[] }>()
   const isFavoritesRoute = isAppRouteActive(pathname, APP_ROUTES.favoritos)
   const isPropertiesListRoute = isAppRouteActive(pathname, APP_ROUTES.imoveis)
   const isSearchWithinProperties = isFavoritesRoute || isPropertiesListRoute
@@ -58,17 +60,21 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
   const [isExpanded, setIsExpanded] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const [speechError, setSpeechError] = useState<string | null>(null)
+  const [aiSearchError, setAiSearchError] = useState<string | null>(null)
+  const [isInterpretingSearch, setIsInterpretingSearch] = useState(false)
   const [countryOptions, setCountryOptions] = useState<{ cities: string[]; regions: string[] }>({
     cities: [],
     regions: [],
   })
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([])
 
+  const updateFilters = useCallback((update: SetStateAction<PropertiesFilters>) => {
+    setAiSearchError(null)
+    setFilters(update)
+  }, [])
+
   const persistSearchHistory = useCallback(async (entry: SearchHistoryEntry) => {
-    const normalizedEntry = {
-      ...entry,
-      searchTerm: entry.searchTerm.trim(),
-    }
+    const normalizedEntry = { ...entry }
     const currentHistory = searchHistory.filter((item) => JSON.stringify(item) !== JSON.stringify(normalizedEntry))
     const nextHistory = [normalizedEntry, ...currentHistory].slice(0, SEARCH_HISTORY_LIMIT)
 
@@ -87,7 +93,21 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
         if (!storedHistory) return
 
         const parsedHistory = JSON.parse(storedHistory) as unknown
-        if (Array.isArray(parsedHistory)) setSearchHistory(parsedHistory.slice(0, SEARCH_HISTORY_LIMIT))
+        if (Array.isArray(parsedHistory)) {
+          const compatibleHistory = parsedHistory
+            .filter((entry): entry is Partial<SearchHistoryEntry> => typeof entry === 'object' && entry !== null)
+            .map((entry): SearchHistoryEntry => ({
+              ...defaultFilters,
+              searchTerm: typeof entry.searchTerm === 'string' ? entry.searchTerm : '',
+              city: typeof entry.city === 'string' ? entry.city : null,
+              region: typeof entry.region === 'string' ? entry.region : null,
+              type: typeof entry.type === 'string' ? entry.type as PropertiesFilters['type'] : 'TODOS',
+              sortOrder: entry.sortOrder === 'asc' || entry.sortOrder === 'desc' ? entry.sortOrder : 'distance',
+              minBedrooms: typeof entry.minBedrooms === 'number' && entry.minBedrooms > 0 ? entry.minBedrooms : null,
+              maxPrice: typeof entry.maxPrice === 'number' && entry.maxPrice > 0 ? entry.maxPrice : null,
+            }))
+          setSearchHistory(compatibleHistory.slice(0, SEARCH_HISTORY_LIMIT))
+        }
       } catch (error) {
         console.error('Falha ao carregar histórico de pesquisa', error)
       }
@@ -147,7 +167,9 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       || nextFilters.city
       || nextFilters.region
       || nextFilters.type !== 'TODOS'
-      || nextFilters.sortOrder !== 'distance',
+      || nextFilters.sortOrder !== 'distance'
+      || nextFilters.minBedrooms !== null
+      || nextFilters.maxPrice !== null,
     )
 
     const resolvedFilters = hasRouteFilters ? nextFilters : lastAppliedFiltersRef.current
@@ -160,11 +182,13 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
         || currentFilters.region !== resolvedFilters.region
         || currentFilters.type !== resolvedFilters.type
         || currentFilters.sortOrder !== resolvedFilters.sortOrder
+        || currentFilters.minBedrooms !== resolvedFilters.minBedrooms
+        || currentFilters.maxPrice !== resolvedFilters.maxPrice
       )
 
       return hasChanged ? resolvedFilters : currentFilters
     })
-  }, [isSearchWithinProperties, routeParams.city, routeParams.region, routeParams.searchTerm, routeParams.sortOrder, routeParams.type])
+  }, [isSearchWithinProperties, routeParams.city, routeParams.maxPrice, routeParams.minBedrooms, routeParams.region, routeParams.searchTerm, routeParams.sortOrder, routeParams.type])
 
   useEffect(() => {
     if (!visible) return
@@ -175,6 +199,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       setFilters(clearedFilters)
       setIsExpanded(false)
       setSpeechError(null)
+      setAiSearchError(null)
       return
     }
 
@@ -184,7 +209,9 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       || nextFilters.city
       || nextFilters.region
       || nextFilters.type !== 'TODOS'
-      || nextFilters.sortOrder !== 'distance',
+      || nextFilters.sortOrder !== 'distance'
+      || nextFilters.minBedrooms !== null
+      || nextFilters.maxPrice !== null,
     )
 
     const resolvedFilters = hasRouteFilters ? nextFilters : lastAppliedFiltersRef.current
@@ -192,7 +219,8 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     setFilters(resolvedFilters)
     setIsExpanded(false)
     setSpeechError(null)
-  }, [isSearchWithinProperties, routeParams.city, routeParams.region, routeParams.searchTerm, routeParams.sortOrder, routeParams.type, visible])
+    setAiSearchError(null)
+  }, [isSearchWithinProperties, routeParams.city, routeParams.maxPrice, routeParams.minBedrooms, routeParams.region, routeParams.searchTerm, routeParams.sortOrder, routeParams.type, visible])
 
   useEffect(() => {
     if (!visible) return
@@ -206,7 +234,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       const transcript = event.results[0]?.transcript?.trim()
       if (!transcript) return
 
-      setFilters((currentFilters) => ({ ...currentFilters, searchTerm: transcript }))
+      updateFilters((currentFilters) => ({ ...currentFilters, searchTerm: transcript }))
     })
     const errorListener = module.addListener('error', (event) => {
       setSpeechError(event.message ?? 'Não foi possível reconhecer sua fala.')
@@ -220,43 +248,102 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       errorListener.remove()
       module.stop()
     }
-  }, [visible])
+  }, [updateFilters, visible])
 
   const hasActiveFilterState = hasActiveFilters(filters)
 
-  const handleSubmitSearch = useCallback(() => {
+  const applySearch = useCallback((nextFilters: PropertiesFilters, historySearchTerm = nextFilters.searchTerm) => {
+    const normalizedFilters = {
+      ...defaultFilters,
+      ...nextFilters,
+      searchTerm: nextFilters.searchTerm.trim(),
+    }
+
+    lastAppliedFiltersRef.current = normalizedFilters
+    setFilters(normalizedFilters)
+    const params = toQueryParams(normalizedFilters)
+
+    if (hasActiveFilters(normalizedFilters)) {
+      void persistSearchHistory({ ...normalizedFilters, searchTerm: historySearchTerm })
+    }
+
+    if (isSearchWithinProperties) {
+      router.setParams(params)
+    } else {
+      router.push({ pathname: APP_ROUTES.imoveis, params })
+    }
+
+    inputRef.current?.blur()
+    onClose()
+  }, [isSearchWithinProperties, onClose, persistSearchHistory, router])
+
+  const handleSubmitSearch = useCallback(async () => {
+    if (isInterpretingSearch) return
+
     const normalizedFilters = {
       ...defaultFilters,
       ...filters,
       searchTerm: filters.searchTerm.trim(),
     }
+    const historySearchTerm = filters.searchTerm
+    const transcript = historySearchTerm.trim()
+    setAiSearchError(null)
 
-    lastAppliedFiltersRef.current = normalizedFilters
-    setFilters(normalizedFilters)
-
-    const params = toQueryParams(normalizedFilters)
-
-    if (hasActiveFilters(normalizedFilters)) void persistSearchHistory(normalizedFilters)
-
-    if (isSearchWithinProperties) {
-      router.setParams(params)
-    } else {
-      router.push({
-        pathname: APP_ROUTES.imoveis,
-        params,
-      })
+    if (!transcript) {
+      applySearch(normalizedFilters)
+      return
     }
 
-    onClose()
-  }, [filters, isSearchWithinProperties, onClose, persistSearchHistory, router])
+    if (transcript.length > 500) {
+      setAiSearchError('A busca pode ter no máximo 500 caracteres.')
+      return
+    }
+
+    inputRef.current?.blur()
+    setIsInterpretingSearch(true)
+    try {
+      const interpretation = await interpretPropertySearch({
+        transcript,
+        cities: countryOptions.cities.slice(0, 100),
+        regions: countryOptions.regions.slice(0, 100),
+        propertyTypes: ['TODOS', ...Object.values(PROPERTY_TYPES).map(({ domainKey }) => domainKey)] as PropertyTypeFilter[],
+      })
+
+      const hasStructuredFilter = Boolean(
+        interpretation.city
+        || interpretation.region
+        || interpretation.type !== 'TODOS'
+        || interpretation.minBedrooms
+        || interpretation.maxPrice
+        || interpretation.sortOrder !== 'distance',
+      )
+
+      applySearch({
+        ...normalizedFilters,
+        searchTerm: interpretation.searchTerm.trim() || (hasStructuredFilter ? '' : transcript),
+        city: normalizedFilters.city ?? interpretation.city,
+        region: normalizedFilters.region ?? interpretation.region,
+        type: normalizedFilters.type !== 'TODOS' ? normalizedFilters.type : interpretation.type,
+        sortOrder: normalizedFilters.sortOrder !== 'distance' ? normalizedFilters.sortOrder : interpretation.sortOrder,
+        minBedrooms: normalizedFilters.minBedrooms ?? interpretation.minBedrooms,
+        maxPrice: normalizedFilters.maxPrice ?? interpretation.maxPrice,
+      }, historySearchTerm)
+    } catch (error) {
+      console.error('Falha ao interpretar pesquisa com IA', error)
+      setAiSearchError(error instanceof Error ? error.message : 'Não foi possível interpretar sua busca com IA.')
+    } finally {
+      setIsInterpretingSearch(false)
+    }
+  }, [applySearch, countryOptions.cities, countryOptions.regions, filters, isInterpretingSearch])
 
   const handleClose = useCallback(() => {
+    if (isInterpretingSearch) return
     inputRef.current?.blur()
     onClose()
-  }, [onClose])
+  }, [isInterpretingSearch, onClose])
 
   const handleSelectSearchHistory = useCallback((entry: SearchHistoryEntry) => {
-    setFilters(entry)
+    updateFilters(entry)
     lastAppliedFiltersRef.current = entry
     setIsExpanded(false)
     inputRef.current?.blur()
@@ -269,7 +356,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     }
 
     onClose()
-  }, [isSearchWithinProperties, onClose, router])
+  }, [isSearchWithinProperties, onClose, router, updateFilters])
 
   const handleVoiceSearch = useCallback(async (shouldStart = !isListening) => {
     const module = getSpeechRecognitionModule()
@@ -308,7 +395,8 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
   }, [handleSubmitSearch, isListening])
 
   const resetFilters = useCallback(() => {
-    setFilters((currentFilters) => ({
+    setAiSearchError(null)
+    updateFilters((currentFilters) => ({
       ...defaultFilters,
       searchTerm: currentFilters.searchTerm,
     }))
@@ -319,16 +407,21 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       region: '',
       type: 'TODOS',
       sortOrder: 'distance',
+      minBedrooms: '',
+      maxPrice: '',
     })
-  }, [router])
+  }, [router, updateFilters])
 
   return {
     filters,
     setFilters,
+    updateFilters,
     isExpanded,
     setIsExpanded,
     isListening,
     speechError,
+    aiSearchError,
+    isInterpretingSearch,
     cityOptions,
     regionOptions,
     sortOptions,

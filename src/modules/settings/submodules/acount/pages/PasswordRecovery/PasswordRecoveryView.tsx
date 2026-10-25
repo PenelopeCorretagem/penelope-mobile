@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react'
+import { router } from 'expo-router'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native'
 import Form, { type FormField } from '@shared/components/forms/Form'
 import Section from '@shared/components/layout/Section'
 import Text from '@shared/components/ui/Text'
 import { colors } from '@shared/styles/style'
+import { APP_ROUTES } from '@shared/constants/routes'
 
 export default function PasswordRecoveryView() {
   const [email, setEmail] = useState('')
@@ -37,7 +39,10 @@ export default function PasswordRecoveryView() {
             fields={[field]}
             submitText="Enviar instruções"
             isSubmitting={false}
-            onSubmit={() => setIsSubmitted(true)}
+            onSubmit={() => {
+              setIsSubmitted(true)
+              router.replace(APP_ROUTES.configuracoes)
+            }}
             onFieldFocus={scrollToFocusedField}
             statusMessage={isSubmitted ? 'Verifique seu e-mail para continuar.' : undefined}
           />

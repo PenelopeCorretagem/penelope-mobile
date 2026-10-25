@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { router } from 'expo-router'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native'
 import Form, { type FormField } from '@shared/components/forms/Form'
 import Section from '@shared/components/layout/Section'
@@ -8,14 +9,40 @@ import { colors } from '@shared/styles/style'
 
 export default function PasswordView() {
   const [form, setForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' })
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const scrollViewRef = useRef<ScrollView>(null)
 
   const updateField = (field: keyof typeof form, value: string) => {
+    setError(null)
+    setSuccessMessage(null)
     setForm((current) => ({ ...current, [field]: value }))
   }
 
   const scrollToFocusedField = () => {
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 250)
+  }
+
+  const handleSavePassword = async () => {
+    if (!form.oldPassword.trim()) {
+      setError('Informe sua senha atual.')
+      return
+    }
+    if (form.newPassword.length < 6) {
+      setError('A nova senha deve ter no mínimo 6 caracteres.')
+      return
+    }
+    if (form.newPassword !== form.confirmPassword) {
+      setError('As senhas precisam ser iguais.')
+      return
+    }
+
+    setIsSaving(true)
+    setError(null)
+    setSuccessMessage('Senha alterada com sucesso. Redirecionando...')
+    await new Promise<void>((resolve) => setTimeout(resolve, 1500))
+    router.replace(APP_ROUTES.configuracoes)
   }
 
   const fields: FormField[] = [
@@ -54,7 +81,7 @@ export default function PasswordView() {
         <Section>
           <Text style={styles.title}>Alterar senha</Text>
           <Text style={styles.subtitle}>Defina uma nova senha para sua conta.</Text>
-          <Form fields={fields} submitText="Salvar nova senha" isSubmitting={false} onSubmit={() => undefined} onFieldFocus={scrollToFocusedField} helperLabel="Esqueceu sua senha?" helperActionLabel="Recuperar senha" helperHref={`/${APP_ROUTES.recuperacao_senha}`} />
+          <Form fields={fields} submitText="Salvar nova senha" isSubmitting={isSaving} onSubmit={() => void handleSavePassword()} onFieldFocus={scrollToFocusedField} statusMessage={error ?? successMessage ?? undefined} statusVariant={error ? 'error' : 'success'} helperLabel="Esqueceu sua senha?" helperActionLabel="Recuperar senha" helperHref={`/${APP_ROUTES.recuperacao_senha}`} />
         </Section>
       </ScrollView>
     </KeyboardAvoidingView>

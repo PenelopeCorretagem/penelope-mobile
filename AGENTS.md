@@ -34,16 +34,21 @@ input -> planejamento -> execução -> revisão -> saída
 - `src/modules/profile`: perfil, conta, dashboard, sobre e contatos.
 - `src/app`: somente rotas do Expo Router e layouts.
 - `src/shared`: componentes e utilitários realmente reutilizáveis.
-- `src/constants/routes.ts`: fonte única dos destinos de navegação.
+- `src/shared/constants/routes.ts`: fonte dos destinos de navegação do Expo Router.
+- `src/shared/constants/apiRoutes.ts`: fonte dos paths HTTP do backend, sem o
+  prefixo de ambiente `/api`.
 
-A navegação principal do app fica em `src/app/app/_layout.tsx` e deve usar o
-`TabNavigator` inferior com as rotas `APP_ROUTES.app.home`,
-`APP_ROUTES.app.imoveis`, `APP_ROUTES.app.dashboard`,
-`APP_ROUTES.app.favoritos` e `APP_ROUTES.app.perfil`.
+O alvo de produto para a navegação principal é um `TabNavigator` com Home,
+Imóveis, Dashboard, Favoritos e Perfil; Configurações deve ficar fora da barra.
+Esse alvo ainda diverge do código atual: `src/app/(private)/(tabs)/_layout.tsx`
+registra Imóveis, Favoritos e Configurações, e `APP_ROUTES` ainda tem formato
+plano. Não trate os dois estados como sincronizados nem redesenhe a shell sem
+uma decisão explícita que resolva essa divergência.
 
-Não use strings literais de rota em telas, componentes ou ViewModels. Importe
+Não use strings literais de rota de tela em Views ou ViewModels. Importe
 `APP_ROUTES` de `@constant/routes` e mantenha `routes.ts` sincronizado com a
-árvore de arquivos em `src/app`. O `HeaderView` fornece a busca global por meio
+árvore de arquivos em `src/app`. Services devem usar `API_ROUTES` de
+`@constant/apiRoutes` para os endpoints HTTP. O `HeaderView` fornece a busca global por meio
 do `SearchModalView`; não reintroduza menu hamburguer ou footer no shell principal.
 
 ## Validação mínima

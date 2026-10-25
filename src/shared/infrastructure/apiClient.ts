@@ -1,7 +1,5 @@
 import { getAccessToken, invalidateAccessToken } from "@shared/infrastructure/authTokenStorage";
 
-const DEFAULT_API_BASE_URL = "http://localhost:8080/api";
-
 export class ApiRequestError extends Error {
   constructor(
     message: string,
@@ -19,9 +17,16 @@ type ApiRequestOptions = Omit<RequestInit, "body"> & {
 
 function resolveApiBaseUrl() {
   const configuredUrl = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  const baseUrl = configuredUrl || DEFAULT_API_BASE_URL;
+  if (!configuredUrl) {
+    throw new Error("Configure EXPO_PUBLIC_API_BASE_URL no ambiente do Expo.");
+  }
 
-  return baseUrl.replace(/\/+$/, "");
+  const baseUrl = configuredUrl.replace(/\/+$/, "");
+  if (!baseUrl.endsWith("/api")) {
+    throw new Error("EXPO_PUBLIC_API_BASE_URL deve incluir o context path /api.");
+  }
+
+  return baseUrl;
 }
 
 async function resolveErrorMessage(response: Response) {

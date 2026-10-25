@@ -16,7 +16,8 @@ export const APP_ROUTES = {
     detalhes: 'imoveis/detalhes-imovel',
     detalhesGaleria: 'galeria',
     detalhesPlanta: 'planta',
-    favoritos: 'imoveis/favoritos',
+    detalhesVideo: 'video',
+    favoritos: 'favoritos',
 } as const
 
 export type AppRouteKey = keyof typeof APP_ROUTES
@@ -42,8 +43,11 @@ export function isAppRouteActive(pathname: string, route: AppRoutePath) {
 
 export function isAuthRoute(pathname: string) {
   const normalizedPathname = normalizePathname(pathname)
+  const authRoutes = Object.values(APP_ROUTES.auth).map(normalizePathname)
 
-  return normalizedPathname === 'auth' || normalizedPathname.startsWith('auth/')
+  return normalizedPathname === 'auth'
+    || normalizedPathname.startsWith('auth/')
+    || authRoutes.includes(normalizedPathname)
 }
 
 export function isEntryRoute(pathname: string) {
