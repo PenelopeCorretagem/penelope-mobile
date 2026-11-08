@@ -1,5 +1,7 @@
 import { PropertyTypeKey } from '@constant/propertyTypes'
+import { MEDIA_TYPES } from '@shared/constants/mediaTypes'
 import type { Advertisement } from '@properties/types/advertisement'
+import type { PropertyImage } from '@properties/types/property-image'
 export { toAdvertisementList } from '@shared/utils/advertisementNormalizer'
 
 export type PropertyTypeFilter = 'TODOS' | PropertyTypeKey
@@ -186,10 +188,21 @@ export const getCoverImageUrl = (advertisement: Advertisement) => (
   getAdvertisementImageUrls(advertisement)[0] ?? null
 )
 
+const isPropertyPhoto = (image: PropertyImage) => {
+  const description = image.type?.description?.trim().toLocaleLowerCase('pt-BR')
+
+  return image.type?.id === MEDIA_TYPES.COVER
+    || image.type?.id === MEDIA_TYPES.GALLERY
+    || description === 'capa'
+    || description === 'cover'
+    || description === 'imagem'
+}
+
 export const getAdvertisementImageUrls = (advertisement: Advertisement) => {
   const images = advertisement.property.images ?? []
-  const coverImages = images.filter((image) => image.type?.id === 1)
-  const otherImages = images.filter((image) => image.type?.id !== 1)
+  const photoImages = images.filter(isPropertyPhoto)
+  const coverImages = photoImages.filter((image) => image.type?.id === MEDIA_TYPES.COVER)
+  const otherImages = photoImages.filter((image) => image.type?.id !== MEDIA_TYPES.COVER)
 
   return [...coverImages, ...otherImages]
     .map((image) => image.url)
@@ -197,12 +210,7 @@ export const getAdvertisementImageUrls = (advertisement: Advertisement) => {
 }
 
 export const getAdvertisementCardImageUrls = (advertisement: Advertisement) => {
-  const images = advertisement.property.images ?? []
-  const galleryImages = images.filter((image) => image.type?.id === 1 || image.type?.id === 2)
-
-  return galleryImages
-    .map((image) => image.url)
-    .filter((url): url is string => Boolean(url))
+  return getAdvertisementImageUrls(advertisement)
 }
 
 export const filterFavoriteGroups = (groups: PropertyGroups, favoriteIds: number[]): PropertyGroups => {

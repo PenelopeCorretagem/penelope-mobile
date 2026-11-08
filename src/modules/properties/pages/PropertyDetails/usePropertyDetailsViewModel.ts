@@ -4,7 +4,7 @@ import { Linking } from 'react-native'
 import type { Advertisement } from '@properties/types/advertisement'
 import { APP_ROUTES } from '@constant/routes'
 import { getAdvertisementById } from '@properties/services/advertisementService'
-import { getDetailsPresentation, getGoogleMapsUrl, getRouteId, getStaticMapUrl } from './PropertyDetailsModel'
+import { getDetailsPresentation, getGoogleMapsUrl, getRouteId, getStaticMapUrl, type PropertyQuality } from './PropertyDetailsModel'
 import { usePropertyMediaViewModel } from './usePropertyMediaViewModel'
 
 export function usePropertyDetailsViewModel() {
@@ -12,6 +12,7 @@ export function usePropertyDetailsViewModel() {
   const router = useRouter()
   const [advertisement, setAdvertisement] = useState<Advertisement | null>(null)
   const [isVideoModalVisible, setIsVideoModalVisible] = useState(false)
+  const [selectedQuality, setSelectedQuality] = useState<PropertyQuality | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -63,6 +64,10 @@ export function usePropertyDetailsViewModel() {
     if (mediaState.videos.length > 0) setIsVideoModalVisible(true)
   }
 
+  const openQualityExplanation = (quality: PropertyQuality) => {
+    setSelectedQuality(quality)
+  }
+
   const openMap = () => {
     if (advertisement) {
       Linking.openURL(getGoogleMapsUrl(advertisement)).catch((openError) => {
@@ -80,12 +85,15 @@ export function usePropertyDetailsViewModel() {
     plans: mediaState.plans,
     videos: mediaState.videos,
     isVideoModalVisible,
+    selectedQuality,
     presentation: advertisement ? getDetailsPresentation(advertisement) : null,
     mapImageUrl: advertisement ? getStaticMapUrl(advertisement) : null,
     openGallery,
     openFloorPlan,
     openVideo,
     closeVideo: () => setIsVideoModalVisible(false),
+    openQualityExplanation,
+    closeQualityExplanation: () => setSelectedQuality(null),
     openMap,
   }
 }

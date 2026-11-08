@@ -81,6 +81,10 @@ export default function TabLayout() {
         options={{ title: 'Imóveis', tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} /> }}
       />
       <Tabs.Screen
+        name="dashboard"
+        options={{ title: 'Tendência', tabBarIcon: ({ color, size }) => <Ionicons name="stats-chart-outline" size={size} color={color} /> }}
+      />
+      <Tabs.Screen
         name="favoritos"
         options={{ title: 'Favoritos', tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} /> }}
       />

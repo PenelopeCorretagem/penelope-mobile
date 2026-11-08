@@ -1,6 +1,34 @@
 import type { Advertisement } from '@properties/types/advertisement'
 import { getAdvertisementImageUrls } from '../Properties/PropertiesModel'
 
+export type PropertyQuality = {
+  key: 'security' | 'green-area' | 'transport'
+  title: string
+  icon: 'shield' | 'leaf' | 'bus'
+  explanation: string
+}
+
+export const propertyQualities: PropertyQuality[] = [
+  {
+    key: 'security',
+    title: 'Segurança',
+    icon: 'shield',
+    explanation: 'Esta insignia representa que o imóvel está em uma região com indicador favorável de segurança, considerando os dados analisados para a área.',
+  },
+  {
+    key: 'green-area',
+    title: 'Área Verde',
+    icon: 'leaf',
+    explanation: 'Esta insignia representa que existe uma área verde relevante próxima ao imóvel, favorecendo o contato com a natureza e o lazer.',
+  },
+  {
+    key: 'transport',
+    title: 'Transporte',
+    icon: 'bus',
+    explanation: 'Esta insignia representa que o imóvel está próximo a opções de transporte público, facilitando o deslocamento pela região.',
+  },
+]
+
 export const getRouteId = (value: string | string[] | undefined) => {
   const routeValue = Array.isArray(value) ? value[0] : value
   const id = Number(routeValue)

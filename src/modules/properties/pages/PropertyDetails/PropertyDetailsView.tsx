@@ -8,7 +8,7 @@ import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import Section from '@shared/components/layout/Section'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
-import { getLocationLabel, getYouTubeVideoId } from './PropertyDetailsModel'
+import { getLocationLabel, getYouTubeVideoId, propertyQualities } from './PropertyDetailsModel'
 import { usePropertyDetailsViewModel } from './usePropertyDetailsViewModel'
 import { LinearGradient } from 'expo-linear-gradient'
 export default function PropertyDetailsView() {
@@ -23,12 +23,15 @@ export default function PropertyDetailsView() {
     plans,
     videos,
     isVideoModalVisible,
+    selectedQuality,
     presentation,
     mapImageUrl,
     openGallery,
     openFloorPlan,
     openVideo,
     closeVideo,
+    openQualityExplanation,
+    closeQualityExplanation,
     openMap,
   } = usePropertyDetailsViewModel()
 
@@ -175,20 +178,20 @@ export default function PropertyDetailsView() {
       <Section style={[styles.section, styles.lightSection]}>
         <Heading level={3} style={styles.sectionTitle}>QUALIDADES</Heading>
         <View style={styles.qualitiesGrid}>
-          <View style={styles.qualityItem}>
-            <Ionicons name="shield" size={30} color={colors.primary} />
-            <Text style={styles.body}>Segurança</Text>
-          </View>
-
-          <View style={styles.qualityItem}>
-            <Ionicons name="leaf" size={30} color={colors.primary} />
-            <Text style={styles.body}>Área Verde</Text>
-          </View>
-
-          <View style={styles.qualityItem}>
-            <Ionicons name="bus" size={30} color={colors.primary} />
-            <Text style={styles.body}>Transporte</Text>
-          </View>
+        {propertyQualities.map((quality) => (
+            <Pressable
+              accessibilityHint="Abre uma explicação resumida"
+              accessibilityLabel={`Ver por que este imóvel tem a insígnia ${quality.title}`}
+              accessibilityRole="button"
+              key={quality.key}
+              onPress={() => openQualityExplanation(quality)}
+              style={({ pressed }) => [styles.qualityItem, pressed && styles.qualityItemPressed]}
+            >
+              <Ionicons name={quality.icon} size={30} color={colors.primary} />
+              <Text style={styles.body}>{quality.title}</Text>
+              <Ionicons name="information-circle-outline" size={16} color={colors.primary} />
+            </Pressable>
+          ))}
         </View>
       </Section>
 
@@ -248,6 +251,25 @@ export default function PropertyDetailsView() {
         </View>
       </View>
     </Modal>
+
+    <Modal animationType="fade" onRequestClose={closeQualityExplanation} transparent visible={selectedQuality !== null}>
+      <Pressable onPress={closeQualityExplanation} style={styles.qualityModalBackdrop}>
+        <View onStartShouldSetResponder={() => true} style={styles.qualityModalCard}>
+          <View style={styles.qualityModalHeader}>
+            <Text style={styles.qualityModalTitle}>{selectedQuality?.title}</Text>
+            <Pressable
+              accessibilityLabel="Fechar explicação da insígnia"
+              accessibilityRole="button"
+              onPress={closeQualityExplanation}
+              style={styles.qualityCloseButton}
+            >
+              <Ionicons name="close" size={24} color={colors.mutedText} />
+            </Pressable>
+          </View>
+          <Text style={styles.qualityModalBody}>{selectedQuality?.explanation}</Text>
+        </View>
+      </Pressable>
+    </Modal>
     </>
   )
 }
@@ -287,11 +309,18 @@ const styles = StyleSheet.create({
   mapText: { color: colors.white, fontSize: 14, fontWeight: '600' },
   state: { alignItems: 'center', flex: 1, gap: spacing.md, justifyContent: 'center' },
   qualitiesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, justifyContent: 'center', width: '100%' },
-  qualityItem: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center', marginBottom: spacing.sm, width: '46%' },
+  qualityItem: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center', marginBottom: spacing.sm, padding: spacing.sm, width: '46%' },
+  qualityItemPressed: { opacity: 0.65 },
   detailsSection: { width: '100%', paddingVertical: 18 },
   videoModalBackdrop: { backgroundColor: 'rgba(0, 0, 0, 0.96)', flex: 1, justifyContent: 'center', paddingHorizontal: spacing.md },
   videoModalHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.md },
   videoModalTitle: { color: colors.white, fontSize: 16, fontWeight: '700' },
   videoCloseButton: { padding: spacing.sm },
   videoContainer: { aspectRatio: 16 / 9, backgroundColor: '#000', overflow: 'hidden', width: '100%' },
+  qualityModalBackdrop: { alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.45)', flex: 1, justifyContent: 'center', padding: spacing.lg },
+  qualityModalCard: { backgroundColor: colors.white, borderRadius: 12, padding: spacing.lg, width: '100%' },
+  qualityModalHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
+  qualityModalTitle: { color: colors.primary, fontSize: 18, fontWeight: '700' },
+  qualityCloseButton: { padding: spacing.sm },
+  qualityModalBody: { fontSize: 15, lineHeight: 22, marginTop: spacing.sm },
 })
