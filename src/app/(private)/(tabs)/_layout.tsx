@@ -81,12 +81,12 @@ export default function TabLayout() {
         options={{ title: 'Imóveis', tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} /> }}
       />
       <Tabs.Screen
-        name="dashboard"
-        options={{ title: 'Tendência', tabBarIcon: ({ color, size }) => <Ionicons name="stats-chart-outline" size={size} color={color} /> }}
-      />
-      <Tabs.Screen
         name="favoritos"
         options={{ title: 'Favoritos', tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} /> }}
+      />
+      <Tabs.Screen
+        name="trend-analysis"
+        options={{ title: 'Tendência', tabBarIcon: ({ color, size }) => <Ionicons name="stats-chart-outline" size={size} color={color} /> }}
       />
       <Tabs.Screen
         name="configuracoes"
@@ -104,6 +104,12 @@ const tabStyles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 4,
+    zIndex: 10,
   },
   tabItem: {
     alignItems: 'center',

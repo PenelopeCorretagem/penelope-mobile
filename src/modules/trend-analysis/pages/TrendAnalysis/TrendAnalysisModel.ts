@@ -28,7 +28,7 @@ export type TransactionRecord = {
   pricePerSquareMeter: number
 }
 
-export type DashboardData = {
+export type TrendAnalysisData = {
   filters: TrendFilter[]
   indicators: TrendMetric[]
   points: TrendPoint[]
@@ -70,11 +70,7 @@ const fallbackPoints: TrendPoint[] = [
   { label: '2021', value: 0 },
 ]
 
-export function filterTransactions(
-  transactions: TransactionRecord[],
-  neighborhood: string,
-  area: string,
-): TransactionRecord[] {
+export function filterTransactions(transactions: TransactionRecord[], neighborhood: string, area: string) {
   const filtered = transactions.filter((transaction) => {
     const matchesNeighborhood = neighborhood === 'Todos os bairros' || transaction.neighborhood === neighborhood
     const matchesArea =
@@ -90,7 +86,6 @@ export function filterTransactions(
 
 function median(values: number[]): number {
   if (values.length === 0) return 0
-
   const sorted = [...values].sort((left, right) => left - right)
   const middle = Math.floor(sorted.length / 2)
   return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle]
@@ -102,13 +97,11 @@ export function deriveAnnualPoints(transactions: TransactionRecord[]): TrendPoin
     label: String(year),
     value: Math.round(median(transactions.filter((transaction) => transaction.year === year).map((transaction) => transaction.pricePerSquareMeter))),
   }))
-
   return points.length > 0 ? points : fallbackPoints
 }
 
 export function deriveMedianPrice(transactions: TransactionRecord[]): number {
   if (transactions.length === 0) return 0
-
   const latestYear = Math.max(...transactions.map((transaction) => transaction.year))
   return median(transactions.filter((transaction) => transaction.year === latestYear).map((transaction) => transaction.pricePerSquareMeter))
 }
@@ -116,7 +109,6 @@ export function deriveMedianPrice(transactions: TransactionRecord[]): number {
 export function deriveAnnualVariation(transactions: TransactionRecord[]): number {
   const points = deriveAnnualPoints(transactions)
   if (points.length < 2 || points[points.length - 2].value === 0) return 0
-
   return ((points[points.length - 1].value - points[points.length - 2].value) / points[points.length - 2].value) * 100
 }
 
@@ -124,7 +116,7 @@ export function formatCurrency(value: number): string {
   return `R$ ${Math.round(value).toLocaleString('pt-BR')}`
 }
 
-export const localDashboardData: DashboardData = {
+export const localTrendAnalysisData: TrendAnalysisData = {
   filters: [
     { key: 'period', label: 'Período', options: ['Jan/2022 - Ago/2026', 'Último ano'] },
     { key: 'neighborhood', label: 'Bairro', options: ['Todos os bairros', 'Centro', 'Jardim América'] },
