@@ -1,6 +1,8 @@
 import { Ionicons } from '@expo/vector-icons'
-import { useState } from 'react'
+import { useFocusEffect } from 'expo-router'
+import { useCallback, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
+import AlertView from '@shared/components/feedback/Alert'
 import Text from '@shared/components/ui/Text'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import TrendFilterControl from '../../components/TrendFilterControl'
@@ -8,6 +10,7 @@ import { useTrendAnalysisViewModel } from './useTrendAnalysisViewModel'
 
 export default function TrendAnalysisView() {
   const [filtersExpanded, setFiltersExpanded] = useState(false)
+  const [alertKey, setAlertKey] = useState(0)
   const { width } = useWindowDimensions()
   const {
     points,
@@ -21,6 +24,12 @@ export default function TrendAnalysisView() {
     selectFilter,
   } = useTrendAnalysisViewModel()
 
+  useFocusEffect(
+    useCallback(() => {
+      setAlertKey((current) => current + 1)
+    }, []),
+  )
+
   const chartWidth = Math.max(width - spacing.lg * 2 - spacing.md * 2, 260)
   const plotWidth = chartWidth - 34
   const plotHeight = 112
@@ -32,8 +41,15 @@ export default function TrendAnalysisView() {
   }))
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={sharedStyles.screen} showsVerticalScrollIndicator={false}>
-      <View style={styles.marketSection}>
+    <>
+      <AlertView
+        key={alertKey}
+        message="As análises preditivas de IA são estimativas baseadas na amostra disponível e podem apresentar imprecisões. Use-as como apoio à sua análise."
+        presentation="modal"
+        variant="info"
+      />
+      <ScrollView contentContainerStyle={styles.content} style={sharedStyles.screen} showsVerticalScrollIndicator={false}>
+        <View style={styles.marketSection}>
         <View style={styles.pageHeader}>
           <Text style={styles.pageTitle}>Tendências de mercado</Text>
           <Pressable
@@ -148,8 +164,9 @@ export default function TrendAnalysisView() {
           </View>
           <Text style={styles.chartNote}>Acompanhe a direção dos preços no período selecionado.</Text>
         </View>
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </>
   )
 }
 
