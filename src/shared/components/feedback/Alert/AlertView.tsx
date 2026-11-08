@@ -68,7 +68,7 @@ export default function AlertView({
             <Text style={styles.modalMessage}>{message}</Text>
             {loading ? (
               <ActivityIndicator color={colors.primary} size="small" />
-            ) : variant === 'error' ? (
+            ) : (
               <Pressable
                 accessibilityState={{ disabled: !canDismiss }}
                 accessibilityRole="button"
@@ -82,7 +82,7 @@ export default function AlertView({
               >
                 <Text style={styles.closeButtonText}>Entendi</Text>
               </Pressable>
-            ) : null}
+            )}
           </View>
         </View>
       </Modal>
