@@ -4,6 +4,7 @@ import type { PropertyImage } from './property-image'
 import type { PropertyType } from './property-type'
 
 export type Property = {
+  id?: number
   title?: string
   subtitle?: string
   description?: string

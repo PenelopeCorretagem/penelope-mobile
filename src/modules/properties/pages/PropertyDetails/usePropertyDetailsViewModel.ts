@@ -4,7 +4,9 @@ import { Linking } from 'react-native'
 import type { Advertisement } from '@properties/types/advertisement'
 import { APP_ROUTES } from '@constant/routes'
 import { getAdvertisementById } from '@properties/services/advertisementService'
-import { getDetailsPresentation, getGoogleMapsUrl, getRouteId, getStaticMapUrl, type PropertyQuality } from './PropertyDetailsModel'
+import { getEstateBadges } from '@properties/services/badgeService'
+import type { PropertyBadge } from '@properties/types/badge'
+import { getDetailsPresentation, getGoogleMapsUrl, getRouteId, getStaticMapUrl } from './PropertyDetailsModel'
 import { usePropertyMediaViewModel } from './usePropertyMediaViewModel'
 
 export function usePropertyDetailsViewModel() {
@@ -12,7 +14,9 @@ export function usePropertyDetailsViewModel() {
   const router = useRouter()
   const [advertisement, setAdvertisement] = useState<Advertisement | null>(null)
   const [isVideoModalVisible, setIsVideoModalVisible] = useState(false)
-  const [selectedQuality, setSelectedQuality] = useState<PropertyQuality | null>(null)
+  const [selectedQuality, setSelectedQuality] = useState<PropertyBadge | null>(null)
+  const [badges, setBadges] = useState<PropertyBadge[]>([])
+  const [badgesStatus, setBadgesStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -45,6 +49,31 @@ export function usePropertyDetailsViewModel() {
     void loadAdvertisement()
   }, [loadAdvertisement])
 
+  // Falha nas insígnias não pode quebrar a tela de detalhes.
+  // Insígnias pertencem ao empreendimento (estate.id), não ao id do anúncio da rota.
+  const estateId = advertisement?.property.id ?? null
+  const loadBadges = useCallback(async () => {
+    if (estateId === null) {
+      setBadges([])
+      setBadgesStatus(advertisement ? 'ready' : 'loading')
+      return
+    }
+    setBadgesStatus('loading')
+    try {
+      const result = await getEstateBadges(estateId)
+      setBadges(result.badges)
+      setBadgesStatus('ready')
+    } catch (badgesError) {
+      console.error('Falha ao carregar insígnias do imóvel', badgesError)
+      setBadges([])
+      setBadgesStatus('error')
+    }
+  }, [advertisement, estateId])
+
+  useEffect(() => {
+    void loadBadges()
+  }, [loadBadges])
+
   const routeIdValue = getRouteId(routeId)
   const mediaState = usePropertyMediaViewModel({ advertisement, loadFromRoute: false })
 
@@ -64,7 +93,7 @@ export function usePropertyDetailsViewModel() {
     if (mediaState.videos.length > 0) setIsVideoModalVisible(true)
   }
 
-  const openQualityExplanation = (quality: PropertyQuality) => {
+  const openQualityExplanation = (quality: PropertyBadge) => {
     setSelectedQuality(quality)
   }
 
@@ -86,6 +115,9 @@ export function usePropertyDetailsViewModel() {
     videos: mediaState.videos,
     isVideoModalVisible,
     selectedQuality,
+    badges,
+    badgesStatus,
+    retryBadges: loadBadges,
     presentation: advertisement ? getDetailsPresentation(advertisement) : null,
     mapImageUrl: advertisement ? getStaticMapUrl(advertisement) : null,
     openGallery,

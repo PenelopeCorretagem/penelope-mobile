@@ -9,6 +9,9 @@ export const API_ROUTES = {
     collection: '/v1/advertisements',
     byId: (id: number) => `/v1/advertisements/${id}`,
   },
+  estates: {
+    badges: (estateId: number) => `/v1/estates/${estateId}/badges`,
+  },
   propertySearch: {
     interpret: '/v1/property-search/interpret',
   },

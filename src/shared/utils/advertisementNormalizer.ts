@@ -20,6 +20,7 @@ export type AdvertisementApiResponse = {
   featured?: boolean
   createdAt?: string
   estate?: {
+    id?: number
     title?: string
     subtitle?: string
     description?: string
@@ -89,6 +90,7 @@ export const toAdvertisement = (raw: AdvertisementApiResponse): Advertisement =>
     featured: raw.featured,
     createdAt: raw.createdAt,
     property: {
+      id: rawProperty.id,
       title: rawProperty.title,
       subtitle: rawProperty.subtitle,
       description: rawProperty.description,
