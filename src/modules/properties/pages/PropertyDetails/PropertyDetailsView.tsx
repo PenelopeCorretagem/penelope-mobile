@@ -8,7 +8,7 @@ import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import Section from '@shared/components/layout/Section'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
-import { getLocationLabel, getYouTubeVideoId, propertyQualities } from './PropertyDetailsModel'
+import { badgeIcons, formatBadgeScore, getLocationLabel, getYouTubeVideoId, isBadgeAvailable } from './PropertyDetailsModel'
 import { usePropertyDetailsViewModel } from './usePropertyDetailsViewModel'
 import { LinearGradient } from 'expo-linear-gradient'
 export default function PropertyDetailsView() {
@@ -24,6 +24,9 @@ export default function PropertyDetailsView() {
     videos,
     isVideoModalVisible,
     selectedQuality,
+    badges,
+    badgesStatus,
+    retryBadges,
     presentation,
     mapImageUrl,
     openGallery,
@@ -177,21 +180,36 @@ export default function PropertyDetailsView() {
 
       <Section style={[styles.section, styles.lightSection]}>
         <Heading level={3} style={styles.sectionTitle}>QUALIDADES</Heading>
+        {badgesStatus === 'loading' ? (
+          <ActivityIndicator color={colors.primary} />
+        ) : null}
+        {badgesStatus === 'error' ? (
+          <Pressable accessibilityRole="button" onPress={retryBadges} style={styles.badgesError}>
+            <Text style={styles.body}>Não foi possível carregar as qualidades. Toque para tentar novamente.</Text>
+          </Pressable>
+        ) : null}
         <View style={styles.qualitiesGrid}>
-        {propertyQualities.map((quality) => (
-            <Pressable
-              accessibilityHint="Abre uma explicação resumida"
-              accessibilityLabel={`Ver por que este imóvel tem a insígnia ${quality.title}`}
-              accessibilityRole="button"
-              key={quality.key}
-              onPress={() => openQualityExplanation(quality)}
-              style={({ pressed }) => [styles.qualityItem, pressed && styles.qualityItemPressed]}
-            >
-              <Ionicons name={quality.icon} size={30} color={colors.primary} />
-              <Text style={styles.body}>{quality.title}</Text>
-              <Ionicons name="information-circle-outline" size={16} color={colors.primary} />
-            </Pressable>
-          ))}
+          {badges.map((badge) => {
+            const available = isBadgeAvailable(badge)
+            const tint = available ? colors.primary : colors.mutedText
+            return (
+              <Pressable
+                accessibilityHint="Abre uma explicação resumida"
+                accessibilityLabel={`${badge.label}: ${formatBadgeScore(badge)}. Ver explicação`}
+                accessibilityRole="button"
+                key={badge.type}
+                onPress={() => openQualityExplanation(badge)}
+                style={({ pressed }) => [styles.qualityItem, !available && styles.qualityItemUnavailable, pressed && styles.qualityItemPressed]}
+              >
+                <Ionicons name={badgeIcons[badge.type]} size={30} color={tint} />
+                <View style={styles.qualityTexts}>
+                  <Text style={styles.body}>{badge.label}</Text>
+                  <Text style={[styles.qualityScore, { color: tint }]}>{formatBadgeScore(badge)}</Text>
+                </View>
+                <Ionicons name="information-circle-outline" size={16} color={tint} />
+              </Pressable>
+            )
+          })}
         </View>
       </Section>
 
@@ -256,7 +274,9 @@ export default function PropertyDetailsView() {
       <Pressable onPress={closeQualityExplanation} style={styles.qualityModalBackdrop}>
         <View onStartShouldSetResponder={() => true} style={styles.qualityModalCard}>
           <View style={styles.qualityModalHeader}>
-            <Text style={styles.qualityModalTitle}>{selectedQuality?.title}</Text>
+            <Text style={styles.qualityModalTitle}>
+              {selectedQuality ? `${selectedQuality.label} · ${formatBadgeScore(selectedQuality)}` : ''}
+            </Text>
             <Pressable
               accessibilityLabel="Fechar explicação da insígnia"
               accessibilityRole="button"
@@ -311,6 +331,10 @@ const styles = StyleSheet.create({
   qualitiesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, justifyContent: 'center', width: '100%' },
   qualityItem: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center', marginBottom: spacing.sm, padding: spacing.sm, width: '46%' },
   qualityItemPressed: { opacity: 0.65 },
+  qualityItemUnavailable: { opacity: 0.7 },
+  qualityTexts: { flexShrink: 1 },
+  qualityScore: { fontSize: 13, fontWeight: '700' },
+  badgesError: { alignItems: 'center', padding: spacing.sm },
   detailsSection: { width: '100%', paddingVertical: 18 },
   videoModalBackdrop: { backgroundColor: 'rgba(0, 0, 0, 0.96)', flex: 1, justifyContent: 'center', paddingHorizontal: spacing.md },
   videoModalHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.md },

@@ -1,33 +1,25 @@
 import type { Advertisement } from '@properties/types/advertisement'
+import type { BadgeType, PropertyBadge } from '@properties/types/badge'
 import { getAdvertisementImageUrls } from '../Properties/PropertiesModel'
 
-export type PropertyQuality = {
-  key: 'security' | 'green-area' | 'transport'
-  title: string
-  icon: 'shield' | 'leaf' | 'bus'
-  explanation: string
+export type BadgeIcon = 'school' | 'medkit' | 'medical' | 'leaf' | 'bus' | 'shield'
+
+export const badgeIcons: Record<BadgeType, BadgeIcon> = {
+  EDUCATION: 'school',
+  HEALTH_PRIMARY_CARE: 'medkit',
+  HEALTH_GENERAL_HOSPITAL: 'medical',
+  GREEN_PARK_NEARBY: 'leaf',
+  TRANSPORT_ACCESS: 'bus',
+  SAFETY_OCCURRENCES: 'shield',
 }
 
-export const propertyQualities: PropertyQuality[] = [
-  {
-    key: 'security',
-    title: 'Segurança',
-    icon: 'shield',
-    explanation: 'Esta insignia representa que o imóvel está em uma região com indicador favorável de segurança, considerando os dados analisados para a área.',
-  },
-  {
-    key: 'green-area',
-    title: 'Área Verde',
-    icon: 'leaf',
-    explanation: 'Esta insignia representa que existe uma área verde relevante próxima ao imóvel, favorecendo o contato com a natureza e o lazer.',
-  },
-  {
-    key: 'transport',
-    title: 'Transporte',
-    icon: 'bus',
-    explanation: 'Esta insignia representa que o imóvel está próximo a opções de transporte público, facilitando o deslocamento pela região.',
-  },
-]
+export const formatBadgeScore = (badge: PropertyBadge) =>
+  badge.status === 'CALCULATED' && badge.score !== null
+    ? `${badge.score.toFixed(1).replace('.', ',')}/10`
+    : 'Indisponível'
+
+export const isBadgeAvailable = (badge: PropertyBadge) =>
+  badge.status === 'CALCULATED' && badge.score !== null
 
 export const getRouteId = (value: string | string[] | undefined) => {
   const routeValue = Array.isArray(value) ? value[0] : value
