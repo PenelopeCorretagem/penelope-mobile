@@ -15,10 +15,10 @@ export const defaultFilters: PropertiesFilters = {
   maxPrice: null,
 }
 
-export const sortOptions: Array<{ label: string; value: SortOrder }> = [
-  { label: 'Mais próximos', value: 'distance' },
-  { label: 'A a Z', value: 'asc' },
-  { label: 'Z a A', value: 'desc' },
+export const sortOptions: Array<{ labelKey: string; value: SortOrder }> = [
+  { labelKey: 'search.sortOptions.distance', value: 'distance' },
+  { labelKey: 'search.sortOptions.asc', value: 'asc' },
+  { labelKey: 'search.sortOptions.desc', value: 'desc' },
 ]
 
 export const normalizeRouteStringValue = (value: string | string[] | undefined) => {
@@ -77,12 +77,14 @@ export const hasActiveFilters = (filters: PropertiesFilters) => Boolean(
 )
 
 export const getSearchHistoryLabel = (entry: SearchHistoryEntry) => {
-  if (entry.searchTerm.trim()) return entry.searchTerm.trim()
-  if (entry.city) return entry.city
-  if (entry.region) return entry.region
-  if (entry.minBedrooms !== null) return `${entry.minBedrooms}+ dormitórios`
+  if (entry.searchTerm.trim()) return { value: entry.searchTerm.trim() }
+  if (entry.city) return { value: entry.city }
+  if (entry.region) return { value: entry.region }
+  if (entry.minBedrooms !== null) return { key: 'search.history.minBedrooms', params: { count: entry.minBedrooms } }
   if (entry.maxPrice !== null) {
-    return `Até ${entry.maxPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`
+    return { key: 'search.history.maxPrice', params: { price: entry.maxPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) } }
   }
-  return entry.type !== 'TODOS' ? entry.type : 'Pesquisa com filtros'
+  return entry.type !== 'TODOS'
+    ? { key: `search.typeOptions.${entry.type}` }
+    : { key: 'search.history.filtered' }
 }

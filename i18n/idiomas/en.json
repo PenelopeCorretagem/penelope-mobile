@@ -1,0 +1,179 @@
+{
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "close": "Close",
+    "continue": "Continue",
+    "loading": "Loading...",
+    "retry": "Try again",
+    "all": "All",
+    "clearFilters": "Clear filters",
+    "applyFilters": "Apply filters",
+    "properties": "Properties",
+    "favorites": "Favorites"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Use your email and password to sign in.",
+    "login": "Sign in",
+    "loggingIn": "Signing in to your account...",
+    "loggingInButton": "Signing in...",
+    "forgotPassword": "Forgot your password?",
+    "resetPassword": "Reset password",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "createAccount": "Create account",
+    "createAccountSubtitle": "Fill in the fields to start your journey.",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Enter your full name",
+    "birthDate": "Date of birth",
+    "birthDatePlaceholder": "DD/MM/YYYY",
+    "passwordPlaceholder": "Enter your password",
+    "createPassword": "Create a password",
+    "confirmPassword": "Confirm password",
+    "repeatPassword": "Repeat your password",
+    "signingUp": "Creating your account...",
+    "signingUpButton": "Creating account...",
+    "alreadyAccount": "Already have an account?",
+    "access": "Sign in",
+    "recoverPassword": "Recover password",
+    "recoverSubtitle": "Enter your email to receive recovery instructions.",
+    "sendInstructions": "Send instructions",
+    "sendingInstructions": "Sending recovery instructions...",
+    "sendingInstructionsButton": "Sending...",
+    "rememberedPassword": "Remembered your password?",
+    "backToLogin": "Back to sign in",
+    "step": "Step {{step}} of {{total}}",
+    "validation": {"emailRequired": "Enter your email.", "emailInvalid": "Enter a valid email address.", "passwordRequired": "Enter your password.", "passwordMinLength": "The password must be at least 6 characters.", "loginRequired": "Enter your email and password to continue.", "fullNameRequired": "Enter your full name.", "fullNameMinLength": "Your name must have at least 2 letters.", "birthDateRequired": "Enter your birth date.", "birthDateInvalid": "Enter a valid date in DD/MM/YYYY format.", "birthDateFuture": "Birth date cannot be in the future.", "passwordCreateRequired": "Create a password.", "passwordConfirmRequired": "Confirm your password.", "passwordMismatch": "The passwords must match.", "stepInvalid": "Correct the fields to continue.", "formInvalid": "Correct all fields to complete registration."},
+    "errors": {"login": "Unable to sign in.", "registration": "Unable to complete registration."},
+    "success": {"login": "Signed in successfully. Redirecting...", "registration": "Account created successfully! You will be redirected to sign in."}
+  },
+  "settings": {
+    "hello": "Hello",
+    "account": "Account",
+    "application": "Application",
+    "profile": "My profile",
+    "profileDescription": "Edit your personal details.",
+    "changePassword": "Change password",
+    "changePasswordDescription": "Keep your account protected.",
+    "contact": "Contact us",
+    "contactDescription": "Get in touch with us.",
+    "about": "About the app",
+    "aboutDescription": "Learn about Penélope Imóveis.",
+    "logout": "Sign out",
+    "logoutDescription": "Return to the sign-in screen.",
+    "deleteAccount": "Delete account",
+    "deleteDescription": "Permanently remove your account.",
+    "deleteWarning": "This action is permanent. Do you really want to delete your account?",
+    "language": "Language",
+    "languageDescription": "Choose the interface language",
+    "portuguese": "Portuguese",
+    "english": "English"
+    ,"passwordRecovery": {"emailPlaceholder": "Enter your email", "success": "Check your email to continue."}
+    ,"emailPlaceholder": "Enter your email"
+    ,"birthDatePlaceholder": "Select your birth date"
+    ,"loadingProfile": "Loading profile..."
+    ,"saveChanges": "Save changes"
+    ,"savingChanges": "Saving..."
+    ,"savePassword": "Save new password"
+    ,"savingPassword": "Saving password..."
+    ,"passwordTitle": "Change password"
+    ,"passwordSubtitle": "Set a new password for your account."
+    ,"oldPassword": "Current password"
+    ,"oldPasswordPlaceholder": "Enter your current password"
+    ,"newPassword": "New password"
+    ,"newPasswordPlaceholder": "Enter your new password"
+    ,"confirmNewPassword": "Confirm new password"
+    ,"confirmNewPasswordPlaceholder": "Repeat your new password"
+    ,"passwordSuccess": "Password changed successfully. Redirecting..."
+    ,"passwordErrors": {"currentRequired": "Enter your current password.", "minimumLength": "The new password must be at least 6 characters.", "mismatch": "The passwords must match."}
+    ,"editProfileImage": "Edit profile image"
+    ,"profileImage": "Profile image"
+    ,"chooseFromGallery": "Choose from gallery"
+    ,"takePhoto": "Take a photo"
+    ,"removePhoto": "Remove photo"
+    ,"profileSuccess": "Changes saved successfully."
+    ,"profileErrors": {"load": "Unable to load the profile. Try again.", "cameraPermission": "Allow camera access to take a photo.", "galleryPermission": "Allow photo access to choose an image.", "cameraFailed": "Unable to take the photo.", "galleryFailed": "Unable to select the image.", "nameRequired": "Enter your full name.", "emailInvalid": "Enter a valid email address.", "birthDateRequired": "Enter your date of birth.", "save": "Unable to save the changes. Try again."}
+    ,"aboutPage": {"title": "About us", "paragraphOne": "Penelope Real Estate is a platform dedicated to offering high-quality real estate solutions.", "paragraphTwo": "Our mission is to provide an exceptional experience to our clients, ensuring transparency, trust, and satisfaction throughout every step of the real estate process. We value lasting relationships and always strive to exceed expectations.", "copyright": "© {{year}} Penélope - Real Estate Consultant | All rights reserved."}
+    ,"contacts": {"title": "Contact us", "description": "Have questions or suggestions, or want to learn more about our services? Send us a message or access one of our channels.", "subject": "Subject", "subjectPlaceholder": "What is the reason for contacting us?", "message": "Message", "messagePlaceholder": "Write your message...", "submit": "Send message", "submitting": "Sending...", "alertError": "Error", "validationError": "Please correct the errors in the form", "alertSuccess": "Success", "success": "Message sent successfully!", "submitError": "Unable to send the message", "subjectRequired": "Subject is required", "messageRequired": "Message is required", "messageMinLength": "Message must be at least 10 characters"}
+  },
+  "notifications": {"title": "Notifications", "detailTitle": "Notification", "close": "Close notifications", "back": "Back to notifications", "loading": "Loading notifications...", "empty": "No notifications available.", "delete": "Delete notification", "errors": {"load": "Unable to load notifications.", "markRead": "Unable to mark the notification as read.", "delete": "Unable to delete the notification."}},
+  "alert": {"close": "Close alert", "eyebrow": "IMPORTANT INFORMATION", "title": "About this analysis", "understood": "Got it"},
+  "header": {
+    "settings": "Settings",
+    "back": "Back",
+    "search": "Open search",
+    "notifications": "Notifications"
+  },
+  "search": {
+    "close": "Close search",
+    "placeholder": "Search properties",
+    "stopVoice": "Stop voice search",
+    "voice": "Voice search",
+    "openFilters": "Open filters",
+    "closeFilters": "Close filters",
+    "interpreting": "Interpreting your search...",
+    "city": "City",
+    "region": "Region",
+    "type": "Type",
+    "sort": "Sort order",
+    "recent": "Recent searches",
+    "aiSearch": "Search with AI",
+    "interpretingShort": "Interpreting...",
+    "sortOptions": {"distance": "Closest", "asc": "A to Z", "desc": "Z to A"},
+    "typeOptions": {"LANCAMENTO": "New developments", "DISPONIVEL": "Available", "EM_OBRAS": "Under construction"},
+    "errors": {"speechRecognition": "We couldn't recognize your speech.", "maxLength": "Searches can be up to 500 characters.", "aiInterpretation": "We couldn't interpret your search with AI.", "voiceUnavailable": "Voice search is unavailable in this environment. Use a development build of the app.", "microphonePermission": "Microphone permission was denied. Enable access to use voice search.", "voiceStart": "We couldn't start voice search."},
+    "history": {"minBedrooms": "{{count}}+ bedrooms", "maxPrice": "Up to {{price}}", "filtered": "Filtered search"}
+  },
+  "properties": {
+    "loading": "Loading properties...",
+    "empty": "No properties found with the selected filters.",
+    "clearSearch": "Clear search and filters",
+    "property": "Property",
+    "untitled": "Untitled property",
+    "unknownCity": "City not informed",
+    "lessThanKm": "Less than 1 km away",
+    "kmAway": "{{distance}} km away",
+    "bedrooms": "{{area}} m² - {{rooms}} bedrooms",
+    "amenity": "Feature",
+    "learnMore": "Learn more",
+    "propertyImage": "Property image {{title}}",
+    "removeFavorite": "Remove from favorites",
+    "addFavorite": "Add to favorites",
+    "images": "{{count}} images",
+    "openDetails": "Open details for {{title}}"
+    ,"loadError": "Unable to load properties. Try again."
+    ,"details": {"loading": "Loading property details...", "notFound": "Property not found.", "loadError": "Unable to load property details. Try again.", "imageCount": "Image {{current}} of {{total}}", "viewGallery": "VIEW GALLERY", "viewFloorPlan": "VIEW FLOOR PLAN", "watchVideo": "WATCH VIDEO", "description": "DESCRIPTION", "amenities": "FEATURES", "qualities": "QUALITIES", "qualitiesError": "Unable to load qualities. Tap to try again.", "qualityHint": "Opens a short explanation", "qualityLabel": "{{label}}: {{score}}. View explanation", "location": "LOCATION", "locationUnknown": "Location not informed", "typeUnknown": "Type not informed", "bedrooms": "{{count}} bedroom", "unavailable": "Unavailable", "viewOnMaps": "View on Google Maps", "propertyVideo": "Property video", "closeVideo": "Close video", "closeQualityExplanation": "Close quality explanation"}
+    ,"gallery": {"title": "Gallery ({{count}})", "loading": "Loading gallery...", "empty": "No images available", "notFound": "Property not found.", "loadError": "Unable to load property media. Try again.", "openImage": "Open image {{index}}", "imageTitle": "Gallery image"}
+    ,"video": {"title": "Videos ({{count}})", "loading": "Loading videos...", "empty": "No videos available", "item": "Video {{index}}", "openYouTube": "Open on YouTube", "open": "Open video"}
+    ,"plan": {"title": "Floor plans ({{count}})", "loading": "Loading floor plans...", "empty": "No floor plan available", "item": "Floor plan {{index}}", "open": "Open floor plan {{index}}", "modalTitle": "Property floor plan"}
+  },
+  "errors": {
+    "favorite": "Unable to update favorites.",
+    "tryAgain": "Try again."
+  },
+  "form": {
+    "done": "Done"
+  },
+  "trend": {
+    "warning": "AI predictive analyses are estimates based on the available sample and may be inaccurate. Use them as support for your analysis.",
+    "title": "Market trends",
+    "marketView": "MARKET VIEW",
+    "context": "Apartments in São Paulo · {{period}}",
+    "filters": "Analysis filters",
+    "note": "Filters will be applied to the chart and indicators simultaneously.",
+    "ai": "AI analysis",
+    "priceEvolution": "Price evolution per m²",
+    "median": "Annual median of valid transactions",
+    "chart": "Line chart showing price per square meter evolution",
+    "legend": "Median price per m²",
+    "chartNote": "Follow price direction for the selected period."
+    ,"analysis": "In the sample for {{neighborhood}}, {{direction}} of {{variation}} was observed for {{area}} during {{period}}. This is an indicative estimate based on the filtered sample and supports market analysis; it is not a forecast and does not replace a complete analysis."
+    ,"directions": {"up": "appreciation", "down": "decline"}
+    ,"indicators": {"marketReading": "Market reading", "up": "Appreciation {{value}}%", "down": "Decline {{value}}%", "comparison": "Comparison with the previous year in the filtered sample.", "medianPrice": "Median price per m²", "latestYear": "Latest available year"}
+    ,"axis12k": "R$ 12k", "axis10k": "R$ 10k", "axis8k": "R$ 8k"
+    ,"filters": {"openOptions": "Tap to open options", "closeOptions": "Tap to close options", "optionsFor": "Options for {{label}}", "period": {"label": "Period", "options": {"jan-2022-aug-2026": "Jan/2022 - Aug/2026", "last-year": "Last year"}}, "neighborhood": {"label": "Neighborhood", "options": {"all": "All neighborhoods", "centro": "Centro", "jardim-america": "Jardim América"}}, "area": {"label": "Built area range", "options": {"all": "All areas", "up-to-100": "Up to 100 m²", "over-100": "Over 100 m²"}}}
+  }
+}

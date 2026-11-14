@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useEffect, useState } from 'react'
 import { colors, spacing } from '@shared/styles/style'
+import { useTranslation } from 'react-i18next'
 
 export type AlertVariant = 'error' | 'success' | 'info'
 
@@ -20,6 +21,7 @@ export default function AlertView({
   loading = false,
   presentation = 'inline',
 }: AlertViewProps) {
+  const { t } = useTranslation()
   const [dismissedMessage, setDismissedMessage] = useState<string | null>(null)
   const [dismissibleMessage, setDismissibleMessage] = useState<string | null>(null)
   const isVisible = dismissedMessage !== message
@@ -59,7 +61,7 @@ export default function AlertView({
       >
         <View style={styles.modalRoot}>
           <Pressable
-            accessibilityLabel="Fechar aviso"
+            accessibilityLabel={t('alert.close')}
             accessibilityRole="button"
             disabled={loading || !canDismiss}
             onPress={dismiss}
@@ -76,7 +78,7 @@ export default function AlertView({
                 <Ionicons color={palette.accent} name={iconName} size={28} />
               </View>
               <Pressable
-                accessibilityLabel="Fechar aviso"
+                accessibilityLabel={t('alert.close')}
                 accessibilityRole="button"
                 disabled={loading || !canDismiss}
                 onPress={dismiss}
@@ -88,8 +90,8 @@ export default function AlertView({
                 <Ionicons color={colors.secondaryLight} name="close" size={20} />
               </Pressable>
             </View>
-            <Text style={styles.modalEyebrow}>INFORMAÇÃO IMPORTANTE</Text>
-            <Text style={styles.modalTitle}>Sobre esta análise</Text>
+            <Text style={styles.modalEyebrow}>{t('alert.eyebrow')}</Text>
+            <Text style={styles.modalTitle}>{t('alert.title')}</Text>
             <Text style={styles.modalMessage}>{message}</Text>
             {loading ? (
               <ActivityIndicator color={colors.primary} size="small" />
@@ -105,7 +107,7 @@ export default function AlertView({
                   pressed && canDismiss && styles.closeButtonPressed,
                 ]}
               >
-                <Text style={styles.closeButtonText}>Entendi</Text>
+                <Text style={styles.closeButtonText}>{t('alert.understood')}</Text>
               </Pressable>
             )}
           </View>

@@ -10,8 +10,10 @@ import {
   TrendFilterKey,
   TrendMetric,
 } from './TrendAnalysisModel'
+import { useTranslation } from 'react-i18next'
 
 export function useTrendAnalysisViewModel() {
+  const { t } = useTranslation()
   const initialFilters = useMemo(
     () => Object.fromEntries(localTrendAnalysisData.filters.map((filter) => [filter.key, filter.options[0]])) as Record<TrendFilterKey, string>,
     [],
@@ -25,32 +27,38 @@ export function useTrendAnalysisViewModel() {
   const points = useMemo(() => deriveAnnualPoints(selectedTransactions), [selectedTransactions])
   const indicators = useMemo<TrendMetric[]>(() => {
     const annualVariation = deriveAnnualVariation(selectedTransactions)
-    const direction = annualVariation >= 0 ? 'valorização' : 'redução'
+    const direction = annualVariation >= 0 ? 'up' : 'down'
     return [
       {
-        title: 'Leitura do mercado',
-        value: `${direction === 'valorização' ? 'Valorização' : 'Redução'} ${Math.abs(annualVariation).toFixed(1).replace('.', ',')}%`,
-        caption: 'Comparação com o ano anterior na amostra filtrada.',
+        title: t('trend.indicators.marketReading'),
+        value: t(`trend.indicators.${direction}`, { value: Math.abs(annualVariation).toFixed(1).replace('.', ',') }),
+        caption: t('trend.indicators.comparison'),
         icon: 'business',
         tone: 'pink',
         spansTwoColumns: true,
       },
       {
-        title: 'Preço mediano m²',
+        title: t('trend.indicators.medianPrice'),
         value: formatCurrency(deriveMedianPrice(selectedTransactions)),
-        caption: 'Último ano disponível',
+        caption: t('trend.indicators.latestYear'),
         icon: 'card',
         tone: 'pink',
       },
     ]
-  }, [selectedTransactions])
+  }, [selectedTransactions, t])
   const marketAnalysis = useMemo(() => {
     const annualVariation = deriveAnnualVariation(selectedTransactions)
-    const direction = annualVariation >= 0 ? 'valorização' : 'redução'
+    const direction = annualVariation >= 0 ? 'up' : 'down'
     const variation = `${Math.abs(annualVariation).toFixed(1).replace('.', ',')}%`
 
-    return `Na amostra de ${filters.neighborhood}, para ${filters.area}, os preços apresentam ${direction} de ${variation} no período de ${filters.period}. Esta é uma estimativa orientativa baseada nas transações da amostra filtrada, oferecida como apoio à leitura do mercado; não representa uma previsão certa nem substitui uma análise completa.`
-  }, [filters.area, filters.neighborhood, filters.period, selectedTransactions])
+    return t('trend.analysis', {
+      neighborhood: t(`trend.filters.neighborhood.options.${filters.neighborhood}`),
+      area: t(`trend.filters.area.options.${filters.area}`),
+      period: t(`trend.filters.period.options.${filters.period}`),
+      direction: t(`trend.directions.${direction}`),
+      variation,
+    })
+  }, [filters.area, filters.neighborhood, filters.period, selectedTransactions, t])
 
   const selectFilter = useCallback((key: TrendFilterKey, value: string) => {
     setFilters((current) => ({ ...current, [key]: value }))

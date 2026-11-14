@@ -8,6 +8,7 @@ import Section from '@shared/components/layout/Section'
 import Button from '@shared/components/ui/Button'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import { usePropertyMediaViewModel } from '../PropertyDetails/usePropertyMediaViewModel'
+import { useTranslation } from 'react-i18next'
 
 function getYouTubeEmbedUrl(url: string): string | null {
   // Detecta YouTube URLs em vários formatos
@@ -28,6 +29,7 @@ function isVideoUrl(url: string): boolean {
 
 export default function PropertyVideoView() {
   const router = useRouter()
+  const { t } = useTranslation()
   const { videos, isLoading } = usePropertyMediaViewModel()
 
   const openVideoExternal = (url: string) => {
@@ -40,18 +42,18 @@ export default function PropertyVideoView() {
         <Pressable onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={colors.primary} />
         </Pressable>
-        <Heading level={2}>Vídeos ({videos.length})</Heading>
+        <Heading level={2}>{t('properties.video.title', { count: videos.length })}</Heading>
         <View style={{ width: 24 }} />
       </View>
 
       {isLoading ? (
         <Section style={styles.loadingContainer}>
-          <Text>Carregando vídeos...</Text>
+          <Text>{t('properties.video.loading')}</Text>
         </Section>
       ) : videos.length === 0 ? (
         <Section style={styles.emptyContainer}>
           <Ionicons name="videocam-outline" size={48} color={colors.mutedText} />
-          <Text>Nenhum vídeo disponível</Text>
+          <Text>{t('properties.video.empty')}</Text>
         </Section>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -61,7 +63,7 @@ export default function PropertyVideoView() {
 
             return (
               <Section key={video.id} style={styles.videoContainer}>
-                <Text style={styles.videoLabel}>Vídeo {index + 1}</Text>
+                <Text style={styles.videoLabel}>{t('properties.video.item', { index: index + 1 })}</Text>
 
                 {isYouTube ? (
                   <View style={styles.webViewContainer}>
@@ -90,10 +92,11 @@ export default function PropertyVideoView() {
                 )}
 
                 <Button
+                  accessibilityLabel={isYouTube ? t('properties.video.openYouTube') : t('properties.video.open')}
                   onPress={() => openVideoExternal(video.url)}
                   style={styles.openButton}
                 >
-                  {isYouTube ? 'Abrir no YouTube' : 'Abrir Vídeo'}
+                  {isYouTube ? t('properties.video.openYouTube') : t('properties.video.open')}
                 </Button>
               </Section>
             )

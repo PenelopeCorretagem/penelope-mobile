@@ -10,13 +10,13 @@ export class ContactsModel {
     const errors: Record<string, string> = {}
 
     if (!data.subject?.trim()) {
-      errors.subject = 'Assunto é obrigatório'
+      errors.subject = 'settings.contacts.subjectRequired'
     }
 
     if (!data.message?.trim()) {
-      errors.message = 'Mensagem é obrigatória'
+      errors.message = 'settings.contacts.messageRequired'
     } else if (data.message.trim().length < 10) {
-      errors.message = 'A mensagem deve ter pelo menos 10 caracteres'
+      errors.message = 'settings.contacts.messageMinLength'
     }
 
     return {

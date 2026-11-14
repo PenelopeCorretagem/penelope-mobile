@@ -1,10 +1,10 @@
-import { View, Text } from "react-native";
 import AuthScreen from "@auth/components/AuthScreen/AuthScreenView";
-import { colors } from "@shared/styles/style";
 import { useCadastroViewModel } from "./useCadastroViewModel";
 import { APP_ROUTES } from '@shared/constants/routes'
+import { useTranslation } from 'react-i18next'
 
 export function CadastroView() {
+  const { t } = useTranslation()
   const {
     form,
     error,
@@ -22,61 +22,62 @@ export function CadastroView() {
     ? [
         {
           key: "nomeCompleto",
-          label: "Nome completo",
-          placeholder: "Digite seu nome completo",
+          label: t('auth.fullName'),
+          placeholder: t('auth.fullNamePlaceholder'),
           value: form.nomeCompleto,
           autoCapitalize: "words" as const,
-          error: fieldErrors.nomeCompleto,
+          error: fieldErrors.nomeCompleto ? t(fieldErrors.nomeCompleto, { defaultValue: fieldErrors.nomeCompleto }) : '',
           onChangeText: (value: string) => updateField("nomeCompleto", value),
         },
         {
           key: "dataNascimento",
-          label: "Data de nascimento",
-          placeholder: "DD/MM/AAAA",
+          label: t('auth.birthDate'),
+          placeholder: t('auth.birthDatePlaceholder'),
           value: form.dataNascimento,
           type: "text" as const,
           keyboardType: "numeric" as const,
-          error: fieldErrors.dataNascimento,
+          error: fieldErrors.dataNascimento ? t(fieldErrors.dataNascimento, { defaultValue: fieldErrors.dataNascimento }) : '',
           onChangeText: (value: string) => updateField("dataNascimento", value),
         },
       ]
     : [
         {
           key: "email",
-          label: "E-mail",
-          placeholder: "Digite seu e-mail",
+          label: t('auth.email'),
+          placeholder: t('auth.email'),
           value: form.email,
           keyboardType: "email-address" as const,
           autoCapitalize: "none" as const,
-          error: fieldErrors.email,
+          error: fieldErrors.email ? t(fieldErrors.email, { defaultValue: fieldErrors.email }) : '',
           onChangeText: (value: string) => updateField("email", value),
         },
         {
           key: "senha",
-          label: "Senha",
-          placeholder: "Crie uma senha",
+          label: t('auth.password'),
+          placeholder: t('auth.createPassword'),
           value: form.senha,
           secureTextEntry: true,
-          error: fieldErrors.senha,
+          error: fieldErrors.senha ? t(fieldErrors.senha, { defaultValue: fieldErrors.senha }) : '',
           onChangeText: (value: string) => updateField("senha", value),
         },
         {
           key: "confirmSenha",
-          label: "Confirmar senha",
-          placeholder: "Repita a senha",
+          label: t('auth.confirmPassword'),
+          placeholder: t('auth.repeatPassword'),
           value: form.confirmSenha,
           secureTextEntry: true,
-          error: fieldErrors.confirmSenha,
+          error: fieldErrors.confirmSenha ? t(fieldErrors.confirmSenha, { defaultValue: fieldErrors.confirmSenha }) : '',
           onChangeText: (value: string) => updateField("confirmSenha", value),
         },
       ];
 
   return (
     <AuthScreen
-      title="Criar Conta"
-      subtitle="Preencha os campos para iniciar sua jornada."
+      title={t('auth.createAccount')}
+      subtitle={t('auth.createAccountSubtitle')}
       fields={fields}
-      submitText="Cadastrar"
+      submitText={t('auth.signUp')}
+      submittingText={t('auth.signingUpButton')}
       isSubmitting={isSubmitting}
       onSubmit={handleSubmit}
       onNext={handleNext}
@@ -84,11 +85,11 @@ export function CadastroView() {
       isLastStep={step === 2}
       step={step}
       totalSteps={2}
-      statusMessage={successMessage ?? (isSubmitting ? "Cadastrando sua conta..." : error ?? undefined)}
+      statusMessage={successMessage ? t(successMessage, { defaultValue: successMessage }) : isSubmitting ? t('auth.signingUp') : error ? t(error, { defaultValue: error }) : undefined}
       statusVariant={successMessage ? "success" : error ? "error" : "info"}
       statusLoading={isSubmitting && !successMessage && !error}
-      secondaryPrompt="Já tem conta?"
-      secondaryActionLabel="Acessar"
+      secondaryPrompt={t('auth.alreadyAccount')}
+      secondaryActionLabel={t('auth.access')}
       secondaryActionHref={ APP_ROUTES.auth.login }
     />
   );

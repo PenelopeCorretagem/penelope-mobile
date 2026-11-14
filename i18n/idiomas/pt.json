@@ -1,0 +1,179 @@
+{
+  "common": {
+    "back": "Voltar",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "continue": "Continuar",
+    "loading": "Carregando...",
+    "retry": "Tentar novamente",
+    "all": "Todos",
+    "clearFilters": "Limpar filtros",
+    "applyFilters": "Aplicar filtros",
+    "properties": "Imóveis",
+    "favorites": "Favoritos"
+  },
+  "auth": {
+    "email": "E-mail",
+    "password": "Senha",
+    "loginTitle": "Acessar Conta",
+    "loginSubtitle": "Utilize seu e-mail e senha para entrar.",
+    "login": "Entrar",
+    "loggingIn": "Entrando na sua conta...",
+    "loggingInButton": "Entrando...",
+    "forgotPassword": "Esqueceu a senha?",
+    "resetPassword": "Redefinir senha",
+    "noAccount": "Não tem conta?",
+    "signUp": "Cadastre-se",
+    "createAccount": "Criar Conta",
+    "createAccountSubtitle": "Preencha os campos para iniciar sua jornada.",
+    "fullName": "Nome completo",
+    "fullNamePlaceholder": "Digite seu nome completo",
+    "birthDate": "Data de nascimento",
+    "birthDatePlaceholder": "DD/MM/AAAA",
+    "passwordPlaceholder": "Digite sua senha",
+    "createPassword": "Crie uma senha",
+    "confirmPassword": "Confirmar senha",
+    "repeatPassword": "Repita a senha",
+    "signingUp": "Cadastrando sua conta...",
+    "signingUpButton": "Cadastrando...",
+    "alreadyAccount": "Já tem conta?",
+    "access": "Acessar",
+    "recoverPassword": "Recuperar senha",
+    "recoverSubtitle": "Informe seu e-mail para receber as instruções de recuperação.",
+    "sendInstructions": "Enviar instruções",
+    "sendingInstructions": "Enviando instruções de recuperação...",
+    "sendingInstructionsButton": "Enviando...",
+    "rememberedPassword": "Já lembrou sua senha?",
+    "backToLogin": "Voltar para o login",
+    "step": "Etapa {{step}} de {{total}}",
+    "validation": {"emailRequired": "Informe seu e-mail.", "emailInvalid": "Informe um e-mail válido.", "passwordRequired": "Digite sua senha.", "passwordMinLength": "A senha deve ter no mínimo 6 caracteres.", "loginRequired": "Preencha seu e-mail e senha para continuar.", "fullNameRequired": "Informe seu nome completo.", "fullNameMinLength": "Seu nome deve ter pelo menos 2 letras.", "birthDateRequired": "Informe sua data de nascimento.", "birthDateInvalid": "Informe uma data válida no formato DD/MM/AAAA.", "birthDateFuture": "A data de nascimento não pode ser futura.", "passwordCreateRequired": "Crie uma senha.", "passwordConfirmRequired": "Confirme sua senha.", "passwordMismatch": "As senhas precisam ser iguais.", "stepInvalid": "Preencha os campos corretamente para continuar.", "formInvalid": "Preencha todos os campos corretamente para concluir o cadastro."},
+    "errors": {"login": "Não foi possível entrar.", "registration": "Não foi possível concluir o cadastro."},
+    "success": {"login": "Login realizado com sucesso. Redirecionando...", "registration": "Cadastro realizado com sucesso! Você será redirecionado para o login."}
+  },
+  "settings": {
+    "hello": "Olá",
+    "account": "Conta",
+    "application": "Aplicativo",
+    "profile": "Meu perfil",
+    "profileDescription": "Edite seus dados pessoais.",
+    "changePassword": "Alterar senha",
+    "changePasswordDescription": "Mantenha sua conta protegida.",
+    "contact": "Entre em contato",
+    "contactDescription": "Fale conosco.",
+    "about": "Sobre o aplicativo",
+    "aboutDescription": "Conheça a Penélope Imóveis.",
+    "logout": "Sair",
+    "logoutDescription": "Voltar para a tela de login.",
+    "deleteAccount": "Excluir conta",
+    "deleteDescription": "Remova permanentemente sua conta.",
+    "deleteWarning": "Essa ação é permanente. Deseja realmente excluir sua conta?",
+    "language": "Idioma",
+    "languageDescription": "Escolha o idioma da interface",
+    "portuguese": "Português",
+    "english": "Inglês"
+    ,"passwordRecovery": {"emailPlaceholder": "Digite seu e-mail", "success": "Verifique seu e-mail para continuar."}
+    ,"emailPlaceholder": "Digite seu e-mail"
+    ,"birthDatePlaceholder": "Selecione sua data de nascimento"
+    ,"loadingProfile": "Carregando perfil..."
+    ,"saveChanges": "Salvar alterações"
+    ,"savingChanges": "Salvando..."
+    ,"savePassword": "Salvar nova senha"
+    ,"savingPassword": "Salvando senha..."
+    ,"passwordTitle": "Alterar senha"
+    ,"passwordSubtitle": "Defina uma nova senha para sua conta."
+    ,"oldPassword": "Senha atual"
+    ,"oldPasswordPlaceholder": "Digite sua senha atual"
+    ,"newPassword": "Nova senha"
+    ,"newPasswordPlaceholder": "Digite sua nova senha"
+    ,"confirmNewPassword": "Confirmar nova senha"
+    ,"confirmNewPasswordPlaceholder": "Repita sua nova senha"
+    ,"passwordSuccess": "Senha alterada com sucesso. Redirecionando..."
+    ,"passwordErrors": {"currentRequired": "Informe sua senha atual.", "minimumLength": "A nova senha deve ter no mínimo 6 caracteres.", "mismatch": "As senhas precisam ser iguais."}
+    ,"editProfileImage": "Editar imagem de perfil"
+    ,"profileImage": "Imagem de perfil"
+    ,"chooseFromGallery": "Escolher da galeria"
+    ,"takePhoto": "Tirar foto"
+    ,"removePhoto": "Remover foto"
+    ,"profileSuccess": "Alterações salvas com sucesso."
+    ,"profileErrors": {"load": "Não foi possível carregar o perfil. Tente novamente.", "cameraPermission": "Permita o acesso à câmera para tirar uma foto.", "galleryPermission": "Permita o acesso às fotos para escolher uma imagem.", "cameraFailed": "Não foi possível tirar a foto.", "galleryFailed": "Não foi possível selecionar a imagem.", "nameRequired": "Informe seu nome completo.", "emailInvalid": "Informe um e-mail válido.", "birthDateRequired": "Informe sua data de nascimento.", "save": "Não foi possível salvar as alterações. Tente novamente."}
+    ,"aboutPage": {"title": "Sobre nós", "paragraphOne": "A Penelope Corretora de Imóveis é uma plataforma dedicada a oferecer soluções imobiliárias de alta qualidade.", "paragraphTwo": "Nossa missão é proporcionar uma experiência excepcional aos nossos clientes, garantindo transparência, confiança e satisfação em todas as etapas do processo imobiliário. Valorizamos relacionamentos duradouros e buscamos sempre superar as expectativas.", "copyright": "© {{year}} Penélope - Consultora de Imóveis | Todos os direitos reservados."}
+    ,"contacts": {"title": "Entre em contato", "description": "Tem dúvidas, sugestões ou deseja conhecer mais sobre os nossos serviços? Envie uma mensagem ou acesse um dos nossos canais.", "subject": "Assunto", "subjectPlaceholder": "Qual é o motivo do contato?", "message": "Mensagem", "messagePlaceholder": "Escreva sua mensagem...", "submit": "Enviar mensagem", "submitting": "Enviando...", "alertError": "Erro", "validationError": "Por favor, corrija os erros no formulário", "alertSuccess": "Sucesso", "success": "Mensagem enviada com sucesso!", "submitError": "Não foi possível enviar a mensagem", "subjectRequired": "Assunto é obrigatório", "messageRequired": "Mensagem é obrigatória", "messageMinLength": "A mensagem deve ter pelo menos 10 caracteres"}
+  },
+  "notifications": {"title": "Notificações", "detailTitle": "Notificação", "close": "Fechar notificações", "back": "Voltar para notificações", "loading": "Carregando notificações...", "empty": "Nenhuma notificação disponível.", "delete": "Excluir notificação", "errors": {"load": "Não foi possível carregar as notificações.", "markRead": "Não foi possível marcar a notificação como lida.", "delete": "Não foi possível excluir a notificação."}},
+  "alert": {"close": "Fechar aviso", "eyebrow": "INFORMAÇÃO IMPORTANTE", "title": "Sobre esta análise", "understood": "Entendi"},
+  "header": {
+    "settings": "Configurações",
+    "back": "Voltar",
+    "search": "Abrir pesquisa",
+    "notifications": "Notificações"
+  },
+  "search": {
+    "close": "Fechar pesquisa",
+    "placeholder": "Pesquisar imóveis",
+    "stopVoice": "Parar pesquisa por voz",
+    "voice": "Pesquisa por voz",
+    "openFilters": "Abrir filtros",
+    "closeFilters": "Fechar filtros",
+    "interpreting": "Interpretando sua busca...",
+    "city": "Cidade",
+    "region": "Região",
+    "type": "Tipo",
+    "sort": "Ordenação",
+    "recent": "Pesquisas recentes",
+    "aiSearch": "Pesquisar com IA",
+    "interpretingShort": "Interpretando...",
+    "sortOptions": {"distance": "Mais próximos", "asc": "A a Z", "desc": "Z a A"},
+    "typeOptions": {"LANCAMENTO": "Lançamentos", "DISPONIVEL": "Disponíveis", "EM_OBRAS": "Em Obras"},
+    "errors": {"speechRecognition": "Não foi possível reconhecer sua fala.", "maxLength": "A busca pode ter no máximo 500 caracteres.", "aiInterpretation": "Não foi possível interpretar sua busca com IA.", "voiceUnavailable": "Pesquisa por voz indisponível neste ambiente. Use um development build do aplicativo.", "microphonePermission": "Permissão de microfone negada. Habilite o acesso para usar a pesquisa por voz.", "voiceStart": "Não foi possível iniciar a pesquisa por voz."},
+    "history": {"minBedrooms": "{{count}}+ dormitórios", "maxPrice": "Até {{price}}", "filtered": "Pesquisa com filtros"}
+  },
+  "properties": {
+    "loading": "Carregando propriedades...",
+    "empty": "Nenhuma propriedade encontrada com os filtros aplicados.",
+    "clearSearch": "Limpar busca e filtros",
+    "property": "Imóvel",
+    "untitled": "Imóvel sem título",
+    "unknownCity": "Cidade não informada",
+    "lessThanKm": "A menos de 1 km de distância",
+    "kmAway": "{{distance}} km de distância",
+    "bedrooms": "{{area}} m² - {{rooms}} dormitórios",
+    "amenity": "Diferencial",
+    "learnMore": "Saiba Mais",
+    "propertyImage": "Imagem do imóvel {{title}}",
+    "removeFavorite": "Remover dos favoritos",
+    "addFavorite": "Adicionar aos favoritos",
+    "images": "{{count}} imagens",
+    "openDetails": "Abrir detalhes de {{title}}"
+    ,"loadError": "Não foi possível carregar os imóveis. Tente novamente."
+    ,"details": {"loading": "Carregando detalhes do imóvel...", "notFound": "Imóvel não encontrado.", "loadError": "Não foi possível carregar os detalhes do imóvel. Tente novamente.", "imageCount": "Imagem {{current}} de {{total}}", "viewGallery": "VER GALERIA", "viewFloorPlan": "VER PLANTA", "watchVideo": "ASSISTIR VÍDEO", "description": "DESCRIÇÃO", "amenities": "DIFERENCIAIS", "qualities": "QUALIDADES", "qualitiesError": "Não foi possível carregar as qualidades. Toque para tentar novamente.", "qualityHint": "Abre uma explicação resumida", "qualityLabel": "{{label}}: {{score}}. Ver explicação", "location": "LOCALIZAÇÃO", "locationUnknown": "Localização não informada", "typeUnknown": "Tipo não informado", "bedrooms": "{{count}} dormitório", "unavailable": "Indisponível", "viewOnMaps": "Ver no Google Maps", "propertyVideo": "Vídeo do imóvel", "closeVideo": "Fechar vídeo", "closeQualityExplanation": "Fechar explicação da insígnia"}
+    ,"gallery": {"title": "Galeria ({{count}})", "loading": "Carregando galeria...", "empty": "Nenhuma imagem disponível", "notFound": "Imóvel não encontrado.", "loadError": "Não foi possível carregar as mídias do imóvel. Tente novamente.", "openImage": "Abrir imagem {{index}}", "imageTitle": "Imagem da galeria"}
+    ,"video": {"title": "Vídeos ({{count}})", "loading": "Carregando vídeos...", "empty": "Nenhum vídeo disponível", "item": "Vídeo {{index}}", "openYouTube": "Abrir no YouTube", "open": "Abrir vídeo"}
+    ,"plan": {"title": "Plantas ({{count}})", "loading": "Carregando plantas...", "empty": "Nenhuma planta disponível", "item": "Planta {{index}}", "open": "Abrir planta {{index}}", "modalTitle": "Planta do imóvel"}
+  },
+  "errors": {
+    "favorite": "Não foi possível atualizar favoritos.",
+    "tryAgain": "Tente novamente."
+  },
+  "form": {
+    "done": "Concluído"
+  },
+  "trend": {
+    "warning": "As análises preditivas de IA são estimativas baseadas na amostra disponível e podem apresentar imprecisões. Use-as como apoio à sua análise.",
+    "title": "Tendências de mercado",
+    "marketView": "VISÃO DE MERCADO",
+    "context": "Apartamentos em São Paulo · {{period}}",
+    "filters": "Filtros da análise",
+    "note": "Os filtros serão aplicados ao gráfico e aos indicadores simultaneamente.",
+    "ai": "Análise da IA",
+    "priceEvolution": "Evolução do preço por m²",
+    "median": "Mediana anual das transações válidas",
+    "chart": "Gráfico de linha da evolução do preço por metro quadrado",
+    "legend": "Preço mediano por m²",
+    "chartNote": "Acompanhe a direção dos preços no período selecionado."
+    ,"analysis": "Na amostra de {{neighborhood}}, para {{area}}, os preços apresentam {{direction}} de {{variation}} no período de {{period}}. Esta é uma estimativa orientativa baseada nas transações da amostra filtrada, oferecida como apoio à leitura do mercado; não representa uma previsão certa nem substitui uma análise completa."
+    ,"directions": {"up": "valorização", "down": "redução"}
+    ,"indicators": {"marketReading": "Leitura do mercado", "up": "Valorização {{value}}%", "down": "Redução {{value}}%", "comparison": "Comparação com o ano anterior na amostra filtrada.", "medianPrice": "Preço mediano m²", "latestYear": "Último ano disponível"}
+    ,"axis12k": "R$ 12 mil", "axis10k": "R$ 10 mil", "axis8k": "R$ 8 mil"
+    ,"filters": {"openOptions": "Toque para abrir as opções", "closeOptions": "Toque para fechar as opções", "optionsFor": "Opções de {{label}}", "period": {"label": "Período", "options": {"jan-2022-aug-2026": "Jan/2022 - Ago/2026", "last-year": "Último ano"}}, "neighborhood": {"label": "Bairro", "options": {"all": "Todos os bairros", "centro": "Centro", "jardim-america": "Jardim América"}}, "area": {"label": "Faixa de área construída", "options": {"all": "Todas as áreas", "up-to-100": "Até 100 m²", "over-100": "Acima de 100 m²"}}}
+  }
+}

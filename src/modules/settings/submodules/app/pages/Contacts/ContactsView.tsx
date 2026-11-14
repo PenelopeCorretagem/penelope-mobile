@@ -5,6 +5,7 @@ import Section from '@shared/components/layout/Section'
 import Heading from '@shared/components/ui/Heading'
 import Text from '@shared/components/ui/Text'
 import { ContactFormView } from '../../components/ContactForm'
+import { useTranslation } from 'react-i18next'
 
 /**
  * ContactsView - Página institucional de contato.
@@ -20,6 +21,7 @@ import { ContactFormView } from '../../components/ContactForm'
  */
 export function ContactsView() {
   const scrollViewRef = useRef<ScrollView>(null)
+  const { t } = useTranslation()
   const scrollToFocusedField = () => {
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 250)
   }
@@ -39,7 +41,7 @@ export function ContactsView() {
             fontWeight: '700',
           }}
         >
-          Entre em contato
+          {t('settings.contacts.title')}
         </Heading>
 
         {/* Texto Descritivo */}
@@ -52,7 +54,7 @@ export function ContactsView() {
             textAlign: 'center',
           }}
         >
-          Tem dúvidas, sugestões ou deseja conhecer mais sobre os nossos serviços? Envie uma mensagem ou acesse um dos nossos canais.
+          {t('settings.contacts.description')}
         </Text>
 
 

@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native'
 import Text from '@shared/components/ui/Text'
 import { colors, spacing } from '@shared/styles/style'
 import { TrendFilter, TrendFilterKey } from '../../pages/TrendAnalysis/TrendAnalysisModel'
+import { useTranslation } from 'react-i18next'
 
 type TrendFilterControlProps = {
   filter: TrendFilter
@@ -13,34 +14,37 @@ type TrendFilterControlProps = {
 }
 
 export default function TrendFilterControlView({ filter, value, expanded, onToggle, onSelect }: TrendFilterControlProps) {
+  const { t } = useTranslation()
+  const label = t(filter.labelKey)
+  const translateOption = (option: string) => t(`trend.filters.${filter.key}.options.${option}`)
   return (
     <View style={styles.filterControl}>
       <Pressable
-        accessibilityHint={expanded ? 'Toque para fechar as opções' : 'Toque para abrir as opções'}
-        accessibilityLabel={`${filter.label}: ${value}`}
+        accessibilityHint={expanded ? t('trend.filters.closeOptions') : t('trend.filters.openOptions')}
+        accessibilityLabel={`${label}: ${translateOption(value)}`}
         accessibilityRole="button"
         accessibilityState={{ expanded }}
         onPress={() => onToggle(filter.key)}
         style={styles.filterTrigger}
       >
-        <Text style={styles.filterLabel}>{filter.label}</Text>
+        <Text style={styles.filterLabel}>{label}</Text>
         <View style={styles.filterValueRow}>
-          <Text style={styles.filterValue}>{value}</Text>
+          <Text style={styles.filterValue}>{translateOption(value)}</Text>
           <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={16} color={colors.secondaryLight} />
         </View>
       </Pressable>
       {expanded && (
-        <View accessibilityLabel={`Opções de ${filter.label}`} style={styles.optionsList}>
+        <View accessibilityLabel={t('trend.filters.optionsFor', { label })} style={styles.optionsList}>
           {filter.options.map((option) => (
             <Pressable
-              accessibilityLabel={`${filter.label}: ${option}`}
+              accessibilityLabel={`${label}: ${translateOption(option)}`}
               accessibilityRole="button"
               accessibilityState={{ selected: option === value }}
               key={option}
               onPress={() => onSelect(filter.key, option)}
               style={[styles.option, option === value && styles.selectedOption]}
             >
-              <Text style={[styles.optionText, option === value && styles.selectedOptionText]}>{option}</Text>
+              <Text style={[styles.optionText, option === value && styles.selectedOptionText]}>{translateOption(option)}</Text>
               {option === value && <Ionicons name="checkmark" size={16} color={colors.primary} />}
             </Pressable>
           ))}

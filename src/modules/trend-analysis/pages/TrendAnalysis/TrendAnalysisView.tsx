@@ -7,10 +7,12 @@ import Text from '@shared/components/ui/Text'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import TrendFilterControl from '../../components/TrendFilterControl'
 import { useTrendAnalysisViewModel } from './useTrendAnalysisViewModel'
+import { useTranslation } from 'react-i18next'
 
 export default function TrendAnalysisView() {
   const [filtersExpanded, setFiltersExpanded] = useState(false)
   const [alertKey, setAlertKey] = useState(0)
+  const { t } = useTranslation()
   const { width } = useWindowDimensions()
   const {
     points,
@@ -44,16 +46,16 @@ export default function TrendAnalysisView() {
     <>
       <AlertView
         key={alertKey}
-        message="As análises preditivas de IA são estimativas baseadas na amostra disponível e podem apresentar imprecisões. Use-as como apoio à sua análise."
+        message={t('trend.warning')}
         presentation="modal"
         variant="info"
       />
       <ScrollView contentContainerStyle={styles.content} style={sharedStyles.screen} showsVerticalScrollIndicator={false}>
         <View style={styles.marketSection}>
         <View style={styles.pageHeader}>
-          <Text style={styles.pageTitle}>Tendências de mercado</Text>
+          <Text style={styles.pageTitle}>{t('trend.title')}</Text>
           <Pressable
-            accessibilityLabel={filtersExpanded ? 'Fechar filtros' : 'Abrir filtros'}
+            accessibilityLabel={filtersExpanded ? t('search.closeFilters') : t('search.openFilters')}
             accessibilityRole="button"
             accessibilityState={{ expanded: filtersExpanded }}
             onPress={() => setFiltersExpanded((current) => !current)}
@@ -64,20 +66,20 @@ export default function TrendAnalysisView() {
         </View>
         <View style={styles.contextHeader}>
           <View style={styles.contextCopy}>
-            <Text style={styles.eyebrow}>VISÃO DE MERCADO</Text>
-            <Text style={styles.contextText}>Apartamentos em São Paulo · {filterValues.period}</Text>
+            <Text style={styles.eyebrow}>{t('trend.marketView')}</Text>
+            <Text style={styles.contextText}>{t('trend.context', { period: t(`trend.filters.period.options.${filterValues.period}`) })}</Text>
           </View>
         </View>
         {filtersExpanded && (
           <View style={styles.filtersOverlay}>
             <View style={styles.filtersHeading}>
-              <View style={styles.sectionHeading}><Ionicons name="funnel-outline" size={18} color={colors.primary} /><Text style={styles.sectionTitle}>Filtros da análise</Text></View>
-              <Pressable accessibilityLabel="Limpar filtros" accessibilityRole="button" onPress={clearFilters}><Text style={styles.clearText}>Limpar filtros</Text></Pressable>
+              <View style={styles.sectionHeading}><Ionicons name="funnel-outline" size={18} color={colors.primary} /><Text style={styles.sectionTitle}>{t('trend.filters')}</Text></View>
+              <Pressable accessibilityLabel={t('common.clearFilters')} accessibilityRole="button" onPress={clearFilters}><Text style={styles.clearText}>{t('common.clearFilters')}</Text></Pressable>
             </View>
             <View style={styles.divider} />
             <TrendFilterControl expanded={expandedFilter === 'neighborhood'} filter={filterDefinitions[1]} value={filterValues.neighborhood} onSelect={selectFilter} onToggle={toggleFilter} />
             <TrendFilterControl expanded={expandedFilter === 'area'} filter={filterDefinitions[2]} value={filterValues.area} onSelect={selectFilter} onToggle={toggleFilter} />
-            <Text style={styles.filterNote}>Os filtros serão aplicados ao gráfico e aos indicadores simultaneamente.</Text>
+            <Text style={styles.filterNote}>{t('trend.note')}</Text>
           </View>
         )}
         <View style={styles.indicators}>
@@ -99,25 +101,25 @@ export default function TrendAnalysisView() {
             </View>
           ))}
         </View>
-        <View accessible accessibilityLabel={`Análise da IA. ${marketAnalysis}`} accessibilityRole="summary" style={styles.analysisCard}>
+        <View accessible accessibilityLabel={`${t('trend.ai')}. ${marketAnalysis}`} accessibilityRole="summary" style={styles.analysisCard}>
           <View style={styles.analysisHeading}>
             <Ionicons name="sparkles-outline" size={20} color={colors.primary} />
-            <Text style={styles.analysisTitle}>Análise da IA</Text>
+            <Text style={styles.analysisTitle}>{t('trend.ai')}</Text>
           </View>
           <Text style={styles.analysisText}>{marketAnalysis}</Text>
         </View>
         <View style={styles.chartCard}>
           <View style={styles.chartHeading}>
             <View>
-              <Text style={styles.sectionTitle}>Evolução do preço por m²</Text>
-              <Text style={styles.chartSubtitle}>Mediana anual das transações válidas</Text>
+              <Text style={styles.sectionTitle}>{t('trend.priceEvolution')}</Text>
+              <Text style={styles.chartSubtitle}>{t('trend.median')}</Text>
             </View>
             <View style={styles.chartIcon}>
               <Ionicons name="bar-chart-outline" size={18} color={colors.primary} />
             </View>
           </View>
           <View
-            accessibilityLabel="Gráfico de linha da evolução do preço por metro quadrado"
+            accessibilityLabel={t('trend.chart')}
             accessibilityRole="image"
             style={[styles.chart, { height: 178 }]}
           >
@@ -125,9 +127,9 @@ export default function TrendAnalysisView() {
               <View key={line} style={[styles.gridLine, { top: 18 + line * 30 }]} />
             ))}
             <View style={[styles.yLabels, { height: plotHeight }]}>
-              <Text style={styles.axisLabel}>R$ 12k</Text>
-              <Text style={styles.axisLabel}>R$ 10k</Text>
-              <Text style={styles.axisLabel}>R$ 8k</Text>
+              <Text style={styles.axisLabel}>{t('trend.axis12k')}</Text>
+              <Text style={styles.axisLabel}>{t('trend.axis10k')}</Text>
+              <Text style={styles.axisLabel}>{t('trend.axis8k')}</Text>
             </View>
             <View style={[styles.plot, { width: plotWidth, height: plotHeight }]}>
               <View style={styles.areaFill} />
@@ -160,9 +162,9 @@ export default function TrendAnalysisView() {
           </View>
           <View style={styles.legend}>
             <View style={styles.legendDot} />
-            <Text style={styles.legendText}>Preço mediano por m²</Text>
+            <Text style={styles.legendText}>{t('trend.legend')}</Text>
           </View>
-          <Text style={styles.chartNote}>Acompanhe a direção dos preços no período selecionado.</Text>
+          <Text style={styles.chartNote}>{t('trend.chartNote')}</Text>
         </View>
         </View>
       </ScrollView>

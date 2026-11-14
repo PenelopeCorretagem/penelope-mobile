@@ -6,6 +6,7 @@ import Logo from '@shared/components/ui/Logo'
 import Text from '@shared/components/ui/Text'
 import type { AlertVariant } from '@shared/components/feedback/Alert'
 import { colors, spacing } from '@shared/styles/style'
+import { useTranslation } from 'react-i18next'
 
 export type AuthInputField = FormField
 
@@ -14,6 +15,7 @@ type AuthScreenProps = {
   subtitle: string
   fields: AuthInputField[]
   submitText: string
+  submittingText?: string
   isSubmitting: boolean
   onSubmit: () => void
   onNext?: () => void
@@ -37,6 +39,7 @@ export default function AuthScreenView({
   subtitle,
   fields,
   submitText,
+  submittingText,
   isSubmitting,
   onSubmit,
   onNext,
@@ -54,6 +57,7 @@ export default function AuthScreenView({
   statusVariant,
   statusLoading,
 }: AuthScreenProps) {
+  const { t } = useTranslation()
   const scrollViewRef = useRef<ScrollView>(null)
   const scrollToFocusedField = () => {
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 250)
@@ -66,10 +70,11 @@ export default function AuthScreenView({
           <Logo width={160} height={62} color={colors.primary} style={styles.logo} />
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
-          {step && totalSteps ? <Text style={styles.stepIndicator}>Etapa {step} de {totalSteps}</Text> : null}
+          {step && totalSteps ? <Text style={styles.stepIndicator}>{t('auth.step', { step, total: totalSteps })}</Text> : null}
           <Form
             fields={fields}
             submitText={submitText}
+            submittingText={submittingText}
             isSubmitting={isSubmitting}
             onSubmit={onSubmit}
             onFieldFocus={scrollToFocusedField}

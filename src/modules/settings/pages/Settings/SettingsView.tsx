@@ -9,45 +9,22 @@ import SettingsOption from '../../components/SettingsOption'
 import { getProfileInitials } from '@settings/submodules/acount/pages/Account/ProfileModel'
 import { useProfileViewModel } from '@settings/submodules/acount/pages/Account/useProfileViewModel'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
-
-const options = [
-  {
-    title: 'Meu perfil',
-    description: 'Edite seus dados pessoais.',
-    icon: 'person-circle-outline' as const,
-    href: APP_ROUTES.conta,
-  },
-  {
-    title: 'Alterar senha',
-    description: 'Mantenha sua conta protegida.',
-    icon: 'lock-closed-outline' as const,
-    href: APP_ROUTES.senha,
-  },
-  {
-    title: 'Entre em contato',
-    description: 'Fale conoscos.',
-    icon: 'mail-outline' as const,
-    href: APP_ROUTES.contato,
-  },
-  {
-    title: 'Sobre o aplicativo',
-    description: 'Conheça a Penélope Imóveis.',
-    icon: 'information-circle-outline' as const,
-    href: APP_ROUTES.sobre,
-  },
-  {
-    title: 'Sair',
-    description: 'Voltar para a tela de login.',
-    href: APP_ROUTES.root,
-    icon: 'log-out-outline' as const,
-  },
-]
+import { useTranslation } from 'react-i18next'
+import i18n from '../../../../../i18n'
 
 export default function SettingsView() {
   const scrollRef = useRef<ScrollView>(null)
   useScrollToTop(scrollRef)
   const { deleteAccount, logout } = useAuth()
   const { profile, isLoading, error } = useProfileViewModel()
+  const { t } = useTranslation()
+  const options = {
+    profile: { title: t('settings.profile'), description: t('settings.profileDescription'), icon: 'person-circle-outline' as const, href: APP_ROUTES.conta },
+    password: { title: t('settings.changePassword'), description: t('settings.changePasswordDescription'), icon: 'lock-closed-outline' as const, href: APP_ROUTES.senha },
+    contact: { title: t('settings.contact'), description: t('settings.contactDescription'), icon: 'mail-outline' as const, href: APP_ROUTES.contato },
+    about: { title: t('settings.about'), description: t('settings.aboutDescription'), icon: 'information-circle-outline' as const, href: APP_ROUTES.sobre },
+    logout: { title: t('settings.logout'), description: t('settings.logoutDescription'), href: APP_ROUTES.root, icon: 'log-out-outline' as const },
+  }
 
   return (
     <ScrollView ref={scrollRef} style={sharedStyles.screen} contentContainerStyle={styles.content}>
@@ -56,29 +33,29 @@ export default function SettingsView() {
           {profile.profileImage ? <Image source={{ uri: profile.profileImage }} style={styles.avatarImage} /> : <Text style={styles.avatarText}>{getProfileInitials(profile.name)}</Text>}
         </View>
         <View style={styles.userCopy}>
-          <Text style={styles.greeting}>Olá</Text>
-          <Text style={styles.userName}>{isLoading ? 'Carregando...' : profile.name}</Text>
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          <Text style={styles.greeting}>{t('settings.hello')}</Text>
+          <Text style={styles.userName}>{isLoading ? t('common.loading') : profile.name}</Text>
+          {error ? <Text style={styles.errorText}>{t(error, { defaultValue: error })}</Text> : null}
         </View>
         <Ionicons name="create-outline" size={22} color={colors.primary} />
       </Pressable>
 
-      <SettingsSection title="Conta">
-        <SettingsOption {...options[0]} />
-        <SettingsOption {...options[1]} />
+      <SettingsSection title={t('settings.account')}>
+        <SettingsOption {...options.profile} />
+        <SettingsOption {...options.password} />
         <SettingsOption
-          title="Excluir conta"
-          description="Remova permanentemente sua conta."
+          title={t('settings.deleteAccount')}
+          description={t('settings.deleteDescription')}
           icon="trash-outline"
           tone="danger"
           onPress={() => {
             Alert.alert(
-              'Excluir conta',
-              'Essa ação é permanente. Deseja realmente excluir sua conta?',
+              t('settings.deleteAccount'),
+              t('settings.deleteWarning'),
               [
-                { text: 'Cancelar', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 {
-                  text: 'Excluir conta',
+                  text: t('settings.deleteAccount'),
                   style: 'destructive',
                   onPress: () => {
                     deleteAccount()
@@ -91,11 +68,17 @@ export default function SettingsView() {
         />
       </SettingsSection>
 
-      <SettingsSection title="Aplicativo">
-        <SettingsOption {...options[2]} />
-        <SettingsOption {...options[3]} />
+      <SettingsSection title={t('settings.application')}>
+        <SettingsOption {...options.contact} />
+        <SettingsOption {...options.about} />
         <SettingsOption
-          {...options[4]}
+          title={t('settings.language')}
+          description={`${t('settings.languageDescription')}: ${i18n.language.startsWith('pt') ? t('settings.portuguese') : t('settings.english')}`}
+          icon="language-outline"
+          onPress={() => i18n.changeLanguage(i18n.language.startsWith('pt') ? 'en' : 'pt')}
+        />
+        <SettingsOption
+          {...options.logout}
           tone="danger"
           onPress={() => {
             logout()

@@ -7,6 +7,7 @@ import ButtonView from '@shared/components/ui/Button'
 import { colors, spacing } from '@shared/styles/style'
 import { useSearchModalViewModel } from './useSearchModalViewModel'
 import { getSearchHistoryLabel } from './SearchModalModel'
+import { useTranslation } from 'react-i18next'
 
 type SearchModalViewProps = {
   visible: boolean
@@ -18,7 +19,7 @@ type FilterValue = string | null
 type OptionGroupProps = {
   label: string
   onSelect: (value: FilterValue) => void
-  options: Array<{ label: string; value: FilterValue }>
+  options: Array<{ label?: string; labelKey?: string; value: FilterValue }>
   value: FilterValue
 }
 
@@ -44,6 +45,7 @@ function OptionGroup({ label, onSelect, options, value }: OptionGroupProps) {
 }
 
 export default function SearchModalView({ visible, onClose }: SearchModalViewProps) {
+  const { t } = useTranslation()
   const {
     filters,
     handleClose,
@@ -80,7 +82,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
         <View style={styles.header}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Fechar pesquisa"
+            accessibilityLabel={t('search.close')}
             onPress={handleClose}
             style={styles.actionButton}
           >
@@ -97,7 +99,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
               maxLength={500}
               onChangeText={(searchTerm) => updateFilters((currentFilters) => ({ ...currentFilters, searchTerm }))}
               onSubmitEditing={handleSubmitSearch}
-              placeholder="Pesquisar imóveis"
+              placeholder={t('search.placeholder')}
               placeholderTextColor={colors.mutedText}
               returnKeyType="search"
               style={styles.searchInput}
@@ -107,7 +109,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
 
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={isListening ? 'Parar pesquisa por voz' : 'Pesquisa por voz'}
+            accessibilityLabel={isListening ? t('search.stopVoice') : t('search.voice')}
             disabled={isInterpretingSearch}
             onPress={isListening ? () => handleVoiceSearch(false) : () => handleVoiceSearch(true)}
             style={styles.actionButton}
@@ -117,7 +119,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
 
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={isExpanded ? 'Fechar filtros' : 'Abrir filtros'}
+            accessibilityLabel={isExpanded ? t('search.closeFilters') : t('search.openFilters')}
             onPress={() => setIsExpanded((value) => !value)}
             style={styles.actionButton}
           >
@@ -126,47 +128,53 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
         </View>
 
         <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
-          {speechError ? <Text style={styles.errorText}>{speechError}</Text> : null}
-          {aiSearchError ? <Text style={styles.errorText}>{aiSearchError}</Text> : null}
+          {speechError ? <Text style={styles.errorText}>{t(speechError)}</Text> : null}
+          {aiSearchError ? <Text style={styles.errorText}>{t(aiSearchError)}</Text> : null}
           {isInterpretingSearch ? (
             <View style={styles.aiLoading}>
               <ActivityIndicator color={colors.primary} size="small" />
-              <Text style={styles.aiLoadingText}>Interpretando sua busca...</Text>
+              <Text style={styles.aiLoadingText}>{t('search.interpreting')}</Text>
             </View>
           ) : null}
           {isExpanded ? (
             <View style={styles.filterPanel}>
               <OptionGroup
-                label="Cidade"
+                label={t('search.city')}
                 onSelect={(city) => updateFilters((currentFilters) => ({ ...currentFilters, city }))}
-                options={cityOptions}
+                options={cityOptions.map((option) => ({
+                  ...option,
+                  label: 'label' in option ? option.label : t(option.labelKey),
+                }))}
                 value={filters.city}
               />
               <OptionGroup
-                label="Região"
+                label={t('search.region')}
                 onSelect={(region) => updateFilters((currentFilters) => ({ ...currentFilters, region }))}
-                options={regionOptions}
+                options={regionOptions.map((option) => ({
+                  ...option,
+                  label: 'label' in option ? option.label : t(option.labelKey),
+                }))}
                 value={filters.region}
               />
               <OptionGroup
-                label="Tipo"
+                label={t('search.type')}
                 onSelect={(type) => updateFilters((currentFilters) => ({ ...currentFilters, type: (type ?? 'TODOS') as PropertiesFilters['type'] }))}
                 options={[
-                  { label: 'Todos', value: 'TODOS' },
-                  ...Object.values(PROPERTY_TYPES).map(({ domainKey, filterLabel }) => ({ label: filterLabel, value: domainKey })),
+                  { label: t('common.all'), value: 'TODOS' },
+                  ...Object.values(PROPERTY_TYPES).map(({ domainKey }) => ({ label: t(`search.typeOptions.${domainKey}`), value: domainKey })),
                 ]}
                 value={filters.type}
               />
               <OptionGroup
-                label="Ordenação"
+                label={t('search.sort')}
                 onSelect={(sortOrder) => updateFilters((currentFilters) => ({ ...currentFilters, sortOrder: (sortOrder ?? 'distance') as PropertiesFilters['sortOrder'] }))}
-                options={sortOptions}
+                options={sortOptions.map((option) => ({ label: t(option.labelKey), value: option.value }))}
                 value={filters.sortOrder}
               />
 
               <ButtonView
-                accessibilityLabel="Limpar filtros"
-                label="Limpar filtros"
+                accessibilityLabel={t('common.clearFilters')}
+                label={t('common.clearFilters')}
                 onPress={resetFilters}
                 style={({ pressed }) => ({
                   backgroundColor: colors.secondary,
@@ -176,9 +184,9 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
                 })}
               />
               <ButtonView
-                accessibilityLabel="Aplicar filtros"
+                accessibilityLabel={t('common.applyFilters')}
                 disabled={isInterpretingSearch}
-                label={isInterpretingSearch ? 'Interpretando...' : filters.searchTerm.trim() ? 'Pesquisar com IA' : 'Aplicar filtros'}
+                label={isInterpretingSearch ? t('search.interpretingShort') : filters.searchTerm.trim() ? t('search.aiSearch') : t('common.applyFilters')}
                 onPress={handleSubmitSearch}
                 style={({ pressed }) => ({
                   backgroundColor: colors.primary,
@@ -190,7 +198,7 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
             </View>
           ) : searchHistory.length > 0 ? (
             <View style={styles.historyPanel}>
-              <Text style={styles.historyTitle}>Pesquisas recentes</Text>
+              <Text style={styles.historyTitle}>{t('search.recent')}</Text>
               {searchHistory.map((entry, index) => (
                 <Pressable
                   accessibilityRole="button"
@@ -199,7 +207,12 @@ export default function SearchModalView({ visible, onClose }: SearchModalViewPro
                   style={styles.historyItem}
                 >
                   <Ionicons name="time-outline" size={18} color={colors.mutedText} />
-                  <Text style={styles.historyText}>{getSearchHistoryLabel(entry)}</Text>
+                  <Text style={styles.historyText}>
+                    {(() => {
+                      const label = getSearchHistoryLabel(entry)
+                      return 'value' in label ? label.value : t(label.key, label.params ?? {})
+                    })()}
+                  </Text>
                 </Pressable>
               ))}
             </View>

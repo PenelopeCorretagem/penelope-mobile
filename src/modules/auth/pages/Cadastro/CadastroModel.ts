@@ -23,38 +23,38 @@ export function getCadastroFieldError(
   const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
 
   if (field === "nomeCompleto") {
-    if (!form.nomeCompleto.trim()) return "Informe seu nome completo.";
+    if (!form.nomeCompleto.trim()) return "auth.validation.fullNameRequired";
     if (form.nomeCompleto.trim().length < 2)
-      return "Seu nome deve ter pelo menos 2 letras.";
+      return "auth.validation.fullNameMinLength";
     return "";
   }
 
   if (field === "dataNascimento") {
-    if (!form.dataNascimento.trim()) return "Informe sua data de nascimento.";
+    if (!form.dataNascimento.trim()) return "auth.validation.birthDateRequired";
     if (!isValidBirthDate(form.dataNascimento)) {
-      return "Informe uma data válida no formato DD/MM/AAAA.";
+      return "auth.validation.birthDateInvalid";
     }
     if (isFutureBirthDate(form.dataNascimento)) {
-      return "A data de nascimento não pode ser futura.";
+      return "auth.validation.birthDateFuture";
     }
     return "";
   }
 
   if (field === "email") {
-    if (!form.email.trim()) return "Informe seu e-mail.";
-    if (!emailIsValid) return "Informe um e-mail válido.";
+    if (!form.email.trim()) return "auth.validation.emailRequired";
+    if (!emailIsValid) return "auth.validation.emailInvalid";
     return "";
   }
 
   if (field === "senha") {
-    if (!form.senha.trim()) return "Crie uma senha.";
+    if (!form.senha.trim()) return "auth.validation.passwordCreateRequired";
     if (form.senha.length < 6)
-      return "A senha deve ter no mínimo 6 caracteres.";
+      return "auth.validation.passwordMinLength";
     return "";
   }
 
-  if (!form.confirmSenha.trim()) return "Confirme sua senha.";
-  if (form.senha !== form.confirmSenha) return "As senhas precisam ser iguais.";
+  if (!form.confirmSenha.trim()) return "auth.validation.passwordConfirmRequired";
+  if (form.senha !== form.confirmSenha) return "auth.validation.passwordMismatch";
 
   return "";
 }
@@ -75,14 +75,14 @@ export function validateCadastroStep(
 ) {
   const hasErrors = fields.some((field) => Boolean(getCadastroFieldError(form, field)));
 
-  return hasErrors ? "Preencha os campos corretamente para continuar." : null;
+  return hasErrors ? "auth.validation.stepInvalid" : null;
 }
 
 export function validateCadastroForm(form: CadastroFormState) {
   const errors = getCadastroFieldErrors(form);
 
   if (Object.values(errors).some(Boolean)) {
-    return "Preencha todos os campos corretamente para concluir o cadastro.";
+    return "auth.validation.formInvalid";
   }
 
   return null;

@@ -9,8 +9,10 @@ import { colors, spacing } from '@shared/styles/style'
 import { APP_ROUTES } from '@shared/constants/routes'
 import { getProfileInitials } from './ProfileModel'
 import { useProfileViewModel } from './useProfileViewModel'
+import { useTranslation } from 'react-i18next'
 
 export default function AccountView() {
+  const { t } = useTranslation()
   const { profile, isLoading, isSaving, error, successMessage, updateField, pickProfileImage, takeProfileImage, removeProfileImage, saveProfile } = useProfileViewModel()
   const [isImageModalVisible, setIsImageModalVisible] = useState(false)
   const [isRedirecting, setIsRedirecting] = useState(false)
@@ -38,8 +40,8 @@ export default function AccountView() {
   const fields: FormField[] = [
     {
       key: 'name',
-      label: 'Nome completo',
-      placeholder: 'Digite seu nome completo',
+      label: t('auth.fullName'),
+      placeholder: t('auth.fullNamePlaceholder'),
       value: profile.name,
       autoCapitalize: 'words',
       inputBackgroundColor: colors.primaryLight,
@@ -47,8 +49,8 @@ export default function AccountView() {
     },
     {
       key: 'email',
-      label: 'E-mail',
-      placeholder: 'Digite seu e-mail',
+      label: t('auth.email'),
+      placeholder: t('settings.emailPlaceholder'),
       value: profile.email,
       keyboardType: 'email-address',
       inputBackgroundColor: colors.primaryLight,
@@ -56,8 +58,8 @@ export default function AccountView() {
     },
     {
       key: 'birthDate',
-      label: 'Data de nascimento',
-      placeholder: 'Selecione sua data de nascimento',
+      label: t('auth.birthDate'),
+      placeholder: t('settings.birthDatePlaceholder'),
       value: profile.birthDate,
       type: 'date',
       inputBackgroundColor: colors.primaryLight,
@@ -70,7 +72,7 @@ export default function AccountView() {
       <ScrollView ref={scrollViewRef} automaticallyAdjustKeyboardInsets contentContainerStyle={[styles.content,]} keyboardShouldPersistTaps="handled">
         <Section>
           <View style={styles.profileImageSection}>
-            <Pressable accessibilityLabel="Editar imagem de perfil" accessibilityRole="button" onPress={() => setIsImageModalVisible(true)} style={styles.avatarWrapper}>
+            <Pressable accessibilityLabel={t('settings.editProfileImage')} accessibilityRole="button" onPress={() => setIsImageModalVisible(true)} style={styles.avatarWrapper}>
               <View style={styles.avatar}>
               {profile.profileImage ? <Image source={{ uri: profile.profileImage }} style={styles.avatarImage} /> : <Text style={styles.avatarText}>{getProfileInitials(profile.name)}</Text>}
               </View>
@@ -79,33 +81,33 @@ export default function AccountView() {
               </View>
             </Pressable>
           </View>
-          <Text style={styles.title}>Meu perfil</Text>
-          <Text style={styles.subtitle}>Atualize seus dados pessoais.</Text>
-          {isLoading ? <Text style={styles.statusText}>Carregando perfil...</Text> : null}
-          <Form fields={fields} submitText="Salvar alterações" isSubmitting={isSaving || isLoading || isRedirecting} onSubmit={() => void handleSaveProfile()} onFieldFocus={scrollToFocusedField} statusMessage={error ?? successMessage} statusVariant={successMessage ? 'success' : 'error'} />
+          <Text style={styles.title}>{t('settings.profile')}</Text>
+          <Text style={styles.subtitle}>{t('settings.profileDescription')}</Text>
+          {isLoading ? <Text style={styles.statusText}>{t('settings.loadingProfile')}</Text> : null}
+          <Form fields={fields} submitText={t('settings.saveChanges')} submittingText={t('settings.savingChanges')} isSubmitting={isSaving || isLoading || isRedirecting} onSubmit={() => void handleSaveProfile()} onFieldFocus={scrollToFocusedField} statusMessage={error ? t(error) : successMessage ? t(successMessage) : undefined} statusVariant={successMessage ? 'success' : 'error'} />
         </Section>
       </ScrollView>
       <Modal animationType="fade" transparent visible={isImageModalVisible} onRequestClose={closeImageModal}>
         <Pressable style={styles.modalBackdrop} onPress={closeImageModal}>
           <Pressable style={styles.modalCard} onPress={(event) => event.stopPropagation()}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Imagem de perfil</Text>
-              <Pressable accessibilityLabel="Fechar" accessibilityRole="button" onPress={closeImageModal}>
+              <Text style={styles.modalTitle}>{t('settings.profileImage')}</Text>
+              <Pressable accessibilityLabel={t('common.close')} accessibilityRole="button" onPress={closeImageModal}>
                 <Ionicons name="close" size={24} color={colors.text} />
               </Pressable>
             </View>
             <Pressable style={styles.modalOption} onPress={() => handleImageAction(pickProfileImage)} accessibilityRole="button">
               <Ionicons name="images-outline" size={24} color={colors.primary} />
-              <Text style={styles.modalOptionText}>Escolher da galeria</Text>
+              <Text style={styles.modalOptionText}>{t('settings.chooseFromGallery')}</Text>
             </Pressable>
             <Pressable style={styles.modalOption} onPress={() => handleImageAction(takeProfileImage)} accessibilityRole="button">
               <Ionicons name="camera-outline" size={24} color={colors.primary} />
-              <Text style={styles.modalOptionText}>Tirar foto</Text>
+              <Text style={styles.modalOptionText}>{t('settings.takePhoto')}</Text>
             </Pressable>
             {profile.profileImage ? (
               <Pressable style={styles.modalOption} onPress={() => handleImageAction(removeProfileImage)} accessibilityRole="button">
                 <Ionicons name="trash-outline" size={24} color={colors.primary} />
-                <Text style={styles.removeText}>Remover foto</Text>
+                <Text style={styles.removeText}>{t('settings.removePhoto')}</Text>
               </Pressable>
             ) : null}
           </Pressable>

@@ -34,7 +34,7 @@ export function useNotificationsModalViewModel({ visible, onClose, onUnreadCount
       publishUnreadCount(nextNotifications)
     } catch (loadError) {
       console.error('Falha ao carregar notificações', loadError)
-      setError('Não foi possível carregar as notificações.')
+      setError('notifications.errors.load')
     } finally {
       setIsLoading(false)
     }
@@ -70,7 +70,7 @@ export function useNotificationsModalViewModel({ visible, onClose, onUnreadCount
       publishUnreadCount(nextNotifications)
     } catch (updateError) {
       console.error('Falha ao marcar notificação como lida', updateError)
-      setError('Não foi possível marcar a notificação como lida.')
+      setError('notifications.errors.markRead')
     } finally {
       setIsUpdating(false)
     }
@@ -90,7 +90,7 @@ export function useNotificationsModalViewModel({ visible, onClose, onUnreadCount
       publishUnreadCount(nextNotifications)
     } catch (updateError) {
       console.error('Falha ao excluir notificação', updateError)
-      setError('Não foi possível excluir a notificação.')
+      setError('notifications.errors.delete')
     } finally {
       setIsUpdating(false)
     }

@@ -4,6 +4,7 @@ import Alert from '@shared/components/feedback/Alert'
 import { colors, spacing } from '@shared/styles/style'
 import { getNotificationPreview } from './NotificationsModalModel'
 import { useNotificationsModalViewModel } from './useNotificationsModalViewModel'
+import { useTranslation } from 'react-i18next'
 
 type NotificationsModalViewProps = {
   visible: boolean
@@ -13,6 +14,7 @@ type NotificationsModalViewProps = {
 
 export default function NotificationsModalView(props: NotificationsModalViewProps) {
   const viewModel = useNotificationsModalViewModel(props)
+  const { t } = useTranslation()
   const selectedNotification = viewModel.selectedNotification
 
   return (
@@ -20,16 +22,16 @@ export default function NotificationsModalView(props: NotificationsModalViewProp
       <Modal animationType="slide" onRequestClose={viewModel.handleClose} transparent={false} visible={props.visible}>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Pressable accessibilityLabel="Fechar notificações" accessibilityRole="button" onPress={viewModel.handleClose} style={styles.iconButton}>
+            <Pressable accessibilityLabel={t('notifications.close')} accessibilityRole="button" onPress={viewModel.handleClose} style={styles.iconButton}>
               <Ionicons name="arrow-back" size={24} color={colors.secondary} />
             </Pressable>
-            <Text style={styles.title}>Notificações</Text>
+            <Text style={styles.title}>{t('notifications.title')}</Text>
             <View style={styles.headerSpacer} />
           </View>
 
-          {viewModel.error ? <Text style={styles.errorText}>{viewModel.error}</Text> : null}
-          {viewModel.isLoading ? <Text style={styles.statusText}>Carregando notificações...</Text> : null}
-          {!viewModel.isLoading && viewModel.notifications.length === 0 ? <Text style={styles.statusText}>Nenhuma notificação disponível.</Text> : null}
+          {viewModel.error ? <Text style={styles.errorText}>{t(viewModel.error, { defaultValue: viewModel.error })}</Text> : null}
+          {viewModel.isLoading ? <Text style={styles.statusText}>{t('notifications.loading')}</Text> : null}
+          {!viewModel.isLoading && viewModel.notifications.length === 0 ? <Text style={styles.statusText}>{t('notifications.empty')}</Text> : null}
 
           <ScrollView contentContainerStyle={styles.list}>
             {viewModel.notifications.map((notification) => (
@@ -48,7 +50,7 @@ export default function NotificationsModalView(props: NotificationsModalViewProp
                   <Text style={styles.itemDate}>{new Date(notification.createdAt).toLocaleDateString('pt-BR')}</Text>
                 </Pressable>
                 <Pressable
-                  accessibilityLabel="Excluir notificação"
+                  accessibilityLabel={t('notifications.delete')}
                   accessibilityRole="button"
                   disabled={viewModel.isUpdating}
                   onPress={() => void viewModel.handleDeleteNotification(notification)}
@@ -65,24 +67,24 @@ export default function NotificationsModalView(props: NotificationsModalViewProp
       <Modal animationType="slide" onRequestClose={() => viewModel.setSelectedNotification(null)} transparent={false} visible={selectedNotification !== null}>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Pressable accessibilityLabel="Voltar para notificações" accessibilityRole="button" onPress={() => viewModel.setSelectedNotification(null)} style={styles.iconButton}>
+            <Pressable accessibilityLabel={t('notifications.back')} accessibilityRole="button" onPress={() => viewModel.setSelectedNotification(null)} style={styles.iconButton}>
               <Ionicons name="arrow-back" size={24} color={colors.secondary} />
             </Pressable>
-            <Text style={styles.title}>Notificação</Text>
-            <Pressable accessibilityLabel="Fechar notificações" accessibilityRole="button" onPress={viewModel.handleClose} style={styles.iconButton}>
+            <Text style={styles.title}>{t('notifications.detailTitle')}</Text>
+            <Pressable accessibilityLabel={t('notifications.close')} accessibilityRole="button" onPress={viewModel.handleClose} style={styles.iconButton}>
               <Ionicons name="close" size={24} color={colors.secondary} />
             </Pressable>
           </View>
 
           {selectedNotification ? (
             <ScrollView contentContainerStyle={styles.detailContent}>
-              {viewModel.error ? <Alert message={viewModel.error} /> : null}
+              {viewModel.error ? <Alert message={t(viewModel.error, { defaultValue: viewModel.error })} /> : null}
               <Text style={styles.detailTitle}>{selectedNotification.title}</Text>
               <Text style={styles.itemDate}>{new Date(selectedNotification.createdAt).toLocaleDateString('pt-BR')}</Text>
               <Text style={styles.detailMessage}>{selectedNotification.message}</Text>
               <Pressable accessibilityRole="button" disabled={viewModel.isUpdating} onPress={() => void viewModel.handleDeleteNotification()} style={styles.deleteButton}>
                 <Ionicons name="trash-outline" size={18} color={colors.white} />
-                <Text style={styles.deleteButtonText}>Excluir notificação</Text>
+                <Text style={styles.deleteButtonText}>{t('notifications.delete')}</Text>
               </Pressable>
             </ScrollView>
           ) : null}

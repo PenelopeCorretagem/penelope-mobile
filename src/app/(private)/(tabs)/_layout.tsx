@@ -3,6 +3,7 @@ import { Tabs } from 'expo-router'
 import { StackActions } from 'expo-router/react-navigation'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { colors, spacing, styles } from '@shared/styles/style'
+import { useTranslation } from 'react-i18next'
 
 function CustomTabBar({ state, descriptors, navigation }: any) {
   return (
@@ -70,6 +71,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
 }
 
 export default function TabLayout() {
+  const { t } = useTranslation()
   return (
     <Tabs
       backBehavior="history"
@@ -78,19 +80,19 @@ export default function TabLayout() {
     >
       <Tabs.Screen
         name="imoveis"
-        options={{ title: 'Imóveis', tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} /> }}
+        options={{ title: t('common.properties'), tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} /> }}
       />
       <Tabs.Screen
         name="favoritos"
-        options={{ title: 'Favoritos', tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} /> }}
+        options={{ title: t('common.favorites'), tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} /> }}
       />
       <Tabs.Screen
         name="trend-analysis"
-        options={{ title: 'Tendência', tabBarIcon: ({ color, size }) => <Ionicons name="stats-chart-outline" size={size} color={color} /> }}
+        options={{ title: t('trend.title'), tabBarIcon: ({ color, size }) => <Ionicons name="stats-chart-outline" size={size} color={color} /> }}
       />
       <Tabs.Screen
         name="configuracoes"
-        options={{ title: 'Configurações', tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} /> }}
+        options={{ title: t('header.settings'), tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} /> }}
       />
     </Tabs>
   )

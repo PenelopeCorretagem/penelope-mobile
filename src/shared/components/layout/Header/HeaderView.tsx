@@ -9,10 +9,12 @@ import { getUnreadNotificationCount } from '@service-penelopec/notificationServi
 import { useAuth } from '@shared/context/AuthContext'
 import Logo from '@shared/components/ui/Logo'
 import { colors, spacing, styles } from '@shared/styles/style'
+import { useTranslation } from 'react-i18next'
 
 export default function HeaderView() {
   const pathname = usePathname()
   const { isAuthenticated } = useAuth()
+  const { t } = useTranslation()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0)
@@ -39,7 +41,7 @@ export default function HeaderView() {
         {isSettingsSubmodule ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Voltar"
+            accessibilityLabel={t('header.back')}
             onPress={() => router.back()}
             style={headerStyles.iconButton}
           >
@@ -47,7 +49,7 @@ export default function HeaderView() {
           </Pressable>
         ) : <View style={headerStyles.actionSpacer} />}
         <View style={headerStyles.titleContainer}>
-          <Text style={headerStyles.title}>Configurações</Text>
+          <Text style={headerStyles.title}>{t('header.settings')}</Text>
         </View>
         <View style={headerStyles.actionSpacer} />
       </View>
@@ -62,7 +64,7 @@ export default function HeaderView() {
         <View style={headerStyles.actions}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Abrir pesquisa"
+            accessibilityLabel={t('header.search')}
             onPress={() => setIsSearchOpen(true)}
             style={headerStyles.iconButton}
           >
@@ -72,7 +74,7 @@ export default function HeaderView() {
           {isAuthenticated ? (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Notificações"
+              accessibilityLabel={t('header.notifications')}
               onPress={() => setIsNotificationsOpen(true)}
               style={headerStyles.notificationButton}
             >

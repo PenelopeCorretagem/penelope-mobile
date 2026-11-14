@@ -9,10 +9,12 @@ import Section from '@shared/components/layout/Section'
 import AdvertisementCard from '@properties/components/AdvertisementCard'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import { usePropertiesViewModel } from './usePropertiesViewModel'
+import { useTranslation } from 'react-i18next'
 
 export default function PropertiesView({ favoritesOnly = false }: { favoritesOnly?: boolean }) {
   const listRef = useRef<FlatList<Advertisement>>(null)
   useScrollToTop(listRef)
+  const { t } = useTranslation()
 
   const {
     advertisements,
@@ -29,7 +31,7 @@ export default function PropertiesView({ favoritesOnly = false }: { favoritesOnl
     return (
       <Section style={styles.state}>
         <ActivityIndicator color={colors.primary} size="large" />
-        <Text>Carregando propriedades...</Text>
+        <Text>{t('properties.loading')}</Text>
       </Section>
     )
   }
@@ -37,8 +39,8 @@ export default function PropertiesView({ favoritesOnly = false }: { favoritesOnl
   if (error) {
     return (
       <Section style={styles.state}>
-        <Alert message={error} />
-        <Button onPress={retry}>Tentar novamente</Button>
+        <Alert message={t(error)} />
+        <Button onPress={retry}>{t('common.retry')}</Button>
       </Section>
     )
   }
@@ -46,8 +48,8 @@ export default function PropertiesView({ favoritesOnly = false }: { favoritesOnl
   return (
     totalResults === 0 ? (
       <Section style={styles.state}>
-        <Text>Nenhuma propriedade encontrada com os filtros aplicados.</Text>
-        <Button onPress={clearFilters}>Limpar busca e filtros</Button>
+        <Text>{t('properties.empty')}</Text>
+        <Button onPress={clearFilters}>{t('properties.clearSearch')}</Button>
       </Section>
     ) : (
       <FlatList
