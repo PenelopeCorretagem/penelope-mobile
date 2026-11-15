@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
-import { useFocusEffect } from 'expo-router'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 import AlertView from '@shared/components/feedback/Alert'
 import Text from '@shared/components/ui/Text'
@@ -11,7 +10,6 @@ import { useTranslation } from 'react-i18next'
 
 export default function TrendAnalysisView() {
   const [filtersExpanded, setFiltersExpanded] = useState(false)
-  const [alertKey, setAlertKey] = useState(0)
   const { t } = useTranslation()
   const { width } = useWindowDimensions()
   const {
@@ -26,12 +24,6 @@ export default function TrendAnalysisView() {
     selectFilter,
   } = useTrendAnalysisViewModel()
 
-  useFocusEffect(
-    useCallback(() => {
-      setAlertKey((current) => current + 1)
-    }, []),
-  )
-
   const chartWidth = Math.max(width - spacing.lg * 2 - spacing.md * 2, 260)
   const plotWidth = chartWidth - 34
   const plotHeight = 112
@@ -45,8 +37,8 @@ export default function TrendAnalysisView() {
   return (
     <>
       <AlertView
-        key={alertKey}
         message={t('trend.warning')}
+        persistenceKey="trend-analysis-warning"
         presentation="modal"
         variant="info"
       />
