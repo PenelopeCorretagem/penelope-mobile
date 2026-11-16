@@ -5,6 +5,7 @@ import Button from '@shared/components/ui/Button'
 import Text from '@shared/components/ui/Text'
 import Heading from '@shared/components/ui/Heading'
 import { ContactsModel } from '../../pages/Contacts/ContactsModel'
+import { useTranslation } from 'react-i18next'
 
 type FormData = {
   subject: string
@@ -16,6 +17,7 @@ type ContactFormProps = {
 }
 
 export function ContactFormView({ onFieldFocus }: ContactFormProps) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState<FormData>({
     subject: '',
     message: '',
@@ -42,7 +44,7 @@ export function ContactFormView({ onFieldFocus }: ContactFormProps) {
 
     if (!validation.isValid) {
       setErrors(validation.errors)
-      Alert.alert('Erro', 'Por favor, corrija os erros no formulário')
+      Alert.alert(t('settings.contacts.alertError'), t('settings.contacts.validationError'))
       return
     }
 
@@ -50,11 +52,11 @@ export function ContactFormView({ onFieldFocus }: ContactFormProps) {
     try {
       // TODO: Implementar envio do formulário com serviço real
       console.log('Formulário enviado:', formData)
-      Alert.alert('Sucesso', 'Mensagem enviada com sucesso!')
+      Alert.alert(t('settings.contacts.alertSuccess'), t('settings.contacts.success'))
       setFormData({ subject: '', message: '' })
       setErrors({})
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível enviar a mensagem')
+      Alert.alert(t('settings.contacts.alertError'), t('settings.contacts.submitError'))
     } finally {
       setIsSubmitting(false)
     }
@@ -89,7 +91,7 @@ export function ContactFormView({ onFieldFocus }: ContactFormProps) {
       />
       {errors[field] && (
         <Text style={{ color: colors.error, fontSize: 12, marginTop: spacing.sm }}>
-          ❌ {errors[field]}
+          ❌ {t(errors[field], { defaultValue: errors[field] })}
         </Text>
       )}
     </View>
@@ -105,12 +107,12 @@ export function ContactFormView({ onFieldFocus }: ContactFormProps) {
       scrollEnabled={false}
     >
       <View>
-        {renderField('Assunto', 'subject', 'Qual é o motivo do contato?')}
-        {renderField('Mensagem', 'message', 'Escreva sua mensagem...', true)}
+        {renderField(t('settings.contacts.subject'), 'subject', t('settings.contacts.subjectPlaceholder'))}
+        {renderField(t('settings.contacts.message'), 'message', t('settings.contacts.messagePlaceholder'), true)}
 
         <Button
           onPress={handleSubmit}
-          label={isSubmitting ? 'Enviando...' : 'Enviar mensagem'}
+          label={isSubmitting ? t('settings.contacts.submitting') : t('settings.contacts.submit')}
           style={{ marginTop: spacing.md, alignSelf: 'center' }}
         />
       </View>

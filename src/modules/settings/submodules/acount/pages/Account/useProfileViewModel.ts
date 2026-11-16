@@ -17,7 +17,7 @@ export function useProfileViewModel() {
     try {
       setProfile(await getUserProfile())
     } catch {
-      setError('Não foi possível carregar o perfil. Tente novamente.')
+      setError('settings.profileErrors.load')
     } finally {
       setIsLoading(false)
     }
@@ -42,7 +42,7 @@ export function useProfileViewModel() {
         ? await ImagePicker.requestCameraPermissionsAsync()
         : await ImagePicker.requestMediaLibraryPermissionsAsync()
       if (!permission.granted) {
-        setError(source === 'camera' ? 'Permita o acesso à câmera para tirar uma foto.' : 'Permita o acesso às fotos para escolher uma imagem.')
+        setError(source === 'camera' ? 'settings.profileErrors.cameraPermission' : 'settings.profileErrors.galleryPermission')
         return
       }
 
@@ -63,7 +63,7 @@ export function useProfileViewModel() {
         setProfile((current) => ({ ...current, profileImage: result.assets[0].uri }))
       }
     } catch {
-      setError(source === 'camera' ? 'Não foi possível tirar a foto.' : 'Não foi possível selecionar a imagem.')
+      setError(source === 'camera' ? 'settings.profileErrors.cameraFailed' : 'settings.profileErrors.galleryFailed')
     }
   }, [])
 
@@ -91,10 +91,10 @@ export function useProfileViewModel() {
     try {
       const savedProfile = await updateUserProfile(profile)
       setProfile(savedProfile)
-      setSuccessMessage('Alterações salvas com sucesso.')
+      setSuccessMessage('settings.profileSuccess')
       return true
     } catch {
-      setError('Não foi possível salvar as alterações. Tente novamente.')
+      setError('settings.profileErrors.save')
       return false
     } finally {
       setIsSaving(false)

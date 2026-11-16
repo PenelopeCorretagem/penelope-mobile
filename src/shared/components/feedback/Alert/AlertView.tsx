@@ -1,17 +1,18 @@
 import { Ionicons } from '@expo/vector-icons'
 import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useEffect, useState } from 'react'
+import { useAlertDismissal } from '@shared/context/AlertDismissalContext'
 import { colors, spacing } from '@shared/styles/style'
+import { useTranslation } from 'react-i18next'
 
 export type AlertVariant = 'error' | 'success' | 'info'
-
-
 
 type AlertViewProps = {
   message: string
   variant?: AlertVariant
   loading?: boolean
   presentation?: 'inline' | 'modal'
+  persistenceKey?: string
 }
 
 export default function AlertView({
@@ -19,20 +20,30 @@ export default function AlertView({
   variant = 'error',
   loading = false,
   presentation = 'inline',
+  persistenceKey,
 }: AlertViewProps) {
+  const { t } = useTranslation()
+  const { dismiss: dismissPersisted, isDismissed } = useAlertDismissal()
   const [dismissedMessage, setDismissedMessage] = useState<string | null>(null)
   const [dismissibleMessage, setDismissibleMessage] = useState<string | null>(null)
-  const isVisible = dismissedMessage !== message
+  const isVisible = persistenceKey ? !isDismissed(persistenceKey) : dismissedMessage !== message
   const canDismiss = presentation !== 'modal' || dismissibleMessage === message
   const iconName = variant === 'success'
     ? 'checkmark-circle-outline'
     : variant === 'info'
       ? 'information-circle-outline'
       : 'alert-circle-outline'
+  const palette = variant === 'success'
+    ? { accent: '#2f8f4e', backgroundColor: '#e8f5e9', textColor: '#276738' }
+    : variant === 'info'
+      ? { accent: colors.primary, backgroundColor: '#f7edf4', textColor: colors.primary }
+      : { accent: colors.error, backgroundColor: '#fde8e8', textColor: colors.error }
 
   useEffect(() => {
-    setDismissedMessage(null)
+    if (!persistenceKey) setDismissedMessage(null)
+  }, [message, persistenceKey])
 
+  useEffect(() => {
     if (presentation !== 'modal') return
 
     setDismissibleMessage(message)
@@ -40,7 +51,10 @@ export default function AlertView({
   }, [message, presentation])
 
   const dismiss = () => {
-    if (!loading && canDismiss) setDismissedMessage(message)
+    if (!loading && canDismiss) {
+      if (persistenceKey) dismissPersisted(persistenceKey)
+      else setDismissedMessage(message)
+    }
   }
 
   if (presentation === 'modal') {
@@ -54,21 +68,41 @@ export default function AlertView({
       >
         <View style={styles.modalRoot}>
           <Pressable
-            accessibilityLabel="Fechar aviso"
+            accessibilityLabel={t('alert.close')}
             accessibilityRole="button"
             disabled={loading || !canDismiss}
             onPress={dismiss}
             style={StyleSheet.absoluteFill}
           />
-          <View accessibilityRole="alert" style={styles.modalCard}>
-            <View style={styles.iconBadge}>
-              <Ionicons color={colors.primary} name={iconName} size={30} />
+          <View
+            accessibilityRole="alert"
+            accessibilityViewIsModal
+            style={styles.modalCard}
+          >
+            <View style={[styles.modalAccent, { backgroundColor: palette.accent }]} />
+            <View style={styles.modalHeader}>
+              <View style={[styles.iconBadge, { backgroundColor: palette.backgroundColor }]}>
+                <Ionicons color={palette.accent} name={iconName} size={28} />
+              </View>
+              <Pressable
+                accessibilityLabel={t('alert.close')}
+                accessibilityRole="button"
+                disabled={loading || !canDismiss}
+                onPress={dismiss}
+                style={({ pressed }) => [
+                  styles.iconCloseButton,
+                  pressed && canDismiss && styles.closeButtonPressed,
+                ]}
+              >
+                <Ionicons color={colors.secondaryLight} name="close" size={20} />
+              </Pressable>
             </View>
-            <Text style={styles.modalTitle}>Aviso</Text>
+            <Text style={styles.modalEyebrow}>{t('alert.eyebrow')}</Text>
+            <Text style={styles.modalTitle}>{t('alert.title')}</Text>
             <Text style={styles.modalMessage}>{message}</Text>
             {loading ? (
               <ActivityIndicator color={colors.primary} size="small" />
-            ) : variant === 'error' ? (
+            ) : (
               <Pressable
                 accessibilityState={{ disabled: !canDismiss }}
                 accessibilityRole="button"
@@ -80,20 +114,14 @@ export default function AlertView({
                   pressed && canDismiss && styles.closeButtonPressed,
                 ]}
               >
-                <Text style={styles.closeButtonText}>Entendi</Text>
+                <Text style={styles.closeButtonText}>{t('alert.understood')}</Text>
               </Pressable>
-            ) : null}
+            )}
           </View>
         </View>
       </Modal>
     )
   }
-
-  const palette = variant === 'success'
-    ? { backgroundColor: '#e8f5e9', textColor: '#276738' }
-    : variant === 'info'
-      ? { backgroundColor: '#f7edf4', textColor: colors.primary }
-      : { backgroundColor: '#fde8e8', textColor: colors.error }
 
   return (
     <View accessibilityRole="alert" style={[styles.container, { backgroundColor: palette.backgroundColor }]}>
@@ -114,44 +142,75 @@ const styles = StyleSheet.create({
   modalCard: {
     alignItems: 'center',
     backgroundColor: colors.white,
-    borderRadius: 12,
+    borderRadius: 22,
     boxShadow: '0px 8px 20px rgba(54, 34, 29, 0.18)',
+    elevation: 8,
     maxWidth: 420,
+    overflow: 'hidden',
     padding: spacing.lg,
+    paddingTop: spacing.md,
+    shadowColor: '#36221d',
+    shadowOffset: { height: 8, width: 0 },
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
     width: '100%',
+  },
+  modalAccent: {
+    alignSelf: 'stretch',
+    height: 4,
+    marginBottom: spacing.md,
+  },
+  modalHeader: {
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   iconBadge: {
     alignItems: 'center',
-    backgroundColor: '#f7edf4',
-    borderRadius: 28,
-    height: 56,
+    borderRadius: 18,
+    height: 52,
     justifyContent: 'center',
-    marginBottom: spacing.md,
-    width: 56,
+    width: 52,
+  },
+  iconCloseButton: {
+    alignItems: 'center',
+    borderRadius: 20,
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  modalEyebrow: {
+    alignSelf: 'stretch',
+    color: colors.primary,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.8,
+    marginTop: spacing.md,
   },
   modalTitle: {
+    alignSelf: 'stretch',
     color: colors.text,
-    fontSize: 18,
+    fontSize: 21,
     fontWeight: '700',
-    marginBottom: spacing.sm,
-    textAlign: 'center',
+    marginTop: 4,
   },
   modalMessage: {
+    alignSelf: 'stretch',
     color: colors.secondaryLight,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 14,
+    lineHeight: 21,
     marginBottom: spacing.lg,
-    textAlign: 'center',
-    width: '100%',
+    marginTop: spacing.sm,
   },
   closeButton: {
     alignItems: 'center',
     backgroundColor: colors.primary,
-    borderRadius: 8,
+    borderRadius: 12,
     justifyContent: 'center',
-    minHeight: 44,
-    minWidth: 120,
-    paddingHorizontal: spacing.lg,
+    minHeight: 48,
+    paddingHorizontal: spacing.xl,
+    width: '100%',
   },
   closeButtonDisabled: { opacity: 0.6 },
   closeButtonPressed: { opacity: 0.82 },

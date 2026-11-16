@@ -6,7 +6,7 @@ export const APP_ROUTES = {
     },
     root: '',
     conta: 'configuracoes/conta',
-    dashboard: 'dashboard',
+    trendAnalysis: 'trend-analysis',
     configuracoes: 'configuracoes',
     sobre: 'configuracoes/sobre',
     contato: 'configuracoes/contato',

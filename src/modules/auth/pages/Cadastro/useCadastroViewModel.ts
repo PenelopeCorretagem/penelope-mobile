@@ -85,11 +85,11 @@ export function useCadastroViewModel() {
       if (registrationFailed) {
         setError(registrationError instanceof Error
           ? registrationError.message
-          : "Não foi possível concluir o cadastro.");
+          : "auth.errors.registration");
         return;
       }
 
-      setSuccessMessage("Cadastro realizado com sucesso! Você será redirecionado para o login.");
+      setSuccessMessage("auth.success.registration");
       await new Promise<void>((resolve) => setTimeout(resolve, SUCCESS_MESSAGE_VISIBLE_MS));
       router.replace(APP_ROUTES.auth.login);
     } finally {

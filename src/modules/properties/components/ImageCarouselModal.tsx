@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FlatList, Image, Modal, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors, spacing } from '@shared/styles/style'
+import { useTranslation } from 'react-i18next'
 
 type CarouselImage = {
   id: number
@@ -17,6 +18,7 @@ type ImageCarouselModalProps = {
 }
 
 export default function ImageCarouselModal({ images, initialIndex, title, visible, onClose }: ImageCarouselModalProps) {
+  const { t } = useTranslation()
   const { width, height } = useWindowDimensions()
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
 
@@ -29,7 +31,7 @@ export default function ImageCarouselModal({ images, initialIndex, title, visibl
       <View style={styles.backdrop}>
         <View style={styles.header}>
           <Text style={styles.counter}>{currentIndex + 1} / {images.length}</Text>
-          <Pressable accessibilityLabel={`Fechar ${title}`} accessibilityRole="button" onPress={onClose} style={styles.closeButton}>
+          <Pressable accessibilityLabel={t('common.close')} accessibilityRole="button" onPress={onClose} style={styles.closeButton}>
             <Ionicons name="close" size={28} color={colors.white} />
           </Pressable>
         </View>

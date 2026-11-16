@@ -114,7 +114,7 @@ export function usePropertiesViewModel({ favoritesOnly = false }: { favoritesOnl
       })
     } catch (loadError) {
       console.error('Falha ao carregar imóveis', loadError)
-      setError('Não foi possível carregar os imóveis. Tente novamente.')
+      setError('properties.loadError')
     } finally {
         setTimeout(() => {
         setIsLoading(false)

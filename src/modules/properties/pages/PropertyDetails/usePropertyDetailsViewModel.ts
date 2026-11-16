@@ -27,7 +27,7 @@ export function usePropertyDetailsViewModel() {
 
     if (id === null) {
       setAdvertisement(null)
-      setError('Imóvel não encontrado.')
+      setError('properties.details.notFound')
       setIsLoading(false)
       return
     }
@@ -35,11 +35,11 @@ export function usePropertyDetailsViewModel() {
     try {
       const result = await getAdvertisementById(id)
       setAdvertisement(result ?? null)
-      if (!result) setError('Imóvel não encontrado.')
+      if (!result) setError('properties.details.notFound')
     } catch (loadError) {
       console.error('Falha ao carregar detalhes do imóvel', loadError)
       setAdvertisement(null)
-      setError('Não foi possível carregar os detalhes do imóvel. Tente novamente.')
+      setError('properties.details.loadError')
     } finally {
       setIsLoading(false)
     }

@@ -10,6 +10,7 @@ import Text from '@shared/components/ui/Text'
 import { useFavorites } from '@shared/context/FavoritesContext'
 import { colors, spacing } from '@shared/styles/style'
 import { getAdvertisementCardImageUrls } from '@properties/pages/Properties/PropertiesModel'
+import { useTranslation } from 'react-i18next'
 
 type AdvertisementCardProps = {
   advertisement: Advertisement
@@ -18,6 +19,7 @@ type AdvertisementCardProps = {
 
 export default function AdvertisementCardView({ advertisement, width }: AdvertisementCardProps) {
   const { property } = advertisement
+  const { t } = useTranslation()
   const { isFavorite, toggleFavorite } = useFavorites()
   const { width: windowWidth } = useWindowDimensions()
   const cardWidth = width ?? windowWidth - spacing.md * 2
@@ -43,7 +45,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
       await toggleFavorite(advertisement.id)
     } catch (error) {
       console.error('Falha ao atualizar favorito', error)
-      Alert.alert('Não foi possível atualizar favoritos.', 'Tente novamente.')
+      Alert.alert(t('errors.favorite'), t('errors.tryAgain'))
     } finally {
       setIsFavoriteUpdating(false)
     }
@@ -65,7 +67,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
           pagingEnabled
           renderItem={({ item: imageUrl }) => (
             <Image
-              accessibilityLabel={`Imagem do imóvel ${property.title ?? ''}`}
+              accessibilityLabel={t('properties.propertyImage', { title: property.title ?? '' })}
               source={{ uri: imageUrl }}
               style={[styles.cover, { width: cardWidth }]}
             />
@@ -76,7 +78,7 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
 
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={isSaved ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          accessibilityLabel={isSaved ? t('properties.removeFavorite') : t('properties.addFavorite')}
           disabled={isFavoriteUpdating}
           onStartShouldSetResponder={() => true}
           onPress={() => void handleToggleFavorite()}
@@ -86,11 +88,11 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
         </Pressable>
 
         <Text style={[styles.category, { backgroundColor: categoryColor, color: colors.background }]}>
-          {property.type?.friendlyName ?? 'Imóvel'}
+          {property.type?.friendlyName ?? t('properties.property')}
         </Text>
 
         {imageUrls.length > 1 ? (
-          <View accessibilityLabel={`${imageUrls.length} imagens`} style={styles.pagination}>
+          <View accessibilityLabel={t('properties.images', { count: imageUrls.length })} style={styles.pagination}>
             {imageUrls.map((imageUrl, index) => <View key={`${imageUrl}-dot-${index}`} style={[styles.dot, index === activeImageIndex && styles.activeDot]} />)}
           </View>
         ) : null}
@@ -98,28 +100,28 @@ export default function AdvertisementCardView({ advertisement, width }: Advertis
 
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Abrir detalhes de ${property.title ?? 'imóvel'}`}
+        accessibilityLabel={t('properties.openDetails', { title: property.title ?? t('properties.property') })}
         onPress={() => router.push(`${APP_ROUTES.detalhes}/${advertisement.id}`)}
         style={styles.content}
       >
-        <Heading level={4} style={styles.title}>{property.title ?? 'Imóvel sem título'}</Heading>
-        <Text style={styles.city}>{property.address?.city ?? 'Cidade não informada'}</Text>
+        <Heading level={4} style={styles.title}>{property.title ?? t('properties.untitled')}</Heading>
+        <Text style={styles.city}>{property.address?.city ?? t('properties.unknownCity')}</Text>
         {advertisement.distanceKm !== undefined ? (
-          <Text style={styles.distance}>{advertisement.distanceKm < 1 ? 'A menos de 1 km de distância' : `${advertisement.distanceKm.toFixed(1)} km de distância`}</Text>
+          <Text style={styles.distance}>{advertisement.distanceKm < 1 ? t('properties.lessThanKm') : t('properties.kmAway', { distance: advertisement.distanceKm.toFixed(1) })}</Text>
         ) : null}
-        <Text style={styles.detail}>{detail}</Text>
+        <Text style={styles.detail}>{t('properties.bedrooms', { area: property.area ?? '?', rooms: property.numberOfRooms ?? '?' })}</Text>
 
         {amenities.length > 0 ? (
           <View style={styles.amenities}>
             {amenities.slice(0, 3).map((amenity, index) => (
               <Text key={amenity.id ?? `${amenity.description ?? 'amenity'}-${index}`} style={styles.amenity}>
-                {amenity.description || 'Diferencial'}
+                {amenity.description || t('properties.amenity')}
               </Text>
             ))}
           </View>
         ) : null}
 
-        <Text style={styles.learnMoreButton}>Saiba Mais</Text>
+        <Text style={styles.learnMoreButton}>{t('properties.learnMore')}</Text>
       </Pressable>
     </View>
   )
