@@ -206,7 +206,7 @@ export default function PropertyDetailsView() {
                   <Text style={styles.body}>{badge.label}</Text>
                   <Text style={[styles.qualityScore, { color: tint }]}>{formatBadgeScore(badge)}</Text>
                 </View>
-                <Ionicons name="information-circle-outline" size={16} color={tint} />
+                <Ionicons name="information-circle-outline" size={16} color={tint} style={styles.qualityInfoIcon} />
               </Pressable>
             )
           })}
@@ -329,10 +329,11 @@ const styles = StyleSheet.create({
   mapText: { color: colors.white, fontSize: 14, fontWeight: '600' },
   state: { alignItems: 'center', flex: 1, gap: spacing.md, justifyContent: 'center' },
   qualitiesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, justifyContent: 'center', width: '100%' },
-  qualityItem: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center', marginBottom: spacing.sm, padding: spacing.sm, width: '46%' },
+  qualityItem: { alignItems: 'center', backgroundColor: colors.white, borderRadius: 8, elevation: 2, flexDirection: 'column', gap: spacing.sm, justifyContent: 'center', marginBottom: spacing.sm, padding: spacing.md, position: 'relative', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, width: '46%' },
   qualityItemPressed: { opacity: 0.65 },
   qualityItemUnavailable: { opacity: 0.7 },
-  qualityTexts: { flexShrink: 1 },
+  qualityTexts: { alignItems: 'center', width: '100%' },
+  qualityInfoIcon: { position: 'absolute', right: spacing.sm, top: spacing.sm },
   qualityScore: { fontSize: 13, fontWeight: '700' },
   badgesError: { alignItems: 'center', padding: spacing.sm },
   detailsSection: { width: '100%', paddingVertical: 18 },

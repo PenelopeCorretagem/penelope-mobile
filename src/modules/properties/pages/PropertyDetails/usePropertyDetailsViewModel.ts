@@ -51,7 +51,9 @@ export function usePropertyDetailsViewModel() {
 
   // Falha nas insígnias não pode quebrar a tela de detalhes.
   // Insígnias pertencem ao empreendimento (estate.id), não ao id do anúncio da rota.
-  const estateId = advertisement?.property.id ?? null
+  const estateId =
+    advertisement?.property.id ??
+    (process.env.EXPO_PUBLIC_MOCK_BADGES === 'true' ? advertisement?.id ?? null : null)
   const loadBadges = useCallback(async () => {
     if (estateId === null) {
       setBadges([])
