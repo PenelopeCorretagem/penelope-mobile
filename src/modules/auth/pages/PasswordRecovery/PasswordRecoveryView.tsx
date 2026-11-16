@@ -1,8 +1,10 @@
 import AuthScreen, { type AuthInputField } from '@auth/components/AuthScreen'
 import { APP_ROUTES } from '@constant/routes'
 import { usePasswordRecoveryViewModel } from './usePasswordRecoveryViewModel'
+import { useTranslation } from 'react-i18next'
 
 export default function PasswordRecoveryView() {
+  const { t } = useTranslation()
   const {
     email,
     error,
@@ -15,8 +17,8 @@ export default function PasswordRecoveryView() {
   const fields: AuthInputField[] = [
     {
       key: 'email',
-      label: 'E-mail',
-      placeholder: 'Digite seu e-mail',
+      label: t('auth.email'),
+      placeholder: t('auth.email'),
       value: email,
       keyboardType: 'email-address',
       autoCapitalize: 'none',
@@ -26,17 +28,18 @@ export default function PasswordRecoveryView() {
 
   return (
     <AuthScreen
-      title="Recuperar senha"
-      subtitle="Informe seu e-mail para receber as instruções de recuperação."
+      title={t('auth.recoverPassword')}
+      subtitle={t('auth.recoverSubtitle')}
       fields={fields}
-      submitText="Enviar instruções"
+      submitText={t('auth.sendInstructions')}
+      submittingText={t('auth.sendingInstructionsButton')}
       isSubmitting={isSubmitting}
       onSubmit={handleSubmit}
-      statusMessage={successMessage ?? (isSubmitting ? 'Enviando instruções de recuperação...' : error ?? undefined)}
+      statusMessage={successMessage ?? (isSubmitting ? t('auth.sendingInstructions') : error ?? undefined)}
       statusVariant={successMessage ? 'success' : error ? 'error' : 'info'}
       statusLoading={isSubmitting && !successMessage && !error}
-      secondaryPrompt="Já lembrou sua senha?"
-      secondaryActionLabel="Voltar para o login"
+      secondaryPrompt={t('auth.rememberedPassword')}
+      secondaryActionLabel={t('auth.backToLogin')}
       secondaryActionHref={APP_ROUTES.auth.login}
     />
   )

@@ -10,8 +10,10 @@ import Button from '@shared/components/ui/Button'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import ImageCarouselModal from '@properties/components/ImageCarouselModal'
 import { usePropertyMediaViewModel } from '../PropertyDetails/usePropertyMediaViewModel'
+import { useTranslation } from 'react-i18next'
 
 export default function PropertyGalleryView() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { images, error, isLoading, retry } = usePropertyMediaViewModel()
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
@@ -19,26 +21,26 @@ export default function PropertyGalleryView() {
   return (
     <View style={sharedStyles.screen}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable accessibilityLabel={t('common.back')} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={colors.primary} />
         </Pressable>
-        <Heading level={2}>Galeria ({images.length})</Heading>
+        <Heading level={2}>{t('properties.gallery.title', { count: images.length })}</Heading>
         <View style={{ width: 24 }} />
       </View>
 
       {isLoading ? (
         <Section style={styles.loadingContainer}>
-          <Text>Carregando galeria...</Text>
+          <Text>{t('properties.gallery.loading')}</Text>
         </Section>
       ) : error ? (
         <Section style={styles.emptyContainer}>
-          <Alert message={error} />
-          <Button onPress={retry}>Tentar novamente</Button>
+          <Alert message={t(error, { defaultValue: error })} />
+          <Button onPress={retry}>{t('common.retry')}</Button>
         </Section>
       ) : images.length === 0 ? (
         <Section style={styles.emptyContainer}>
           <Ionicons name="images-outline" size={48} color={colors.mutedText} />
-          <Text>Nenhuma imagem disponível</Text>
+          <Text>{t('properties.gallery.empty')}</Text>
         </Section>
       ) : (
         <FlatList
@@ -47,7 +49,7 @@ export default function PropertyGalleryView() {
           numColumns={2}
           contentContainerStyle={styles.gridContent}
           renderItem={({ item, index }) => (
-            <Pressable accessibilityLabel={`Abrir imagem ${index + 1}`} accessibilityRole="button" onPress={() => setSelectedImageIndex(index)} style={styles.imageItem}>
+            <Pressable accessibilityLabel={t('properties.gallery.openImage', { index: index + 1 })} accessibilityRole="button" onPress={() => setSelectedImageIndex(index)} style={styles.imageItem}>
               <Image source={{ uri: item.url }} style={styles.gridImage} />
             </Pressable>
           )}
@@ -58,7 +60,7 @@ export default function PropertyGalleryView() {
         images={images}
         initialIndex={selectedImageIndex ?? 0}
         onClose={() => setSelectedImageIndex(null)}
-        title="Imagem da galeria"
+        title={t('properties.gallery.imageTitle')}
         visible={selectedImageIndex !== null}
       />
     </View>

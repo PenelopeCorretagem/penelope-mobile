@@ -3,24 +3,26 @@ import Section from '@shared/components/layout/Section'
 import { colors, styles, spacing } from '@shared/styles/style'
 import Text from '@shared/components/ui/Text'
 import Heading from '@shared/components/ui/Heading'
+import { useTranslation } from 'react-i18next'
 
 export default function AboutView() {
   const currentYear = new Date().getFullYear()
+  const { t } = useTranslation()
 
   return (
     <ScrollView style={styles.screen}>
       <Section style={{gap: spacing.md}}>
-        <Heading style={{ color: colors.primary}}>Sobre nós</Heading>
+        <Heading style={{ color: colors.primary}}>{t('settings.aboutPage.title')}</Heading>
         <View style={{ gap: spacing.lg }}>
           <Text style={{ color: colors.text }}>
-            A Penelope Corretora de Imóveis é uma plataforma dedicada a oferecer soluções imobiliárias de alta qualidade.
+            {t('settings.aboutPage.paragraphOne')}
           </Text>
           <Text style={{ color: colors.text }}>
-            Nossa missão é proporcionar uma experiência excepcional aos nossos clientes, garantindo transparência, confiança e satisfação em todas as etapas do processo imobiliário. Valorizamos relacionamentos duradouros e buscamos sempre superar as expectativas.
+            {t('settings.aboutPage.paragraphTwo')}
           </Text>
         </View>
         <Text style={{ color: colors.text }}>
-            © {currentYear} Penélope - Consultora de Imóveis | Todos os direitos reservados.
+            {t('settings.aboutPage.copyright', { year: currentYear })}
           </Text>
       </Section>
     </ScrollView>

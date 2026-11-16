@@ -11,7 +11,9 @@ import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import { badgeIcons, formatBadgeScore, getLocationLabel, getYouTubeVideoId, isBadgeAvailable } from './PropertyDetailsModel'
 import { usePropertyDetailsViewModel } from './usePropertyDetailsViewModel'
 import { LinearGradient } from 'expo-linear-gradient'
+import { useTranslation } from 'react-i18next'
 export default function PropertyDetailsView() {
+  const { t } = useTranslation()
   const { width } = useWindowDimensions()
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const {
@@ -46,7 +48,7 @@ export default function PropertyDetailsView() {
     return (
       <Section style={styles.state}>
         <ActivityIndicator color={colors.primary} size="large" />
-        <Text>Carregando detalhes do imóvel...</Text>
+        <Text>{t('properties.details.loading')}</Text>
       </Section>
     )
   }
@@ -54,14 +56,14 @@ export default function PropertyDetailsView() {
   if (error || !advertisement) {
     return (
       <Section style={styles.state}>
-        <Alert message={error ?? 'Imóvel não encontrado.'} />
-        {error?.includes('Tente novamente') ? <Button onPress={retry}>Tentar novamente</Button> : null}
+        <Alert message={error ? t(error, { defaultValue: error }) : t('properties.details.notFound')} />
+        {error === 'properties.details.loadError' ? <Button onPress={retry}>{t('common.retry')}</Button> : null}
       </Section>
     )
   }
 
   const { property } = advertisement
-  const { imageUrls, typeLabel, dormitoriesLabel, firstThreeAmenities, hasCoordinates } = presentation!
+  const { imageUrls, typeLabel, dormitories, firstThreeAmenities, hasCoordinates } = presentation!
 
   return (
     <>
@@ -84,7 +86,7 @@ export default function PropertyDetailsView() {
             pagingEnabled
             renderItem={({ item: imageUrl }) => (
               <Image
-                accessibilityLabel={`Imagem do imóvel ${property.title ?? ''}`}
+                accessibilityLabel={t('properties.propertyImage', { title: property.title ?? '' })}
                 source={{ uri: imageUrl }}
                 style={[styles.image, { width }]}
               />
@@ -93,7 +95,7 @@ export default function PropertyDetailsView() {
             showsHorizontalScrollIndicator={false}
           />
           {imageUrls.length > 1 ? (
-            <View accessibilityLabel={`Imagem ${activeImageIndex + 1} de ${imageUrls.length}`} style={styles.imageCountBadge}>
+            <View accessibilityLabel={t('properties.details.imageCount', { current: activeImageIndex + 1, total: imageUrls.length })} style={styles.imageCountBadge}>
               <Text style={styles.imageCountText}>{activeImageIndex + 1} / {imageUrls.length}</Text>
             </View>
           ) : null}
@@ -106,18 +108,18 @@ export default function PropertyDetailsView() {
       >
         <View style={styles.headerCard}>
           <Section style={styles.headerSection}>
-            <Text style={styles.typeBadge}>{typeLabel}</Text>
+            <Text style={styles.typeBadge}>{typeLabel ?? t('properties.details.typeUnknown')}</Text>
             <Heading level={1} style={styles.title}>
-              {property.title ?? 'Imóvel sem título'}
+              {property.title ?? t('properties.untitled')}
             </Heading>
-            <Text style={styles.subtitle}>{getLocationLabel(advertisement)}</Text>
-            {dormitoriesLabel ? <Text style={styles.subtitle}>{dormitoriesLabel}</Text> : null}
+            <Text style={styles.subtitle}>{getLocationLabel(advertisement) ?? t('properties.details.locationUnknown')}</Text>
+            {dormitories !== undefined ? <Text style={styles.subtitle}>{t('properties.details.bedrooms', { count: dormitories })}</Text> : null}
 
             {firstThreeAmenities.length > 0 ? (
               <View style={styles.amenitiesRow}>
                 {firstThreeAmenities.map((amenity, index) => (
                   <View key={amenity.id ?? `${amenity.description ?? 'amenity'}-${index}`} style={styles.amenityBadge}>
-                    <Text style={styles.amenityBadgeText}>{amenity.description || 'Diferencial'}</Text>
+                    <Text style={styles.amenityBadgeText}>{amenity.description || t('properties.amenity')}</Text>
                   </View>
                 ))}
               </View>
@@ -133,7 +135,7 @@ export default function PropertyDetailsView() {
             style={[styles.actionButtonFull, styles.actionButtonFilled]}
           >
             <Ionicons name="images-outline" size={18} color={colors.primary} />
-            <Text style={styles.actionButtonTextFilled}>VER GALERIA</Text>
+            <Text style={styles.actionButtonTextFilled}>{t('properties.details.viewGallery')}</Text>
           </Pressable>
         ) : null}
         {plans.length > 0 ? (
@@ -142,7 +144,7 @@ export default function PropertyDetailsView() {
             style={[styles.actionButtonFull, styles.actionButtonFilled]}
           >
             <Ionicons name="document-outline" size={18} color={colors.primary} />
-            <Text style={styles.actionButtonTextFilled}>VER PLANTA</Text>
+            <Text style={styles.actionButtonTextFilled}>{t('properties.details.viewFloorPlan')}</Text>
           </Pressable>
         ) : null}
         {videos.length > 0 ? (
@@ -151,7 +153,7 @@ export default function PropertyDetailsView() {
             style={[styles.actionButtonFull, styles.actionButtonFilled]}
           >
             <Ionicons name="videocam" size={18} color={colors.primary} />
-            <Text style={styles.actionButtonTextFilled}>ASSISTIR VÍDEO</Text>
+            <Text style={styles.actionButtonTextFilled}>{t('properties.details.watchVideo')}</Text>
           </Pressable>
         ) : null}
       </Section>
@@ -160,18 +162,18 @@ export default function PropertyDetailsView() {
 
       {property.description ? (
         <Section style={[styles.section, styles.lightSection]}>
-          <Heading level={3} style={styles.sectionTitle}>DESCRIÇÃO</Heading>
+          <Heading level={3} style={styles.sectionTitle}>{t('properties.details.description')}</Heading>
           <Text style={styles.body}>{property.description}</Text>
         </Section>
       ) : null}
 
       {property.amenities && property.amenities.length > 0 ? (
         <Section style={[styles.section, styles.darkSection]}>
-          <Heading level={3} style={styles.sectionTitle}>DIFERENCIAIS</Heading>
+          <Heading level={3} style={styles.sectionTitle}>{t('properties.details.amenities')}</Heading>
           <View style={styles.amenitiesGrid}>
             {property.amenities.map((amenity, index) => (
               <View key={amenity.id ?? `${amenity.description ?? 'amenity'}-${index}`} style={styles.amenityChip}>
-                <Text style={styles.amenityText}>{amenity.description || 'Diferencial'}</Text>
+                <Text style={styles.amenityText}>{amenity.description || t('properties.amenity')}</Text>
               </View>
             ))}
           </View>
@@ -179,13 +181,13 @@ export default function PropertyDetailsView() {
       ) : null}
 
       <Section style={[styles.section, styles.lightSection]}>
-        <Heading level={3} style={styles.sectionTitle}>QUALIDADES</Heading>
+        <Heading level={3} style={styles.sectionTitle}>{t('properties.details.qualities')}</Heading>
         {badgesStatus === 'loading' ? (
           <ActivityIndicator color={colors.primary} />
         ) : null}
         {badgesStatus === 'error' ? (
           <Pressable accessibilityRole="button" onPress={retryBadges} style={styles.badgesError}>
-            <Text style={styles.body}>Não foi possível carregar as qualidades. Toque para tentar novamente.</Text>
+            <Text style={styles.body}>{t('properties.details.qualitiesError')}</Text>
           </Pressable>
         ) : null}
         <View style={styles.qualitiesGrid}>
@@ -194,8 +196,8 @@ export default function PropertyDetailsView() {
             const tint = available ? colors.primary : colors.mutedText
             return (
               <Pressable
-                accessibilityHint="Abre uma explicação resumida"
-                accessibilityLabel={`${badge.label}: ${formatBadgeScore(badge)}. Ver explicação`}
+                accessibilityHint={t('properties.details.qualityHint')}
+                accessibilityLabel={t('properties.details.qualityLabel', { label: badge.label, score: formatBadgeScore(badge) ?? t('properties.details.unavailable') })}
                 accessibilityRole="button"
                 key={badge.type}
                 onPress={() => openQualityExplanation(badge)}
@@ -204,7 +206,7 @@ export default function PropertyDetailsView() {
                 <Ionicons name={badgeIcons[badge.type]} size={30} color={tint} />
                 <View style={styles.qualityTexts}>
                   <Text style={styles.body}>{badge.label}</Text>
-                  <Text style={[styles.qualityScore, { color: tint }]}>{formatBadgeScore(badge)}</Text>
+                  <Text style={[styles.qualityScore, { color: tint }]}>{formatBadgeScore(badge) ?? t('properties.details.unavailable')}</Text>
                 </View>
                 <Ionicons name="information-circle-outline" size={16} color={tint} />
               </Pressable>
@@ -219,10 +221,10 @@ export default function PropertyDetailsView() {
           style={styles.detailsSection}
         >
         <Section style={styles.sectionSecondary}>
-          <Heading level={3} style={styles.sectionTitleSecondary}>LOCALIZAÇÃO</Heading>
+          <Heading level={3} style={styles.sectionTitleSecondary}>{t('properties.details.location')}</Heading>
           <View style={styles.addressSection}>
             <Ionicons name="location" size={20} color={colors.white} />
-            <Text style={styles.addressText}>{getLocationLabel(advertisement)}</Text>
+            <Text style={styles.addressText}>{getLocationLabel(advertisement) ?? t('properties.details.locationUnknown')}</Text>
           </View>
           <Pressable
             onPress={() => {
@@ -238,7 +240,7 @@ export default function PropertyDetailsView() {
             />
             <View style={styles.mapOverlay}>
               <Ionicons name="map" size={32} color={colors.white} />
-              <Text style={styles.mapText}>Ver no Google Maps</Text>
+              <Text style={styles.mapText}>{t('properties.details.viewOnMaps')}</Text>
             </View>
           </Pressable>
         </Section>
@@ -249,8 +251,8 @@ export default function PropertyDetailsView() {
     <Modal animationType="fade" onRequestClose={closeVideo} statusBarTranslucent transparent visible={isVideoModalVisible}>
       <View style={styles.videoModalBackdrop}>
         <View style={styles.videoModalHeader}>
-          <Text style={styles.videoModalTitle}>Vídeo do imóvel</Text>
-          <Pressable accessibilityLabel="Fechar vídeo" accessibilityRole="button" onPress={closeVideo} style={styles.videoCloseButton}>
+          <Text style={styles.videoModalTitle}>{t('properties.details.propertyVideo')}</Text>
+          <Pressable accessibilityLabel={t('properties.details.closeVideo')} accessibilityRole="button" onPress={closeVideo} style={styles.videoCloseButton}>
             <Ionicons name="close" size={28} color={colors.white} />
           </Pressable>
         </View>
@@ -275,10 +277,10 @@ export default function PropertyDetailsView() {
         <View onStartShouldSetResponder={() => true} style={styles.qualityModalCard}>
           <View style={styles.qualityModalHeader}>
             <Text style={styles.qualityModalTitle}>
-              {selectedQuality ? `${selectedQuality.label} · ${formatBadgeScore(selectedQuality)}` : ''}
+              {selectedQuality ? `${selectedQuality.label} · ${formatBadgeScore(selectedQuality) ?? t('properties.details.unavailable')}` : ''}
             </Text>
             <Pressable
-              accessibilityLabel="Fechar explicação da insígnia"
+              accessibilityLabel={t('properties.details.closeQualityExplanation')}
               accessibilityRole="button"
               onPress={closeQualityExplanation}
               style={styles.qualityCloseButton}

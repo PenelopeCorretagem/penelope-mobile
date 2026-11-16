@@ -73,7 +73,7 @@ export function usePropertyMediaViewModel({
     const advertisementId = getRouteId(id)
     if (advertisementId === null) {
       setRouteAdvertisement(null)
-      setError('Imóvel não encontrado.')
+      setError('properties.gallery.notFound')
       setIsLoading(false)
       return
     }
@@ -84,12 +84,12 @@ export function usePropertyMediaViewModel({
     void getAdvertisementById(advertisementId)
       .then((result) => {
         setRouteAdvertisement(result ?? null)
-        if (!result) setError('Imóvel não encontrado.')
+        if (!result) setError('properties.gallery.notFound')
       })
       .catch((loadError) => {
         console.error('Falha ao carregar mídias do imóvel', loadError)
         setRouteAdvertisement(null)
-        setError('Não foi possível carregar as mídias do imóvel. Tente novamente.')
+        setError('properties.gallery.loadError')
       })
       .finally(() => setIsLoading(false))
   }, [id, loadFromRoute, reloadIndex])

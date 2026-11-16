@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { AccessibilityState, Pressable, StyleSheet, Text, View } from 'react-native'
 import { colors, spacing } from '@shared/styles/style'
 
 type SettingsOptionProps = {
@@ -10,9 +10,10 @@ type SettingsOptionProps = {
   onPress?: () => void;
   icon: keyof typeof Ionicons.glyphMap;
   tone?: 'default' | 'danger';
+  isExpanded?: boolean;
 };
 
-export default function SettingsOptionView({ title, description, href, onPress, icon, tone = 'default' }: SettingsOptionProps) {
+export default function SettingsOptionView({ title, description, href, onPress, icon, tone = 'default', isExpanded }: SettingsOptionProps) {
   const content = (
     <View style={styles.container}>
       <View style={styles.iconBox}>
@@ -22,7 +23,7 @@ export default function SettingsOptionView({ title, description, href, onPress, 
         <Text style={[styles.title, tone === 'danger' && styles.dangerText]}>{title}</Text>
         {description ? <Text style={[styles.description, tone === 'danger' && styles.dangerText]}>{description}</Text> : null}
       </View>
-      {href || onPress ? <Ionicons name="chevron-forward" size={18} color={colors.mutedText} /> : null}
+      {href || onPress ? <Ionicons name={isExpanded ? 'chevron-down' : 'chevron-forward'} size={18} color={colors.mutedText} /> : null}
     </View>
   )
 
@@ -33,6 +34,7 @@ export default function SettingsOptionView({ title, description, href, onPress, 
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={isExpanded === undefined ? undefined : ({ expanded: isExpanded } satisfies AccessibilityState)}
       onPress={onPress ?? (() => router.push(href as string))}
       style={styles.wrapper}
     >

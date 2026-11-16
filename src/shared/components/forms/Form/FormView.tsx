@@ -7,6 +7,7 @@ import Text from '@shared/components/ui/Text'
 import Alert, { type AlertVariant } from '@shared/components/feedback/Alert'
 import { APP_ROUTES } from '@constant/routes'
 import { colors, spacing } from '@shared/styles/style'
+import { useTranslation } from 'react-i18next'
 
 export type FormField = {
   key: string
@@ -25,6 +26,7 @@ export type FormField = {
 type FormProps = {
   fields: FormField[]
   submitText: string
+  submittingText?: string
   isSubmitting: boolean
   onSubmit: () => void
   onFieldFocus?: () => void
@@ -45,6 +47,7 @@ type FormProps = {
 export default function FormView({
   fields,
   submitText,
+  submittingText,
   isSubmitting,
   onSubmit,
   onFieldFocus,
@@ -61,6 +64,7 @@ export default function FormView({
   statusVariant,
   statusLoading = false,
 }: FormProps) {
+  const { t } = useTranslation()
   const [activeDateField, setActiveDateField] = useState<string | null>(null)
   const slideX = useRef(new Animated.Value(0)).current
   const fieldKeys = fields.map((field) => field.key).join('|')
@@ -124,13 +128,13 @@ export default function FormView({
 
       <View style={styles.actionsRow}>
         {onBack ? <Button onPress={onBack} 
-        label="Voltar"
+        label={t('common.back')}
         style={styles.backButton}/>
          : null}
         <Button
           onPress={isLastStep ? onSubmit : onNext}
           disabled={isSubmitting}
-          label={statusVariant === 'success' ? 'Concluído' : isSubmitting ? 'Cadastrando...' : isLastStep ? submitText : 'Continuar'}
+          label={statusVariant === 'success' ? t('form.done') : isSubmitting ? (submittingText ?? submitText) : isLastStep ? submitText : t('common.continue')}
           style={[styles.primaryButton, !isLastStep && styles.primaryButtonWithBack, isSubmitting && styles.primaryButtonDisabled]}
         />
       </View>

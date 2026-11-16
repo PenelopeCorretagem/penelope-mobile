@@ -10,9 +10,11 @@ import Button from '@shared/components/ui/Button'
 import { colors, spacing, styles as sharedStyles } from '@shared/styles/style'
 import ImageCarouselModal from '@properties/components/ImageCarouselModal'
 import { usePropertyMediaViewModel } from '../PropertyDetails/usePropertyMediaViewModel'
+import { useTranslation } from 'react-i18next'
 
 export default function PropertyPlanView() {
   const router = useRouter()
+  const { t } = useTranslation()
   const { plans, error, isLoading, retry } = usePropertyMediaViewModel()
   const [selectedPlantIndex, setSelectedPlantIndex] = useState<number | null>(null)
 
@@ -22,30 +24,30 @@ export default function PropertyPlanView() {
         <Pressable onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={colors.primary} />
         </Pressable>
-        <Heading level={2}>Plantas ({plans.length})</Heading>
+        <Heading level={2}>{t('properties.plan.title', { count: plans.length })}</Heading>
         <View style={{ width: 24 }} />
       </View>
 
       {isLoading ? (
         <Section style={styles.loadingContainer}>
-          <Text>Carregando plantas...</Text>
+          <Text>{t('properties.plan.loading')}</Text>
         </Section>
       ) : error ? (
         <Section style={styles.emptyContainer}>
           <Alert message={error} />
-          <Button onPress={retry}>Tentar novamente</Button>
+          <Button onPress={retry}>{t('common.retry')}</Button>
         </Section>
       ) : plans.length === 0 ? (
         <Section style={styles.emptyContainer}>
           <Ionicons name="document-outline" size={48} color={colors.mutedText} />
-          <Text>Nenhuma planta disponível</Text>
+          <Text>{t('properties.plan.empty')}</Text>
         </Section>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {plans.map((plan, index) => (
             <Section key={plan.id} style={styles.planContainer}>
-              <Text style={styles.planLabel}>Planta {index + 1}</Text>
-              <Pressable accessibilityLabel={`Abrir planta ${index + 1}`} accessibilityRole="button" onPress={() => setSelectedPlantIndex(index)}>
+              <Text style={styles.planLabel}>{t('properties.plan.item', { index: index + 1 })}</Text>
+              <Pressable accessibilityLabel={t('properties.plan.open', { index: index + 1 })} accessibilityRole="button" onPress={() => setSelectedPlantIndex(index)}>
                 <Image source={{ uri: plan.url }} style={styles.planImage} />
               </Pressable>
             </Section>
@@ -57,7 +59,7 @@ export default function PropertyPlanView() {
         images={plans}
         initialIndex={selectedPlantIndex ?? 0}
         onClose={() => setSelectedPlantIndex(null)}
-        title="Planta do imóvel"
+        title={t('properties.plan.modalTitle')}
         visible={selectedPlantIndex !== null}
       />
     </View>

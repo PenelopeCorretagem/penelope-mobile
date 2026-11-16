@@ -16,7 +16,7 @@ export const badgeIcons: Record<BadgeType, BadgeIcon> = {
 export const formatBadgeScore = (badge: PropertyBadge) =>
   badge.status === 'CALCULATED' && badge.score !== null
     ? `${badge.score.toFixed(1).replace('.', ',')}/10`
-    : 'Indisponível'
+    : null
 
 export const isBadgeAvailable = (badge: PropertyBadge) =>
   badge.status === 'CALCULATED' && badge.score !== null
@@ -41,7 +41,7 @@ export const formatPrice = (price: Advertisement['price']) => {
 export const getLocationLabel = (advertisement: Advertisement) => {
   const { city, region, uf } = advertisement.property.address ?? {}
 
-  return [city, region, uf].filter(Boolean).join(' - ') || 'Localização não informada'
+  return [city, region, uf].filter(Boolean).join(' - ') || null
 }
 
 export const getDetailsPresentation = (advertisement: Advertisement) => {
@@ -51,11 +51,8 @@ export const getDetailsPresentation = (advertisement: Advertisement) => {
   return {
     imageUrls,
     imageUrl: imageUrls[0],
-    typeLabel: property.type?.friendlyName ?? property.type?.key ?? 'Tipo não informado',
-    dormitoriesLabel:
-      property.numberOfRooms !== undefined
-        ? `${property.numberOfRooms} DORMITÓRIO${property.numberOfRooms !== 1 ? 'S' : ''}`
-        : '',
+    typeLabel: property.type?.friendlyName ?? property.type?.key ?? null,
+    dormitories: property.numberOfRooms,
     firstThreeAmenities: (property.amenities ?? []).slice(0, 3),
     hasCoordinates: Boolean(property.address?.latitude && property.address?.longitude),
   }

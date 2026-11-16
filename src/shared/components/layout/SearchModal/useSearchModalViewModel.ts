@@ -144,12 +144,12 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
   }, [])
 
   const cityOptions = useMemo(
-    () => [{ label: 'Todas', value: null }, ...countryOptions.cities.map((city) => ({ label: city, value: city }))],
+    () => [{ labelKey: 'common.all', value: null }, ...countryOptions.cities.map((city) => ({ label: city, value: city }))],
     [countryOptions.cities],
   )
 
   const regionOptions = useMemo(
-    () => [{ label: 'Todas', value: null }, ...countryOptions.regions.map((region) => ({ label: region, value: region }))],
+    () => [{ labelKey: 'common.all', value: null }, ...countryOptions.regions.map((region) => ({ label: region, value: region }))],
     [countryOptions.regions],
   )
 
@@ -237,7 +237,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       updateFilters((currentFilters) => ({ ...currentFilters, searchTerm: transcript }))
     })
     const errorListener = module.addListener('error', (event) => {
-      setSpeechError(event.message ?? 'Não foi possível reconhecer sua fala.')
+      setSpeechError('search.errors.speechRecognition')
       setIsListening(false)
     })
 
@@ -295,7 +295,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     }
 
     if (transcript.length > 500) {
-      setAiSearchError('A busca pode ter no máximo 500 caracteres.')
+      setAiSearchError('search.errors.maxLength')
       return
     }
 
@@ -330,7 +330,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       }, historySearchTerm)
     } catch (error) {
       console.error('Falha ao interpretar pesquisa com IA', error)
-      setAiSearchError(error instanceof Error ? error.message : 'Não foi possível interpretar sua busca com IA.')
+      setAiSearchError('search.errors.aiInterpretation')
     } finally {
       setIsInterpretingSearch(false)
     }
@@ -362,7 +362,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     const module = getSpeechRecognitionModule()
 
     if (!module) {
-      setSpeechError('Pesquisa por voz indisponível neste ambiente. Use um development build do aplicativo.')
+      setSpeechError('search.errors.voiceUnavailable')
       return
     }
 
@@ -376,7 +376,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
     try {
       const permission = await module.requestPermissionsAsync()
       if (!permission.granted) {
-        setSpeechError('Permissão de microfone negada. Habilite o acesso para usar a pesquisa por voz.')
+        setSpeechError('search.errors.microphonePermission')
         return
       }
 
@@ -389,7 +389,7 @@ export function useSearchModalViewModel({ visible, onClose }: SearchModalViewMod
       })
     } catch (error) {
       console.error('Erro ao iniciar reconhecimento de voz', error)
-      setSpeechError('Não foi possível iniciar a pesquisa por voz.')
+      setSpeechError('search.errors.voiceStart')
       setIsListening(false)
     }
   }, [handleSubmitSearch, isListening])

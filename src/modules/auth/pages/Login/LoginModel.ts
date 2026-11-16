@@ -15,13 +15,13 @@ export function getLoginFieldError(
   const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
 
   if (field === "email") {
-    if (!form.email.trim()) return "Informe seu e-mail.";
-    if (!emailIsValid) return "Informe um e-mail válido.";
+    if (!form.email.trim()) return "auth.validation.emailRequired";
+    if (!emailIsValid) return "auth.validation.emailInvalid";
     return "";
   }
 
-  if (!form.senha.trim()) return "Digite sua senha.";
-  if (form.senha.length < 6) return "A senha deve ter no mínimo 6 caracteres.";
+  if (!form.senha.trim()) return "auth.validation.passwordRequired";
+  if (form.senha.length < 6) return "auth.validation.passwordMinLength";
 
   return "";
 }
@@ -37,7 +37,7 @@ export function validateLoginForm(form: LoginFormState) {
   const errors = getLoginFieldErrors(form);
 
   if (errors.email || errors.senha) {
-    return "Preencha seu e-mail e senha para continuar.";
+    return "auth.validation.loginRequired";
   }
 
   return null;

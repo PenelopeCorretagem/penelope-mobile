@@ -50,7 +50,8 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "expo-router"
+      "expo-router",
+      "expo-localization"
     ],
     "extra": {
       "router": {},

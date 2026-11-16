@@ -67,11 +67,11 @@ export function useLoginViewModel() {
       }
 
       if (loginFailed) {
-        setError(loginError instanceof Error ? loginError.message : "Não foi possível entrar.");
+        setError(loginError instanceof Error ? loginError.message : "auth.errors.login");
         return;
       }
 
-      setSuccessMessage("Login realizado com sucesso. Redirecionando...");
+      setSuccessMessage("auth.success.login");
       await new Promise<void>((resolve) => setTimeout(resolve, SUCCESS_MESSAGE_VISIBLE_MS));
       router.replace(APP_ROUTES.imoveis);
     } finally {
